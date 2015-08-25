@@ -3,6 +3,7 @@
 require('chai').should();
 var PartitionPlan = require('../commands/partition_plan').PartitionPlan;
 var checkValidTopicName = require('../commands/shared').checkValidTopicName;
+var checkValidTopicNameForDeletion = require('../commands/shared').checkValidTopicNameForDeletion;
 
 describe('PartitionPlan', function () {
   it('plans have the right number of partitions', function () {
@@ -82,5 +83,19 @@ describe('checkValidTopicName', function () {
 
   it('topics are invalid if they match an existing topic\'s name', function () {
     checkValidTopicName('page_visits', ['page_visits']).invalid.should.equal(true);
+  });
+});
+
+describe('checkValidTopicNameForDeletion', function () {
+  it('existing non admin topics are allowed', function () {
+    checkValidTopicNameForDeletion('page_visits', ['page_visits']).invalid.should.equal(false);
+  });
+
+  it('non existing topics are not allowed', function () {
+    checkValidTopicNameForDeletion('page_visits', []).invalid.should.equal(true);
+  });
+
+  it('__consumer_offsets cannot be deleted', function () {
+    checkValidTopicNameForDeletion('__consumer_offsets', ['__consumer_offsets']).invalid.should.equal(true);
   });
 });

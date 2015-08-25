@@ -1,6 +1,7 @@
 'use strict';
 
 let validTopicRegex = /^[a-zA-Z0-9\\._\\-]+$/
+let adminTopics = ["__consumer_offsets"];
 
 function collidesWithExistingTopics(topicName, existingTopics) {
   var replaced = topicName.replace(/\./g, '_');
@@ -28,6 +29,17 @@ function checkValidTopicName(topicName, existingTopics) {
   }
 };
 
+function checkValidTopicNameForDeletion(topicName, existingTopics) {
+  if (existingTopics.indexOf(topicName) === -1) {
+    return {invalid: true, message: "topic must be an existing topic"};
+  } else if (adminTopics.indexOf(topicName) !== -1) {
+    return {invalid: true, message: "topic cannot be an admin topic"};
+  } else {
+    return {invalid: false};
+  }
+};
+
 module.exports = {
-  checkValidTopicName : checkValidTopicName
+  checkValidTopicName : checkValidTopicName,
+  checkValidTopicNameForDeletion: checkValidTopicNameForDeletion,
 }
