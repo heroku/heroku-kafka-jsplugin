@@ -85,7 +85,7 @@ module.exports = {
   needsApp: true,
   needsAuth: true,
   flags: [
-    {name: 'topic', char: 't', description: 'topic name to create', hasValue: true, optional: false}
+    {name: 'topic', char: 't', description: 'topic name to create', hasValue: true, optional: false},
     {name: 'partitions', char: 'p', description: 'number of partitions to give the topic', hasValue: true, optional: false}
   ],
   run: cli.command(co.wrap(createTopic)),
