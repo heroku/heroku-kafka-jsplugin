@@ -4,22 +4,21 @@ let zookeeper = require("node-zookeeper-client");
 let cli = require('heroku-cli-util');
 let co = require('co');
 let PartitionPlan = require('./partition_plan').PartitionPlan;
+let checkValidTopicName = require('./shared').checkValidTopicName;
 
 let ZookeeperTopicAdmin = function (client) {
   this.client = client;
 };
 
-ZookeeperTopicAdmin.prototype.createTopic = function (topicName) {
+ZookeeperTopicAdmin.prototype.createTopic = function (topicName, partitionCount) {
   var that = this;
-  this.getPartitionPlan(function (partitionPlan) {
+  this.getPartitionPlan(partitionCount, function (partitionPlan) {
     that.writeNewTopic(topicName, partitionPlan);
   });
 };
 
-ZookeeperTopicAdmin.prototype.getPartitionPlan = function (callback) {
+ZookeeperTopicAdmin.prototype.getPartitionPlan = function (partitionCount, callback) {
   this.getBrokers(function (brokers) {
-    console.log(brokers);
-    let partitionCount = 100; // TODO: stop hardcoding this
     callback(PartitionPlan.fromBrokers(brokers, partitionCount));
   });
 };
@@ -60,10 +59,18 @@ function* createTopic (context, heroku) {
     let config = yield heroku.apps(context.app).configVars().info();
     let zookeeperURL = config['HEROKU_KAFKA_ZOOKEEPER_URL'].replace(/zk:\/\//g,'');
     let topicName = context.flags.topic;
+    let partitionCount = context.flags.partitions;
+
+    let validTopic = checkValidTopicName(topicName);
+    if (validTopic.invalid) {
+      cli.error("topic name " + topicName + " was invalid: " + validTopic.message);
+      process.exit(1);
+    }
+
 
     let client = zookeeper.createClient(zookeeperURL);
     client.once('connected', function () {
-      new ZookeeperTopicAdmin(client).createTopic(topicName);
+      new ZookeeperTopicAdmin(client).createTopic(topicName, partitionCount);
     });
     client.connect();
 }
@@ -77,6 +84,7 @@ module.exports = {
   needsAuth: true,
   flags: [
     {name: 'topic', char: 't', description: 'topic name to create', hasValue: true, optional: false}
+    {name: 'partitions', char: 'p', description: 'number of partitions to give the topic', hasValue: true, optional: false}
   ],
   run: cli.command(co.wrap(createTopic)),
 }

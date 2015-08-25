@@ -2,6 +2,7 @@
 
 require('chai').should();
 var PartitionPlan = require('../commands/partition_plan').PartitionPlan;
+var checkValidTopicName = require('../commands/shared').checkValidTopicName;
 
 describe('PartitionPlan', function () {
   it('plans have the right number of partitions', function () {
@@ -34,5 +35,31 @@ describe('PartitionPlan', function () {
     for (var i = 0; i < partitionZeroPlan.length; i++) {
       brokers.should.include(partitionZeroPlan[i]);
     }
+  });
+});
+
+describe('checkValidTopicName', function () {
+  it('_, -, . and alphanumerics are allowed', function () {
+    checkValidTopicName('_-.aAzZ09').invalid.should.equal(false);
+  });
+
+  it('empty topics are invalid', function () {
+    checkValidTopicName('').invalid.should.equal(true);
+  });
+
+  it('topics can\'t be "."', function () {
+    checkValidTopicName('.').invalid.should.equal(true);
+  });
+
+  it('topics can\'t be ".."', function () {
+    checkValidTopicName('..').invalid.should.equal(true);
+  });
+
+  it('topics must be under 255 chars', function () {
+    checkValidTopicName('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa').invalid.should.equal(true);
+  });
+
+  it('topics must be ascii alphanumeric', function () {
+    checkValidTopicName('+++').invalid.should.equal(true);
   });
 });
