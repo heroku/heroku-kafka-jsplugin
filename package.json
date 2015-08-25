@@ -13,7 +13,8 @@
   ],
   "license": "ISC",
   "dependencies": {
+    "co": "^4.6.0",
     "heroku-cli-util": "^5.4.5",
-    "zookeeper": "3.4.6-6"
+    "node-zookeeper-client": "^0.2.2"
   }
 }
