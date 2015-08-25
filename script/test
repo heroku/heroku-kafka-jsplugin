@@ -1,4 +1,3 @@
 #!/usr/bin/env bash
 
-heroku plugins:link .
-heroku kafka:create-topic --topic test-topic -a morning-caverns-3182
+npm test
