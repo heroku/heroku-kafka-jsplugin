@@ -36,6 +36,23 @@ describe('PartitionPlan', function () {
       brokers.should.include(partitionZeroPlan[i]);
     }
   });
+
+  it('planned partitions always have 1 replicas when 1 broker is in the cluster', function () {
+    var brokers = [0];
+    var plan = PartitionPlan.fromBrokers(brokers, 10);
+    for (var i = 0; i < plan.length; i++) {
+      plan[i].length.should.equal(1)
+    }
+  });
+
+
+  it('planned partitions always have 3 replicas when 5 brokers are in the cluster', function () {
+    var brokers = [0,1,2,3,4];
+    var plan = PartitionPlan.fromBrokers(brokers, 10);
+    for (var i = 0; i < plan.length; i++) {
+      plan[i].length.should.equal(3)
+    }
+  });
 });
 
 describe('checkValidTopicName', function () {
