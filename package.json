@@ -1,0 +1,19 @@
+{
+  "name": "heroku-kafka",
+  "version": "0.0.1",
+  "description": "heroku plugin to manage heroku kafka",
+  "main": "index.js",
+  "author": "Tom Crayford tcrayford@heroku.com",
+  "repository": "heroku/heroku-kafka-jsplugin",
+  "bugs": {
+    "url": "https://github.com/heroku/heroku-kafka-jsplugin/issues"
+  },
+  "keywords": [
+    "heroku-plugin"
+  ],
+  "license": "ISC",
+  "dependencies": {
+    "heroku-cli-util": "^5.4.5",
+    "zookeeper": "3.4.6-6"
+  }
+}
