@@ -61,16 +61,18 @@ function* createTopic (context, heroku) {
     let topicName = context.flags.topic;
     let partitionCount = context.flags.partitions;
 
-    let validTopic = checkValidTopicName(topicName);
-    if (validTopic.invalid) {
-      cli.error("topic name " + topicName + " was invalid: " + validTopic.message);
-      process.exit(1);
-    }
-
-
     let client = zookeeper.createClient(zookeeperURL);
     client.once('connected', function () {
-      new ZookeeperTopicAdmin(client).createTopic(topicName, partitionCount);
+      client.getChildren("/brokers/topics", function (error, existingTopics) {
+        let validTopic = checkValidTopicName(topicName, existingTopics);
+        if (validTopic.invalid) {
+          cli.error("topic name " + topicName + " was invalid: " + validTopic.message);
+          client.close()
+        process.exit(1);
+        } else {
+          new ZookeeperTopicAdmin(client).createTopic(topicName, partitionCount);
+        }
+      });
     });
     client.connect();
 }

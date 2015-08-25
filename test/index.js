@@ -40,26 +40,30 @@ describe('PartitionPlan', function () {
 
 describe('checkValidTopicName', function () {
   it('_, -, . and alphanumerics are allowed', function () {
-    checkValidTopicName('_-.aAzZ09').invalid.should.equal(false);
+    checkValidTopicName('_-.aAzZ09', []).invalid.should.equal(false);
   });
 
   it('empty topics are invalid', function () {
-    checkValidTopicName('').invalid.should.equal(true);
+    checkValidTopicName('', []).invalid.should.equal(true);
   });
 
   it('topics can\'t be "."', function () {
-    checkValidTopicName('.').invalid.should.equal(true);
+    checkValidTopicName('.', []).invalid.should.equal(true);
   });
 
   it('topics can\'t be ".."', function () {
-    checkValidTopicName('..').invalid.should.equal(true);
+    checkValidTopicName('..', []).invalid.should.equal(true);
   });
 
   it('topics must be under 255 chars', function () {
-    checkValidTopicName('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa').invalid.should.equal(true);
+    checkValidTopicName('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', []).invalid.should.equal(true);
   });
 
   it('topics must be ascii alphanumeric', function () {
-    checkValidTopicName('+++').invalid.should.equal(true);
+    checkValidTopicName('+++', []).invalid.should.equal(true);
+  });
+
+  it('topics are invalid if they match an existing topic\'s name', function () {
+    checkValidTopicName('page_visits', ['page_visits']).invalid.should.equal(true);
   });
 });
