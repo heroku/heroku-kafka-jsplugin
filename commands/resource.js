@@ -14,10 +14,7 @@ HerokuKafkaResource.prototype.info = function* () {
   var response = yield this.heroku.request({
     host: this.host(),
     path: `/client/kafka/${VERSION}/clusters/${addon.name}`,
-    auth: `${this.context.auth.username}:${this.context.auth.password}`,
-    headers: {
-      'Accept': 'application/json'
-    }
+    auth: `${this.context.auth.username}:${this.context.auth.password}`
   });
   return response;
 };
