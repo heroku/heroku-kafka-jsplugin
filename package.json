@@ -19,7 +19,7 @@
     "node-zookeeper-client": "^0.2.2"
   },
   "scripts": {
-    "test": "eslint . && mocha"
+    "test": "eslint index.js commands/ && mocha"
   },
   "devDependencies": {
     "chai": "*",
