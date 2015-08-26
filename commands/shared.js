@@ -1,6 +1,6 @@
 'use strict';
 
-let validTopicRegex = /^[a-zA-Z0-9\\._\\-]+$/
+let validTopicRegex = /^[a-zA-Z0-9\\._\\-]+$/;
 let adminTopics = ["__consumer_offsets"];
 
 function collidesWithExistingTopics(topicName, existingTopics) {
@@ -27,7 +27,7 @@ function checkValidTopicName(topicName, existingTopics) {
   } else {
     return {invalid: false};
   }
-};
+}
 
 function checkValidTopicNameForDeletion(topicName, existingTopics) {
   if (existingTopics.indexOf(topicName) === -1) {
@@ -37,9 +37,9 @@ function checkValidTopicNameForDeletion(topicName, existingTopics) {
   } else {
     return {invalid: false};
   }
-};
+}
 
 module.exports = {
   checkValidTopicName : checkValidTopicName,
-  checkValidTopicNameForDeletion: checkValidTopicNameForDeletion,
-}
+  checkValidTopicNameForDeletion: checkValidTopicNameForDeletion
+};

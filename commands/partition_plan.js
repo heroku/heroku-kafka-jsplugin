@@ -21,7 +21,7 @@ let PartitionPlan = {
       currentPartitionId += 1;
     }
 
-    return out
+    return out;
   },
   replicaIndex: function (firstReplicaIndex, secondReplicaShift, replicaIndex, nBrokers) {
     let shift = 1 + (secondReplicaShift + replicaIndex) % (nBrokers - 1);
@@ -38,4 +38,4 @@ let PartitionPlan = {
 
 module.exports = {
   PartitionPlan : PartitionPlan
-}
+};

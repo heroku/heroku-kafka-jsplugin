@@ -36,7 +36,7 @@ ZookeeperTopicAdmin.prototype.getBrokers = function (callback) {
 ZookeeperTopicAdmin.prototype.writeNewTopic = function (topicName, partitionPlan) {
   var that = this;
   let data = {version:1, partitions: partitionPlan};
-  this.client.create("/brokers/topics/" + topicName, new Buffer(JSON.stringify(data)), function (error, path) {
+  this.client.create("/brokers/topics/" + topicName, new Buffer(JSON.stringify(data)), function (error) {
     if (error) {
       that.error(error);
     } else {
@@ -56,37 +56,42 @@ ZookeeperTopicAdmin.prototype.finished = function () {
 };
 
 function* createTopic (context, heroku) {
-    let config = yield heroku.apps(context.app).configVars().info();
-    let zookeeperURL = config['HEROKU_KAFKA_ZOOKEEPER_URL'].replace(/zk:\/\//g,'');
-    let topicName = context.flags.topic;
-    let partitionCount = context.flags.partitions;
+  let config = yield heroku.apps(context.app).configVars().info();
+  let zookeeperURL = config['HEROKU_KAFKA_ZOOKEEPER_URL'].replace(/zk:\/\//g,'');
+  let topicName = context.flags.topic;
+  let partitionCount = context.flags.partitions;
 
-    let client = zookeeper.createClient(zookeeperURL);
-    client.once('connected', function () {
-      client.getChildren("/brokers/topics", function (error, existingTopics) {
-        let validTopic = checkValidTopicName(topicName, existingTopics);
-        if (validTopic.invalid) {
-          cli.error("topic name " + topicName + " was invalid: " + validTopic.message);
-          client.close()
+  if (partitionCount <= 1) {
+    cli.error("--partitions must be provided and a number, but was " + partitionCount);
+    process.exit(1);
+  }
+
+  let client = zookeeper.createClient(zookeeperURL);
+  client.once('connected', function () {
+    client.getChildren("/brokers/topics", function (error, existingTopics) {
+      let validTopic = checkValidTopicName(topicName, existingTopics);
+      if (validTopic.invalid) {
+        cli.error("topic name " + topicName + " was invalid: " + validTopic.message);
+        client.close();
         process.exit(1);
-        } else {
-          new ZookeeperTopicAdmin(client).createTopic(topicName, partitionCount);
-        }
-      });
+      } else {
+        new ZookeeperTopicAdmin(client).createTopic(topicName, partitionCount);
+      }
     });
-    client.connect();
+  });
+  client.connect();
 }
 
 module.exports = {
   topic: 'kafka',
   command: 'create-topic',
   description: 'creates a topic in kafka',
-  help: '',
+  help: 'Creates a kafka topic',
   needsApp: true,
   needsAuth: true,
   flags: [
     {name: 'topic', char: 't', description: 'topic name to create', hasValue: true, optional: false},
     {name: 'partitions', char: 'p', description: 'number of partitions to give the topic', hasValue: true, optional: false}
   ],
-  run: cli.command(co.wrap(createTopic)),
-}
+  run: cli.command(co.wrap(createTopic))
+};

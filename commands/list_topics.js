@@ -4,16 +4,12 @@ let zookeeper = require("node-zookeeper-client");
 let cli = require('heroku-cli-util');
 let co = require('co');
 
-function formatPartitionData(topicName, data) {
-  return JSON.toString(data);
-};
-
 let TopicList = function(client) {
   this.client = client;
 };
 
 TopicList.prototype.list = function (callback) {
-  var that = this
+  var that = this;
   var out = {};
   that.listTopics(function (topics) {
     for (var i = 0; i < topics.length; i++) {
@@ -29,8 +25,8 @@ TopicList.prototype.list = function (callback) {
 
         out[topicName] = {
           partitions : partitionsAndReplicas,
-          partitionStates : {},
-        }
+          partitionStates : {}
+        };
 
         for (var j = 0; j < partitions.length; j++) {
           var partition = partitions[j];
@@ -38,7 +34,7 @@ TopicList.prototype.list = function (callback) {
             out[topicName].partitionStates[partition] = partitionState;
             remainingPartitions--;
             if (remainingTopics === 0 && remainingPartitions === 0) {
-              callback(out)
+              callback(out);
             }
           });
         }
@@ -56,7 +52,7 @@ TopicList.prototype.listTopics = function (callback) {
       callback(existingTopics);
     }
   });
-}
+};
 
 TopicList.prototype.getTopicPartitions = function (topicName, callback) {
   var that = this;
@@ -68,11 +64,11 @@ TopicList.prototype.getTopicPartitions = function (topicName, callback) {
       callback(topicName, JSON.parse(data.toString('utf-8')).partitions);
     }
   });
-}
+};
 
 TopicList.prototype.getPartitionState = function (topicName, partition, callback) {
   var that = this;
-  var path = "/brokers/topics/" + topicName + "/partitions/" + partition + "/state"
+  var path = "/brokers/topics/" + topicName + "/partitions/" + partition + "/state";
   this.client.getData(path, function(error, data) {
     if (error) {
       that.error(error);
@@ -80,18 +76,18 @@ TopicList.prototype.getPartitionState = function (topicName, partition, callback
       callback(topicName, partition, JSON.parse(data.toString('utf-8')));
     }
   });
-}
+};
 
 TopicList.prototype.error = function (error) {
   cli.error(error);
-  client.close();
-}
+  this.client.close();
+};
 
 function formatTopicData(data) {
   var out = '';
-  var topics = Object.keys(data)
+  var topics = Object.keys(data);
   for (var i = 0; i < topics.length; i ++) {
-    var topic = topics[i]
+    var topic = topics[i];
     out += "\nTopic:" + topic + "  PartitionCount:" + Object.keys(data[topic].partitions).length;
     var partitions = Object.keys(data[topic].partitions);
     for (var j = 0; j < partitions.length; j ++) {
@@ -100,21 +96,21 @@ function formatTopicData(data) {
     }
     out += "\n";
   }
-  return out
+  return out;
 }
 
 function* listTopics (context, heroku) {
-    let config = yield heroku.apps(context.app).configVars().info();
-    let zookeeperURL = config['HEROKU_KAFKA_ZOOKEEPER_URL'].replace(/zk:\/\//g,'');
+  let config = yield heroku.apps(context.app).configVars().info();
+  let zookeeperURL = config['HEROKU_KAFKA_ZOOKEEPER_URL'].replace(/zk:\/\//g,'');
 
-    let client = zookeeper.createClient(zookeeperURL);
-    client.once('connected', function () {
-      new TopicList(client).list(function (data) {
-        console.log(formatTopicData(data));
-        client.close();
-      });
+  let client = zookeeper.createClient(zookeeperURL);
+  client.once('connected', function () {
+    new TopicList(client).list(function (data) {
+      console.log(formatTopicData(data));
+      client.close();
     });
-    client.connect();
+  });
+  client.connect();
 }
 
 module.exports = {
@@ -124,5 +120,5 @@ module.exports = {
   help: '',
   needsApp: true,
   needsAuth: true,
-  run: cli.command(co.wrap(listTopics)),
-}
+  run: cli.command(co.wrap(listTopics))
+};
