@@ -86,7 +86,13 @@ module.exports = {
   topic: 'kafka',
   command: 'create-topic',
   description: 'creates a topic in kafka',
-  help: 'Creates a kafka topic',
+  help: `
+    Creates a topic in Kafka.
+
+    Examples:
+
+    $ heroku kafka:create-topic --partitions 100 --topic page_visits
+`,
   needsApp: true,
   needsAuth: true,
   flags: [

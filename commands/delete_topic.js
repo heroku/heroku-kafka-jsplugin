@@ -36,7 +36,15 @@ module.exports = {
   topic: 'kafka',
   command: 'delete-topic',
   description: 'deletes a topic in kafka',
-  help: '',
+  help: `
+    Deletes a topic in Kafka.
+    Note that topics are deleted asynchronously, so even though this command has returned,
+    a topic may still exist.
+
+    Examples:
+
+    $ heroku kafka:delete-topic --topic page_visits
+`,
   needsApp: true,
   needsAuth: true,
   flags: [
