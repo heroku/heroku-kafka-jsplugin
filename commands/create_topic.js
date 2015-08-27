@@ -6,54 +6,50 @@ let co = require('co');
 let PartitionPlan = require('./partition_plan').PartitionPlan;
 let checkValidTopicName = require('./shared').checkValidTopicName;
 
-let ZookeeperTopicAdmin = function (client) {
-  this.client = client;
-};
-
-ZookeeperTopicAdmin.prototype.createTopic = function (topicName, partitionCount) {
-  var that = this;
-  this.getPartitionPlan(partitionCount, function (partitionPlan) {
-    that.writeNewTopic(topicName, partitionPlan);
-  });
-};
-
-ZookeeperTopicAdmin.prototype.getPartitionPlan = function (partitionCount, callback) {
-  this.getBrokers(function (brokers) {
-    callback(PartitionPlan.fromBrokers(brokers, partitionCount));
-  });
-};
-
-ZookeeperTopicAdmin.prototype.getBrokers = function (callback) {
-  this.client.getChildren("/brokers/ids", function (error, children) {
-    if (error) {
-      this.error(error);
-    } else {
-      callback(children.map(function (brokerId) { return parseInt(brokerId, 10); }));
-    }
-  });
-};
-
-ZookeeperTopicAdmin.prototype.writeNewTopic = function (topicName, partitionPlan) {
-  var that = this;
-  let data = {version:1, partitions: partitionPlan};
-  this.client.create("/brokers/topics/" + topicName, new Buffer(JSON.stringify(data)), function (error) {
-    if (error) {
-      that.error(error);
-    } else {
-      console.info("created topic ", topicName);
-      that.finished();
-    }
-  });
-};
-
-ZookeeperTopicAdmin.prototype.error = function (error) {
-  cli.error(error);
-  this.finished();
-};
-
-ZookeeperTopicAdmin.prototype.finished = function () {
-  this.client.close();
-};
+class ZookeeperTopicAdmin {
+  constructor(client) {
+    this.client = client;
+  }
+  createTopic(topicName, partitionCount) {
+    var that = this;
+    this.getPartitionPlan(partitionCount, function (partitionPlan) {
+      that.writeNewTopic(topicName, partitionPlan);
+    });
+  }
+  getPartitionPlan(partitionCount, callback) {
+    this.getBrokers(function (brokers) {
+      callback(PartitionPlan.fromBrokers(brokers, partitionCount));
+    });
+  }
+  getBrokers(callback) {
+    this.client.getChildren("/brokers/ids", function (error, children) {
+      if (error) {
+        this.error(error);
+      } else {
+        callback(children.map(function (brokerId) { return parseInt(brokerId, 10); }));
+      }
+    });
+  }
+  writeNewTopic(topicName, partitionPlan) {
+    var that = this;
+    let data = {version:1, partitions: partitionPlan};
+    this.client.create("/brokers/topics/" + topicName, new Buffer(JSON.stringify(data)), function (error) {
+      if (error) {
+        that.error(error);
+      } else {
+        console.info("created topic ", topicName);
+        that.finished();
+      }
+    });
+  }
+  error(error) {
+    cli.error(error);
+    this.finished();
+  }
+  finished() {
+    this.client.close();
+  }
+}
 
 function* createTopic (context, heroku) {
   let config = yield heroku.apps(context.app).configVars().info();
