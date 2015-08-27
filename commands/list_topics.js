@@ -115,7 +115,7 @@ function* listTopics (context, heroku) {
 
 module.exports = {
   topic: 'kafka',
-  command: 'list-topics',
+  command: 'topics:list',
   description: 'lists available kafka topics, including their replicas and partitions',
   help: `
     Lists available kafka topics with information on replicas and partitions for each.

@@ -34,7 +34,7 @@ function* deleteTopic (context, heroku) {
 
 module.exports = {
   topic: 'kafka',
-  command: 'delete-topic',
+  command: 'topics:delete',
   description: 'deletes a topic in kafka',
   help: `
     Deletes a topic in Kafka.
