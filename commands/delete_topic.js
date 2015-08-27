@@ -43,7 +43,7 @@ module.exports = {
 
     Examples:
 
-    $ heroku kafka:delete-topic --topic page_visits
+    $ heroku kafka:topics:delete --topic page_visits
 `,
   needsApp: true,
   needsAuth: true,

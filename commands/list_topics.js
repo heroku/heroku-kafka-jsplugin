@@ -123,7 +123,7 @@ module.exports = {
 
     Examples:
 
-    $ heroku kafka:list-topics
+    $ heroku kafka:topics:list
 `,
   needsApp: true,
   needsAuth: true,

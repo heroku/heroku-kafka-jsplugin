@@ -87,7 +87,7 @@ module.exports = {
 
     Examples:
 
-    $ heroku kafka:create-topic --partitions 100 --topic page_visits
+    $ heroku kafka:topics:create --partitions 100 --topic page_visits
 `,
   needsApp: true,
   needsAuth: true,
