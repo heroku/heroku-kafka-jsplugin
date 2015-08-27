@@ -56,7 +56,7 @@ class TopicList {
 
   getTopicPartitions(topicName, callback) {
     var that = this;
-    var path = "/brokers/topics/" + topicName;
+    var path = `/brokers/topics/${topicName}`;
     this.client.getData(path, function(error, data) {
       if (error) {
         that.error(error);
@@ -68,7 +68,7 @@ class TopicList {
 
   getPartitionState(topicName, partition, callback) {
     var that = this;
-    var path = "/brokers/topics/" + topicName + "/partitions/" + partition + "/state";
+    var path = `/brokers/topics/${topicName}/partitions/${partition}/state`;
     this.client.getData(path, function(error, data) {
       if (error) {
         that.error(error);
@@ -93,7 +93,7 @@ function formatTopicData(data) {
     var partitions = Object.keys(data[topic].partitions);
     for (var j = 0; j < partitions.length; j ++) {
       var partition = partitions[j];
-      out += "\nTopic:" + topic + "  Partition:" + partition + "  Leader: " + data[topic].partitionStates[partition].leader + "  Replicas: " + data[topic].partitions[partition].join(',') + "  Isr:  " + data[topic].partitionStates[partition].isr.join(',');
+      out += `\nTopic:${topic}  Partition:${partition}  Leader: ${data[topic].partitionStates[partition].leader}  Replicas: ${data[topic].partitions[partition].join(',')}  Isr:  ${data[topic].partitionStates[partition].isr.join(',')}`;
     }
     out += "\n";
   }

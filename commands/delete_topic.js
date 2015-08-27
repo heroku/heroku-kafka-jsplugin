@@ -15,15 +15,15 @@ function* deleteTopic (context, heroku) {
     client.getChildren("/brokers/topics", function (error, existingTopics) {
       let validTopic = checkValidTopicNameForDeletion(topicName, existingTopics);
       if (validTopic.invalid) {
-        cli.error("topic name " + topicName + " was invalid: " + validTopic.message);
+        cli.error(`topic name ${topicName} was invalid: ${validTopic.message}`);
         client.close();
         process.exit(1);
       } else {
-        client.create("/admin/delete_topics/" + topicName, function (error) {
+        client.create(`/admin/delete_topics/${topicName}`, function (error) {
           if (error) {
             cli.error(error);
           }
-          console.log("marked " + topicName + " for deletion");
+          console.log(`marked ${topicName} for deletion`);
           client.close();
         });
       }

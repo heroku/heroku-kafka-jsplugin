@@ -21,7 +21,7 @@ HerokuKafkaResource.prototype.info = function* () {
 
 HerokuKafkaResource.prototype.host = function () {
   if (this.env.SHOGUN) {
-    return "shogun-" + this.env.SHOGUN + ".herokuapp.com";
+    return `shogun-${this.env.SHOGUN}.herokuapp.com`;
   } else {
     return "postgres-api.heroku.com";
   }

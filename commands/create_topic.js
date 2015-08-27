@@ -33,7 +33,7 @@ class ZookeeperTopicAdmin {
   writeNewTopic(topicName, partitionPlan) {
     var that = this;
     let data = {version:1, partitions: partitionPlan};
-    this.client.create("/brokers/topics/" + topicName, new Buffer(JSON.stringify(data)), function (error) {
+    this.client.create(`/brokers/topics/${topicName}`, new Buffer(JSON.stringify(data)), function (error) {
       if (error) {
         that.error(error);
       } else {
@@ -58,7 +58,7 @@ function* createTopic (context, heroku) {
   let partitionCount = context.flags.partitions;
 
   if (partitionCount <= 1) {
-    cli.error("--partitions must be provided and a number, but was " + partitionCount);
+    cli.error(`--partitions must be provided and a number, but was ${partitionCount}`);
     process.exit(1);
   }
 
@@ -67,7 +67,7 @@ function* createTopic (context, heroku) {
     client.getChildren("/brokers/topics", function (error, existingTopics) {
       let validTopic = checkValidTopicName(topicName, existingTopics);
       if (validTopic.invalid) {
-        cli.error("topic name " + topicName + " was invalid: " + validTopic.message);
+        cli.error(`topic name ${topicName} was invalid: ${validTopic.message}`);
         client.close();
         process.exit(1);
       } else {
