@@ -27,7 +27,11 @@ function formatInfo(addonInfo) {
 
 function* kafkaInfo (context, heroku) {
   var info = yield new HerokuKafkaResource(heroku, process.env, context).info();
-  console.log(formatInfo(info));
+  if (info) {
+    console.log(formatInfo(info));
+  } else {
+    process.exit(1);
+  }
 }
 
 module.exports = {
