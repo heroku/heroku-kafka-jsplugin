@@ -68,12 +68,12 @@ module.exports = {
 
     Examples:
 
-    $ heroku kafka:topics:tail
+    $ heroku kafka:topics:tail --topic page_visits
 `,
   needsApp: true,
   needsAuth: true,
   flags: [
-    {name: 'topic', char: 't', description: 'topic name to delete', hasValue: true, optional: false}
+    {name: 'topic', char: 't', description: 'topic name to tail from', hasValue: true, optional: false}
   ],
   run: cli.command(co.wrap(tail))
 };
