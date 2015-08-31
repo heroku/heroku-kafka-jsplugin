@@ -10,5 +10,6 @@ exports.commands = [
   require('./commands/delete_topic.js'),
   require('./commands/info.js'),
   require('./commands/wait.js'),
-  require('./commands/tail.js')
+  require('./commands/tail.js'),
+  require('./commands/write.js')
 ];
