@@ -57,8 +57,8 @@ function* createTopic (context, heroku) {
   let topicName = context.flags.topic;
   let partitionCount = context.flags.partitions;
 
-  if (partitionCount <= 1) {
-    cli.error(`--partitions must be provided and a number, but was ${partitionCount}`);
+  if (partitionCount < 1) {
+    cli.error(`--partitions must be provided and a number, but was '${partitionCount}'`);
     process.exit(1);
   }
 
