@@ -11,7 +11,7 @@ function* tail(context, heroku) {
   let kafkaURL = config['HEROKU_KAFKA_URL'].replace(/kafka:\/\//g,'');
   let topicName = context.flags.topic;
 
-  let zookeeperURL = config['HEROKU_KAFKA_ZOOKEEPER_URL'].replace(/zk:\/\//g,'');
+  let zookeeperURL = config['HEROKU_KAFKA_ZOOKEEPER_URL'].replace(/zookeeper:\/\//g,'');
 
   let zookeeperClient = zookeeper.createClient(zookeeperURL);
   zookeeperClient.once('connected', function () {
