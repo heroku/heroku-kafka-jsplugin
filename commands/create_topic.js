@@ -53,7 +53,7 @@ class ZookeeperTopicAdmin {
 
 function* createTopic (context, heroku) {
   let config = yield heroku.apps(context.app).configVars().info();
-  let zookeeperURL = config['HEROKU_KAFKA_ZOOKEEPER_URL'].replace(/zk:\/\//g,'');
+  let zookeeperURL = config['HEROKU_KAFKA_ZOOKEEPER_URL'].replace(/zookeeper:\/\//g,'');
   let topicName = context.flags.topic;
   let partitionCount = context.flags.partitions;
 
