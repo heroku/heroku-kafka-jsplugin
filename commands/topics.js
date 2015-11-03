@@ -11,7 +11,7 @@ class TopicList {
     that.listTopics(function (topics) {
       if (topics.length === 0) {
         console.log("No topics found");
-        this.finished();
+        that.finished();
       }
       for (var i = 0; i < topics.length; i++) {
         var topicName = topics[i];
@@ -81,6 +81,10 @@ class TopicList {
 
   error(error) {
     cli.error(error);
+    this.client.close();
+  }
+  
+  finished() {
     this.client.close();
   }
 }
