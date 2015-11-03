@@ -73,7 +73,7 @@ module.exports = {
   needsApp: true,
   needsAuth: true,
   flags: [
-    {name: 'topic', char: 't', description: 'topic name to tail from', hasValue: true, optional: false}
+    {name: 'topic', char: 't', description: 'topic name to tail from', hasValue: true, required: true}
   ],
   run: cli.command(co.wrap(tail))
 };

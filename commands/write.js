@@ -56,11 +56,11 @@ module.exports = {
   needsApp: true,
   needsAuth: true,
   flags: [
-    {name: 'topic', char: 't', description: 'topic name to write to', hasValue: true, optional: false},
+    {name: 'topic', char: 't', description: 'topic name to write to', hasValue: true, required: true},
     {name: 'partition', char: 't', description: 'partition to write to', hasValue: true, optional: true}
   ],
   args: [
-    {name: 'message', optional: false, hidden:false}
+    {name: 'message', required: true, hidden:false}
   ],
   run: cli.command(co.wrap(write))
 };

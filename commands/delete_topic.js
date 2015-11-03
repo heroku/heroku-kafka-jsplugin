@@ -48,7 +48,7 @@ module.exports = {
   needsApp: true,
   needsAuth: true,
   flags: [
-    {name: 'topic', char: 't', description: 'topic name to delete', hasValue: true, optional: false}
+    {name: 'topic', char: 't', description: 'topic name to delete', hasValue: true, required: true}
   ],
   run: cli.command(co.wrap(deleteTopic))
 };
