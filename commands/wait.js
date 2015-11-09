@@ -16,7 +16,7 @@ function* kafkaWait (context, heroku) {
   var ticks = 0;
   while (!finished) {
     var info = yield new HerokuKafkaResource(heroku, process.env, context).info();
-    var nodeStatuses = addonInfoWithName(info, 'Status').values;
+    var nodeStatuses = addonInfoWithName(info, 'Status').values[0].split("\n");
     var availableNodes = nodeStatuses.filter(function (nodeStatus) { return nodeStatus.endsWith('available'); });
     if (nodeStatuses.length === availableNodes.length) {
       finished = true;
