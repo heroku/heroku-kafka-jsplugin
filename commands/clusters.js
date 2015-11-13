@@ -73,7 +73,7 @@ HerokuKafkaClusters.prototype.addonsForManyClusterCommand = function* (cluster) 
   if (cluster === undefined) {
     filteredAddons = addons.kafkas;
   } else {
-    filteredAddons = addons.kafkas.filter(function (addon) { return _.contains(addon.config_vars, cluster) || addon.name == cluster; })[0];
+    filteredAddons = addons.kafkas.filter(function (addon) { return _.contains(addon.config_vars, cluster) || addon.name == cluster; });
   }
   if (filteredAddons.length !== 0) {
     return filteredAddons;
