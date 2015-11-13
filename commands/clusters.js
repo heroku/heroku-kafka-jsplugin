@@ -11,20 +11,15 @@ function HerokuKafkaClusters(heroku, env, context) {
   this.app = context.app;
 }
 
-HerokuKafkaClusters.prototype.info = function* () {
+HerokuKafkaClusters.prototype.info = function* (cluster) {
   var that = this;
-  var addons = yield this.addons();
-  if (addons.kafkas.length !== 0) {
-    var responses = yield _.map(addons.kafkas, function(addon) {
-      return that.request({
-        path: `/client/kafka/${VERSION}/clusters/${addon.name}`
-      });
+  var addons = yield this.addonsForManyClusterCommand(cluster);
+  var responses = yield _.map(addons, function(addon) {
+    return that.request({
+      path: `/client/kafka/${VERSION}/clusters/${addon.name}`
     });
-    return responses;
-  } else {
-    console.log(`kafka addon not found, but found these addons: ${addons.available.map(function (addon) { return addon.addon_service.name; }).join(',')}`);
-    return null;
-  }
+  });
+  return responses;
 };
 
 HerokuKafkaClusters.prototype.fail = function* (cluster, catastrophic, zk) {
@@ -69,6 +64,25 @@ HerokuKafkaClusters.prototype.host = function () {
     return `shogun-${this.env.DEPLOY}.herokuapp.com`;
   } else {
     return DEFAULT_HOST;
+  }
+};
+
+HerokuKafkaClusters.prototype.addonsForManyClusterCommand = function* (cluster) {
+  var addons = yield this.addons();
+  var filteredAddons;
+  if (cluster === undefined) {
+    filteredAddons = addons.kafkas;
+  } else {
+    filteredAddons = addons.kafkas.filter(function (addon) { return _.contains(addon.config_vars, cluster) || addon.name == cluster; })[0];
+  }
+  if (filteredAddons.length !== 0) {
+    return filteredAddons;
+  } else if (cluster !== undefined) {
+    console.log(`couldn't find the kafka cluster ${cluster}, but found these addons instead: ${addons.available.map(function (addon) { return addon.name; }).join(',')}`);
+    return null;
+  } else {
+    console.log(`kafka addon not found, but found these addons: ${addons.available.map(function (addon) { return addon.name; }).join(',')}`);
+    return null;
   }
 };
 

@@ -7,7 +7,7 @@ let columnify = require('columnify');
 let _ = require('underscore');
 
 function* kafkaInfo (context, heroku) {
-  var infos = yield new HerokuKafkaClusters(heroku, process.env, context).info();
+  var infos = yield new HerokuKafkaClusters(heroku, process.env, context).info(context.args.CLUSTER);
   if (infos) {
     _.each(infos, function(info) {
       console.log('=== HEROKU_KAFKA');
@@ -23,12 +23,19 @@ module.exports = {
   topic: 'kafka',
   command: 'info',
   description: 'shows information about the state of your Heroku Kafka cluster',
+  args: [
+    {
+      name: 'CLUSTER',
+      optional: true
+    }
+  ],
   help: `
     Shows the state of your Heroku Kafka cluster.
 
     Examples:
 
     $ heroku kafka:info
+    $ heroku kafka:info kafka-adjacent-1337
 `,
   needsApp: true,
   needsAuth: true,
