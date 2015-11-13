@@ -32,7 +32,22 @@ HerokuKafkaResource.prototype.fail = function* (catastrophic, zk) {
       method: 'POST',
       body: { catastrophic: catastrophic, zookeeper: zk },
       path: `/client/kafka/${VERSION}/clusters/${addon.kafka.name}/induce-failure`,
-      auth: `${this.context.auth.username}:${this.context.auth.password}`,
+      auth: `${this.context.auth.username}:${this.context.auth.password}`
+    });
+    return response;
+  } else {
+    console.log(`kafka addon not found, but found these addons: ${addon.available.map(function (addon) { return addon.addon_service.name; }).join(',')}`);
+    return null;
+  }
+};
+
+HerokuKafkaResource.prototype.waitStatus = function* () {
+  var addon = yield this.addon();
+  if (addon.kafka) {
+    var response = yield this.heroku.request({
+      host: this.host(),
+      path: `/client/kafka/${VERSION}/clusters/${addon.kafka.name}/wait_status`,
+      auth: `${this.context.auth.username}:${this.context.auth.password}`
     });
     return response;
   } else {
