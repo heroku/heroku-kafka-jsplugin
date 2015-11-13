@@ -78,10 +78,10 @@ HerokuKafkaClusters.prototype.addonsForManyClusterCommand = function* (cluster) 
   if (filteredAddons.length !== 0) {
     return filteredAddons;
   } else if (cluster !== undefined) {
-    console.log(`couldn't find the kafka cluster ${cluster}, but found these addons instead: ${addons.available.map(function (addon) { return addon.name; }).join(',')}`);
+    console.log(`couldn't find the kafka cluster ${cluster}, but found these addons instead: ${addons.allAddons.map(function (addon) { return addon.name; }).join(',')}`);
     return null;
   } else {
-    console.log(`kafka addon not found, but found these addons: ${addons.available.map(function (addon) { return addon.name; }).join(',')}`);
+    console.log(`kafka addon not found, but found these addons: ${addons.allAddons.map(function (addon) { return addon.name; }).join(',')}`);
     return null;
   }
 };
@@ -97,23 +97,23 @@ HerokuKafkaClusters.prototype.addonForSingleClusterCommand = function* (cluster)
   if (addon) {
     return addon;
   } else if (cluster !== undefined) {
-    console.log(`couldn't find the kafka cluster ${cluster}, but found these addons instead: ${addons.available.map(function (addon) { return addon.name; }).join(',')}`);
+    console.log(`couldn't find the kafka cluster ${cluster}, but found these addons instead: ${addons.allAddons.map(function (addon) { return addon.name; }).join(',')}`);
     return null;
   } else if (addons.kafkas.length !== 1) {
     console.log(`please specify a kafka cluster. Possible clusters: ${addons.kafkas.map(function (addon) { return addon.name; }).join(',')}`);
     return null;
   } else {
-    console.log(`kafka addon not found, but found these addons: ${addons.available.map(function (addon) { return addon.name; }).join(',')}`);
+    console.log(`kafka addon not found, but found these addons: ${addons.allAddons.map(function (addon) { return addon.name; }).join(',')}`);
     return null;
   }
 };
 
 HerokuKafkaClusters.prototype.addons = function* () {
-  let availableAddons = yield this.heroku.apps(this.app).addons().listByApp();
-  let kafkaAddons = availableAddons.filter(function (addon) { return addon.addon_service.name.startsWith('heroku-kafka'); });
+  let allAddons = yield this.heroku.apps(this.app).addons().listByApp();
+  let kafkaAddons = allAddons.filter(function (addon) { return addon.addon_service.name.startsWith('heroku-kafka'); });
   return {
     kafkas: kafkaAddons,
-    available: availableAddons
+    allAddons: allAddons
   };
 };
 
