@@ -2,15 +2,18 @@
 
 let cli = require('heroku-cli-util');
 let co = require('co');
-let HerokuKafkaResource = require('./resource.js').HerokuKafkaResource;
+let HerokuKafkaClusters = require('./clusters.js').HerokuKafkaClusters;
 let columnify = require('columnify');
+let _ = require('underscore');
 
 function* kafkaInfo (context, heroku) {
-  var info = yield new HerokuKafkaResource(heroku, process.env, context).info();
-  if (info) {
-    console.log('=== HEROKU_KAFKA');
-    console.log(columnify(info.info, {showHeaders: false, preserveNewLines: true}));
-    console.log();
+  var infos = yield new HerokuKafkaClusters(heroku, process.env, context).info();
+  if (infos) {
+    _.each(infos, function(info) {
+      console.log('=== HEROKU_KAFKA');
+      console.log(columnify(info.info, {showHeaders: false, preserveNewLines: true}));
+      console.log();
+    });
   } else {
     process.exit(1);
   }

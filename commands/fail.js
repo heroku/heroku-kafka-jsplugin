@@ -2,12 +2,12 @@
 
 let cli = require('heroku-cli-util');
 let co = require('co');
-let HerokuKafkaResource = require('./resource.js').HerokuKafkaResource;
+let HerokuKafkaClusters = require('./clusters.js').HerokuKafkaClusters;
 
 function* fail (context, heroku) {
-  var fail = yield new HerokuKafkaResource(heroku, process.env, context)
-    .fail(context.flags.catastrophic, context.flags.zookeeper);
-  console.log(fail.message)
+  var fail = yield new HerokuKafkaClusters(heroku, process.env, context)
+    .fail(context.args.CLUSTER, context.flags.catastrophic, context.flags.zookeeper);
+  console.log(fail.message);
 }
 
 module.exports = {
@@ -20,9 +20,16 @@ module.exports = {
     Examples:
 
     $ heroku kafka:fail
+    $ heroku kafka:fail HEROKU_KAFKA_BROWN
 `,
   needsApp: true,
   needsAuth: true,
+  args: [
+    {
+      name: 'CLUSTER',
+      optional: true
+    }
+  ],
   flags: [
     {name: 'catastrophic', char: 'c',
      description: 'induce unrecoverable server failure on the single node',
