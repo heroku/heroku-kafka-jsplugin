@@ -1,5 +1,6 @@
 var cli = require('heroku-cli-util');
 var co = require('co');
+var sleep = require('co-sleep');
 var HerokuKafkaResource = require('./resource.js').HerokuKafkaResource;
 var Spinner = require('node-spinner');
 
@@ -12,6 +13,7 @@ function* kafkaWait (context, heroku) {
       finished = true;
     } else {
       process.stdout.write("\r \033[36m" + waitStatus.message + "\033[m " + s.next());
+      yield sleep(500);
     }
   }
 }
