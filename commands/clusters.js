@@ -73,7 +73,7 @@ HerokuKafkaClusters.prototype.addonsForManyClusterCommand = function* (cluster) 
   if (cluster === undefined) {
     filteredAddons = addons.kafkas;
   } else {
-    filteredAddons = addons.kafkas.filter(function (addon) { return _.contains(addon.config_vars, cluster) || addon.name == cluster; });
+    filteredAddons = this.findByClusterName(addons, cluster);
   }
   if (filteredAddons.length !== 0) {
     return filteredAddons;
@@ -92,7 +92,7 @@ HerokuKafkaClusters.prototype.addonForSingleClusterCommand = function* (cluster)
   if (addons.kafkas.length === 1 && cluster === undefined) {
     addon = addons.kafkas[0];
   } else {
-    addon = addons.kafkas.filter(function (addon) { return _.contains(addon.config_vars, cluster) || addon.name == cluster; })[0];
+    addon = this.findByClusterName(addons, cluster)[0];
   }
   if (addon) {
     return addon;
@@ -106,6 +106,10 @@ HerokuKafkaClusters.prototype.addonForSingleClusterCommand = function* (cluster)
     console.log(`kafka addon not found, but found these addons: ${addons.allAddons.map(function (addon) { return addon.name; }).join(',')}`);
     return null;
   }
+};
+
+HerokuKafkaClusters.prototype.findByClusterName = function (addons, cluster) {
+  return addons.kafkas.filter(function (addon) { return _.contains(addon.config_vars, cluster) || addon.name == cluster; });
 };
 
 HerokuKafkaClusters.prototype.addons = function* () {
