@@ -1,8 +1,10 @@
 'use strict';
 
+let _ = require('underscore');
+let cli = require('heroku-cli-util');
+
 let VERSION = "v0";
 let DEFAULT_HOST = "postgres-api.heroku.com";
-let _ = require('underscore');
 
 function HerokuKafkaClusters(heroku, env, context) {
   this.heroku = heroku;
@@ -32,7 +34,7 @@ HerokuKafkaClusters.prototype.fail = function* (cluster, catastrophic, zk) {
     });
     return response;
   } else {
-    console.log(`kafka addon not found, but found these addons: ${addon.available.map(function (addon) { return addon.addon_service.name; }).join(',')}`);
+    cli.error(`kafka addon not found, but found these addons: ${addon.available.map(function (addon) { return addon.addon_service.name; }).join(',')}`);
     return null;
   }
 };
@@ -78,10 +80,10 @@ HerokuKafkaClusters.prototype.addonsForManyClusterCommand = function* (cluster) 
   if (filteredAddons.length !== 0) {
     return filteredAddons;
   } else if (cluster !== undefined) {
-    console.log(`couldn't find the kafka cluster ${cluster}, but found these addons instead: ${addons.allAddons.map(function (addon) { return addon.name; }).join(',')}`);
+    cli.error(`couldn't find the kafka cluster ${cluster}, but found these addons instead: ${addons.allAddons.map(function (addon) { return addon.name; }).join(',')}`);
     return null;
   } else {
-    console.log(`kafka addon not found, but found these addons: ${addons.allAddons.map(function (addon) { return addon.name; }).join(',')}`);
+    cli.error(`kafka addon not found, but found these addons: ${addons.allAddons.map(function (addon) { return addon.name; }).join(',')}`);
     return null;
   }
 };
@@ -97,13 +99,13 @@ HerokuKafkaClusters.prototype.addonForSingleClusterCommand = function* (cluster)
   if (addon) {
     return addon;
   } else if (cluster !== undefined) {
-    console.log(`couldn't find the kafka cluster ${cluster}, but found these addons instead: ${addons.allAddons.map(function (addon) { return addon.name; }).join(',')}`);
+    cli.error(`couldn't find the kafka cluster ${cluster}, but found these addons instead: ${addons.allAddons.map(function (addon) { return addon.name; }).join(',')}`);
     return null;
   } else if (addons.kafkas.length !== 1) {
-    console.log(`please specify a kafka cluster. Possible clusters: ${addons.kafkas.map(function (addon) { return addon.name; }).join(',')}`);
+    cli.error(`please specify a kafka cluster. Possible clusters: ${addons.kafkas.map(function (addon) { return addon.name; }).join(',')}`);
     return null;
   } else {
-    console.log(`kafka addon not found, but found these addons: ${addons.allAddons.map(function (addon) { return addon.name; }).join(',')}`);
+    cli.error(`kafka addon not found, but found these addons: ${addons.allAddons.map(function (addon) { return addon.name; }).join(',')}`);
     return null;
   }
 };
