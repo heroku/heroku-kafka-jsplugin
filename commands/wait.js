@@ -9,7 +9,7 @@ function* kafkaWait (context, heroku) {
   var s = Spinner();
   while (!finished) {
     var waitStatus = yield new HerokuKafkaClusters(heroku, process.env, context).waitStatus(context.args.CLUSTER);
-    if (!waitStatus || !waitStatus['waiting']) {
+    if (!waitStatus || !waitStatus['waiting?']) {
       finished = true;
     } else {
       process.stdout.write("\r \033[36m" + waitStatus.message + "\033[m " + s.next());
