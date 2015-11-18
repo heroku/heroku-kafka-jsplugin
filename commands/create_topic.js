@@ -1,87 +1,61 @@
 'use strict';
 
-let zookeeper = require("node-zookeeper-client");
+let FLAGS = [
+  {name: 'partitions',          char: 'p', description: 'number of partitions to give the topic',                            hasValue: true,  optional: false},
+  {name: 'replication-factor',  char: 'r', description: 'number of replicas the topic should be created across',             hasValue: true,  optional: true},
+  {name: 'retention-time',      char: 't', description: 'The length of time messages in the topic should be retained for.',  hasValue: true,  optional: true},
+  {name: 'compaction',          char: 'c', description: 'Whether to use compaction for this topi',                           hasValue: false, optional: true}
+];
+
 let cli = require('heroku-cli-util');
 let co = require('co');
-let PartitionPlan = require('./partition_plan').PartitionPlan;
-let checkValidTopicName = require('./shared').checkValidTopicName;
+let HerokuKafkaClusters = require('./clusters.js').HerokuKafkaClusters;
+let sleep = require('co-sleep');
+let _ = require('underscore');
 
-class ZookeeperTopicAdmin {
-  constructor(client) {
-    this.client = client;
-  }
-  createTopic(topicName, partitionCount) {
-    var that = this;
-    this.getPartitionPlan(partitionCount, function (partitionPlan) {
-      that.writeNewTopic(topicName, partitionPlan);
-    });
-  }
-  getPartitionPlan(partitionCount, callback) {
-    this.getBrokers(function (brokers) {
-      callback(PartitionPlan.fromBrokers(brokers, partitionCount));
-    });
-  }
-  getBrokers(callback) {
-    this.client.getChildren("/brokers/ids", function (error, children) {
-      if (error) {
-        this.error(error);
-      } else {
-        callback(children.map(function (brokerId) { return parseInt(brokerId, 10); }));
-      }
-    });
-  }
-  writeNewTopic(topicName, partitionPlan) {
-    var that = this;
-    let data = {version:1, partitions: partitionPlan};
-    this.client.create(`/brokers/topics/${topicName}`, new Buffer(JSON.stringify(data)), function (error) {
-      if (error) {
-        that.error(error);
-      } else {
-        console.info("created topic ", topicName);
-        that.finished();
-      }
-    });
-  }
-  error(error) {
-    cli.error(error);
-    this.finished();
-  }
-  finished() {
-    this.client.close();
-  }
+function extractFlags(contextFlags) {
+  // This just ensures that we only ever get the flags we expect,
+  // and don't get any additional keys out of the heroku cli flags object
+  // (if there happen to be any).
+  var out = {};
+  _.each(FLAGS, function (flag) {
+    if (contextFlags[flag.name] !== undefined) {
+      out[flag.name] = contextFlags[flag.name];
+    }
+  });
+  return out;
+}
+
+function* printWaitingDots() {
+  yield sleep(10);
+  process.stdout.write('.');
+  yield sleep(10);
+  process.stdout.write('.');
+  yield sleep(10);
+  process.stdout.write('.');
 }
 
 function* createTopic (context, heroku) {
-  let config = yield heroku.apps(context.app).configVars().info();
-  let zookeeperURL = config['HEROKU_KAFKA_ZOOKEEPER_URL'].replace(/zookeeper:\/\//g,'');
-  let topicName = context.flags.topic;
-  let partitionCount = context.flags.partitions;
+  process.stdout.write(`Creating ${context.args.TOPIC} on context.args.CLUSTER}`);
+  var flags = extractFlags(context.flags);
+  var creation = new HerokuKafkaClusters(heroku, process.env, context).create(context.args.CLUSTER, context.args.TOPIC, flags);
+  yield printWaitingDots();
 
-  if (partitionCount < 1) {
-    cli.error(`--partitions must be provided and a number, but was '${partitionCount}'`);
-    process.exit(1);
+  var err = yield creation;
+
+  if (err) {
+    cli.error(err);
+  } else {
+    process.stdout.write('done.\n');
+    // TODO: once we have heroku kafka:topic, we'll document using it here.
   }
-
-  let client = zookeeper.createClient(zookeeperURL);
-  client.once('connected', function () {
-    client.getChildren("/brokers/topics", function (error, existingTopics) {
-      let validTopic = checkValidTopicName(topicName, existingTopics);
-      if (validTopic.invalid) {
-        cli.error(`topic name ${topicName} was invalid: ${validTopic.message}`);
-        client.close();
-        process.exit(1);
-      } else {
-        new ZookeeperTopicAdmin(client).createTopic(topicName, partitionCount);
-      }
-    });
-  });
-  client.connect();
 }
+
 
 module.exports = {
   topic: 'kafka',
-  command: 'topics:create',
-  description: 'creates a topic in kafka',
+  command: 'create',
+  description: 'Creates a topic in kafka',
   help: `
     Creates a topic in Kafka.
 
@@ -91,9 +65,16 @@ module.exports = {
 `,
   needsApp: true,
   needsAuth: true,
-  flags: [
-    {name: 'topic', char: 't', description: 'topic name to create', hasValue: true, optional: false},
-    {name: 'partitions', char: 'p', description: 'number of partitions to give the topic', hasValue: true, optional: false}
+  args: [
+    {
+      name: 'TOPIC',
+      optional: false
+    },
+    {
+      name: 'CLUSTER',
+      optional: true
+    }
   ],
+  flags: FLAGS,
   run: cli.command(co.wrap(createTopic))
 };

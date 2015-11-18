@@ -62,6 +62,19 @@ HerokuKafkaClusters.prototype.waitStatus = function* (cluster) {
   }
 };
 
+HerokuKafkaClusters.prototype.createTopic = function* (cluster, topicName, flags) {
+  var addon = yield this.addonForSingleClusterCommand(cluster);
+  if (addon) {
+    var response = yield this.request({
+      body: { topic: topicName, flags: flags },
+      path: `/client/kafka/${VERSION}/clusters/${addon.name}/topics/create`
+    });
+    return response;
+  } else {
+    return null;
+  }
+};
+
 HerokuKafkaClusters.prototype.request = function (params) {
   var defaultParams = {
     host: this.host(),
