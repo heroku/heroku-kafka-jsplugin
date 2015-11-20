@@ -10,7 +10,7 @@ function* kafkaInfo (context, heroku) {
   var infos = yield new HerokuKafkaClusters(heroku, process.env, context).info(context.args.CLUSTER);
   if (infos) {
     _.each(infos, function(info) {
-      console.log('=== HEROKU_KAFKA');
+      console.log('=== ' + (info.attachment_name || 'HEROKU_KAFKA'));
       console.log(columnify(info.info, {showHeaders: false, preserveNewLines: true}));
       console.log();
     });
