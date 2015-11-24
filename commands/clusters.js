@@ -79,11 +79,7 @@ HerokuKafkaClusters.prototype.createTopic = function* (cluster, topicName, flags
       },
       path: `/client/kafka/${VERSION}/clusters/${addon.name}/topics`
     }).catch(function (err) { return err; });
-    if (response.statusCode == 422) {
-      return response.body.message;
-    } else {
-      return null;
-    }
+    return this.handleResponse(response);
   } else {
     return null;
   }
@@ -99,11 +95,7 @@ HerokuKafkaClusters.prototype.deleteTopic = function* (cluster, topicName) {
       },
       path: `/client/kafka/${VERSION}/clusters/${addon.name}/topics/${topicName}`
     }).catch(function (err) { return err; });
-    if (response.statusCode == 422) {
-      return response.body.message;
-    } else {
-      return null;
-    }
+    return this.handleResponse(response);
   } else {
     return null;
   }
@@ -116,6 +108,16 @@ HerokuKafkaClusters.prototype.request = function (params) {
     accept: 'application/json'
   };
   return this.heroku.request(_.extend(defaultParams, params));
+};
+
+HerokuKafkaClusters.prototype.handleResponse = function (response) {
+  if (response.statusCode == 422) {
+    return response.body.message;
+  } else if (response.statusCode == undefined || (response.statusCode < 300 && response.statusCode >= 200)) {
+    return null;
+  } else {
+    return "Error";
+  }
 };
 
 HerokuKafkaClusters.prototype.host = function () {
