@@ -6,6 +6,7 @@ let FLAGS = [
   {name: 'retention-time',      char: 't', description: 'The length of time messages in the topic should be retained for.',  hasValue: true,  optional: true},
   {name: 'compaction',          char: 'c', description: 'Whether to use compaction for this topi',                           hasValue: false, optional: true}
 ];
+let DOT_WAITING_TIME = 200;
 
 let cli = require('heroku-cli-util');
 let co = require('co');
@@ -27,27 +28,32 @@ function extractFlags(contextFlags) {
 }
 
 function* printWaitingDots() {
-  yield sleep(10);
+  yield sleep(DOT_WAITING_TIME);
   process.stdout.write('.');
-  yield sleep(10);
+  yield sleep(DOT_WAITING_TIME);
   process.stdout.write('.');
-  yield sleep(10);
+  yield sleep(DOT_WAITING_TIME);
   process.stdout.write('.');
 }
 
 function* createTopic (context, heroku) {
-  process.stdout.write(`Creating ${context.args.TOPIC} on context.args.CLUSTER}`);
+  if (context.args.CLUSTER) {
+    process.stdout.write(`Creating ${context.args.TOPIC} on context.args.CLUSTER}`);
+  } else {
+    process.stdout.write(`Creating ${context.args.TOPIC}`);
+  }
   var flags = extractFlags(context.flags);
-  var creation = new HerokuKafkaClusters(heroku, process.env, context).create(context.args.CLUSTER, context.args.TOPIC, flags);
+  var creation = new HerokuKafkaClusters(heroku, process.env, context).createTopic(context.args.CLUSTER, context.args.TOPIC, flags);
   yield printWaitingDots();
 
   var err = yield creation;
 
   if (err) {
+    process.stdout.write("\n");
     cli.error(err);
   } else {
-    process.stdout.write('done.\n');
-    // TODO: once we have heroku kafka:topic, we'll document using it here.
+    process.stdout.write(' done.\n');
+    process.stdout.write(`Use \`heroku kafka:topic ${context.args.TOPIC}\` to monitor your topic`);
   }
 }
 
@@ -61,7 +67,8 @@ module.exports = {
 
     Examples:
 
-    $ heroku kafka:topics:create --partitions 100 --topic page_visits
+    $ heroku kafka:create page-visits --partitions 100
+    $ heroku kafka:create HEROKU_KAFKA_BROWN_URL page-visits --partitions 100 --replication-factor 3 --retention-time 86400000 --compaction
 `,
   needsApp: true,
   needsAuth: true,

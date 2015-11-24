@@ -66,10 +66,24 @@ HerokuKafkaClusters.prototype.createTopic = function* (cluster, topicName, flags
   var addon = yield this.addonForSingleClusterCommand(cluster);
   if (addon) {
     var response = yield this.request({
-      body: { topic: topicName, flags: flags },
-      path: `/client/kafka/${VERSION}/clusters/${addon.name}/topics/create`
-    });
-    return response;
+      method: 'POST',
+      body: {
+        topic:
+          {
+            name: topicName,
+            retention_time_ms: flags['retention-time'],
+            replication_factor: flags['replication-factor'],
+            partition_count: flags['partition-count'],
+            compaction: flags['compaction'] || false
+          }
+      },
+      path: `/client/kafka/${VERSION}/clusters/${addon.name}/topics`
+    }).catch(function (err) { return err; });
+    if (response.statusCode == 422) {
+      return response.body.message;
+    } else {
+      return null;
+    }
   } else {
     return null;
   }
@@ -78,7 +92,8 @@ HerokuKafkaClusters.prototype.createTopic = function* (cluster, topicName, flags
 HerokuKafkaClusters.prototype.request = function (params) {
   var defaultParams = {
     host: this.host(),
-    auth: `${this.context.auth.username}:${this.context.auth.password}`
+    auth: `${this.context.auth.username}:${this.context.auth.password}`,
+    accept: 'application/json'
   };
   return this.heroku.request(_.extend(defaultParams, params));
 };
