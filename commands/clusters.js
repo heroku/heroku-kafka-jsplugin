@@ -35,6 +35,17 @@ HerokuKafkaClusters.prototype.topic = function* (cluster, topic) {
   }
 };
 
+HerokuKafkaClusters.prototype.topics = function* (cluster) {
+  var addon = yield this.addonForSingleClusterCommand(cluster);
+  if (addon) {
+    return yield this.request({
+      path: `/client/kafka/${VERSION}/clusters/${addon.name}/topics`
+    });
+  } else {
+    return null;
+  }
+};
+
 HerokuKafkaClusters.prototype.fail = function* (cluster, catastrophic, zk) {
   var addon = yield this.addonForSingleClusterCommand(cluster);
   if (addon) {

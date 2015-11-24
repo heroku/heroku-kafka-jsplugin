@@ -17,7 +17,7 @@
     "co-sleep": "0.0.1",
     "columnify": "^1.4.1",
     "eslint": "^1.2.1",
-    "heroku-cli-util": "^5.4.5",
+    "heroku-cli-util": "^5.6.3",
     "kafkaesque": "^0.1.1",
     "node-spinner": "0.0.4",
     "node-zookeeper-client": "^0.2.2",

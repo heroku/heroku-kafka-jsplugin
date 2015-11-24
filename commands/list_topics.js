@@ -1,43 +1,32 @@
 'use strict';
 
-let zookeeper = require("node-zookeeper-client");
 let cli = require('heroku-cli-util');
 let co = require('co');
-let TopicList = require("./topics").TopicList;
-
-function formatTopicData(data) {
-  var out = '';
-  var topics = Object.keys(data);
-  for (var i = 0; i < topics.length; i ++) {
-    var topic = topics[i];
-    out += "\nTopic:" + topic + "  PartitionCount:" + Object.keys(data[topic].partitions).length;
-    var partitions = Object.keys(data[topic].partitions);
-    for (var j = 0; j < partitions.length; j ++) {
-      var partition = partitions[j];
-      out += `\nTopic:${topic}  Partition:${partition}  Leader: ${data[topic].partitionStates[partition].leader}  Replicas: ${data[topic].partitions[partition].join(',')}  Isr:  ${data[topic].partitionStates[partition].isr.join(',')}`;
-    }
-    out += "\n";
-  }
-  return out;
-}
+let HerokuKafkaClusters = require('./clusters.js').HerokuKafkaClusters;
 
 function* listTopics (context, heroku) {
-  let config = yield heroku.apps(context.app).configVars().info();
-  let zookeeperURL = config['HEROKU_KAFKA_ZOOKEEPER_URL'].replace(/zookeeper:\/\//g,'');
-
-  let client = zookeeper.createClient(zookeeperURL);
-  client.once('connected', function () {
-    new TopicList(client).list(function (data) {
-      console.log(formatTopicData(data));
-      client.close();
-    });
-  });
-  client.connect();
+  var topics = yield new HerokuKafkaClusters(heroku, process.env, context).topics(context.args.CLUSTER);
+  if (topics) {
+    cli.styledHeader('Kafka Topics on ' + (topics.attachment_name || 'HEROKU_KAFKA'));
+    console.log();
+    cli.table(topics.topics,
+      {
+        columns:
+        [
+          {key: 'name', label: 'Name'},
+          {key: 'messages', label: 'Messages'},
+          {key: 'bytes', label: 'Traffic'}
+        ]
+      }
+    );
+  } else {
+    process.exit(1);
+  }
 }
 
 module.exports = {
   topic: 'kafka',
-  command: 'topics:list',
+  command: 'list',
   description: 'lists available kafka topics, including their replicas and partitions',
   help: `
     Lists available kafka topics with information on replicas and partitions for each.
