@@ -89,6 +89,26 @@ HerokuKafkaClusters.prototype.createTopic = function* (cluster, topicName, flags
   }
 };
 
+HerokuKafkaClusters.prototype.deleteTopic = function* (cluster, topicName) {
+  var addon = yield this.addonForSingleClusterCommand(cluster);
+  if (addon) {
+    var response = yield this.request({
+      method: 'DELETE',
+      body: {
+        topic: { name: topicName }
+      },
+      path: `/client/kafka/${VERSION}/clusters/${addon.name}/topics/${topicName}`
+    }).catch(function (err) { return err; });
+    if (response.statusCode == 422) {
+      return response.body.message;
+    } else {
+      return null;
+    }
+  } else {
+    return null;
+  }
+};
+
 HerokuKafkaClusters.prototype.request = function (params) {
   var defaultParams = {
     host: this.host(),
