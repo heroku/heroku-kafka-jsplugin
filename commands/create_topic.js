@@ -38,7 +38,7 @@ function* printWaitingDots() {
 
 function* createTopic (context, heroku) {
   if (context.args.CLUSTER) {
-    process.stdout.write(`Creating ${context.args.TOPIC} on context.args.CLUSTER}`);
+    process.stdout.write(`Creating ${context.args.TOPIC} on ${context.args.CLUSTER}`);
   } else {
     process.stdout.write(`Creating ${context.args.TOPIC}`);
   }
@@ -56,7 +56,6 @@ function* createTopic (context, heroku) {
     process.stdout.write(`Use \`heroku kafka:topic ${context.args.TOPIC}\` to monitor your topic`);
   }
 }
-
 
 module.exports = {
   topic: 'kafka',
