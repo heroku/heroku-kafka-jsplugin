@@ -85,6 +85,28 @@ HerokuKafkaClusters.prototype.createTopic = function* (cluster, topicName, flags
   }
 };
 
+HerokuKafkaClusters.prototype.configureTopic = function* (cluster, topicName, flags) {
+  var addon = yield this.addonForSingleClusterCommand(cluster);
+  if (addon) {
+    var response = yield this.request({
+      method: 'PUT',
+      body: {
+        topic:
+          {
+            name: topicName,
+            retention_time_ms: flags['retention-time'],
+            compaction: flags['compaction'] || false
+          }
+      },
+      path: `/client/kafka/${VERSION}/clusters/${addon.name}/topics/${topicName}`
+    }).catch(function (err) { return err; });
+    return this.handleResponse(response);
+  } else {
+    return null;
+  }
+};
+
+
 HerokuKafkaClusters.prototype.deleteTopic = function* (cluster, topicName) {
   var addon = yield this.addonForSingleClusterCommand(cluster);
   if (addon) {
