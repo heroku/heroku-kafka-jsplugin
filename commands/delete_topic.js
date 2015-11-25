@@ -17,8 +17,8 @@ function* printWaitingDots() {
   process.stdout.write('.');
 }
 
-function* doDeletion(context, heroku) {
-  var deletion = new HerokuKafkaClusters(heroku, process.env, context).deleteTopic(context.args.CLUSTER, context.args.TOPIC);
+function* doDeletion(context, heroku, clusters) {
+  var deletion = clusters.deleteTopic(context.args.CLUSTER, context.args.TOPIC);
   process.stdout.write(`Deleting topic ${context.args.TOPIC}`);
   yield printWaitingDots();
 
@@ -35,23 +35,29 @@ function* doDeletion(context, heroku) {
 }
 
 function* deleteTopic (context, heroku) {
-  if (context.flags.confirm !== context.args.TOPIC) {
-    console.log(`
- !    WARNING: Destructive Action
- !    This command will affect the cluster: ${context.args.CLUSTER}
- !
- !    To proceed, type "${context.args.TOPIC}" or re-run this command with --confirm ${context.args.TOPIC}
+  var clusters = new HerokuKafkaClusters(heroku, process.env, context);
+  var addon = yield clusters.addonForSingleClusterCommand(context.args.CLUSTER);
+  if (addon) {
+    if (context.flags.confirm !== context.app) {
+      console.log(`
+  !    WARNING: Destructive Action
+  !    This command will affect the cluster: ${addon.name}, which is on ${context.app}
+  !
+  !    To proceed, type "${context.app}" or re-run this command with --confirm ${context.app}
 
-`);
-    var confirm = yield prompt('> ');
-    if (confirm === context.args.TOPIC) {
-      yield doDeletion(context, heroku);
+  `);
+      var confirm = yield prompt('> ');
+      if (confirm === context.app) {
+        yield doDeletion(context, heroku, clusters);
+      } else {
+        console.log(`  !    Confirmation did not match ${context.args.TOPIC}. Aborted.`);
+        process.exit(1);
+      }
     } else {
-      console.log(` !    Confirmation did not match ${context.args.TOPIC}. Aborted.`);
-      process.exit(1);
+      yield doDeletion(context, heroku, clusters);
     }
   } else {
-    yield doDeletion(context, heroku);
+    process.exit(1);
   }
 }
 
