@@ -1,40 +1,69 @@
 'use strict';
 
-let zookeeper = require("node-zookeeper-client");
+let DOT_WAITING_TIME = 200;
+
 let cli = require('heroku-cli-util');
 let co = require('co');
-let checkValidTopicNameForDeletion = require('./shared').checkValidTopicNameForDeletion;
+let HerokuKafkaClusters = require('./clusters.js').HerokuKafkaClusters;
+let sleep = require('co-sleep');
+let prompt = require('co-prompt');
+
+function* printWaitingDots() {
+  yield sleep(DOT_WAITING_TIME);
+  process.stdout.write('.');
+  yield sleep(DOT_WAITING_TIME);
+  process.stdout.write('.');
+  yield sleep(DOT_WAITING_TIME);
+  process.stdout.write('.');
+}
+
+function* doDeletion(context, heroku, clusters) {
+  var deletion = clusters.deleteTopic(context.args.CLUSTER, context.args.TOPIC);
+  process.stdout.write(`Deleting topic ${context.args.TOPIC}`);
+  yield printWaitingDots();
+
+  var err = yield deletion;
+  if (err) {
+    process.stdout.write("\n");
+    cli.error(err);
+    process.exit(1);
+  } else {
+    process.stdout.write(' done.\n');
+    console.log("Your topic has been marked for deletion, and will be removed from the cluster shortly");
+    process.exit(0);
+  }
+}
 
 function* deleteTopic (context, heroku) {
-  let config = yield heroku.apps(context.app).configVars().info();
-  let zookeeperURL = config['HEROKU_KAFKA_ZOOKEEPER_URL'].replace(/zookeeper:\/\//g,'');
-  let topicName = context.flags.topic;
+  var clusters = new HerokuKafkaClusters(heroku, process.env, context);
+  var addon = yield clusters.addonForSingleClusterCommand(context.args.CLUSTER);
+  if (addon) {
+    if (context.flags.confirm !== context.app) {
+      console.log(`
+  !    WARNING: Destructive Action
+  !    This command will affect the cluster: ${addon.name}, which is on ${context.app}
+  !
+  !    To proceed, type "${context.app}" or re-run this command with --confirm ${context.app}
 
-  let client = zookeeper.createClient(zookeeperURL);
-  client.once('connected', function () {
-    client.getChildren("/brokers/topics", function (error, existingTopics) {
-      let validTopic = checkValidTopicNameForDeletion(topicName, existingTopics);
-      if (validTopic.invalid) {
-        cli.error(`topic name ${topicName} was invalid: ${validTopic.message}`);
-        client.close();
-        process.exit(1);
+  `);
+      var confirm = yield prompt('> ');
+      if (confirm === context.app) {
+        yield doDeletion(context, heroku, clusters);
       } else {
-        client.create(`/admin/delete_topics/${topicName}`, function (error) {
-          if (error) {
-            cli.error(error);
-          }
-          console.log(`marked ${topicName} for deletion`);
-          client.close();
-        });
+        console.log(`  !    Confirmation did not match ${context.args.TOPIC}. Aborted.`);
+        process.exit(1);
       }
-    });
-  });
-  client.connect();
+    } else {
+      yield doDeletion(context, heroku, clusters);
+    }
+  } else {
+    process.exit(1);
+  }
 }
 
 module.exports = {
   topic: 'kafka',
-  command: 'topics:delete',
+  command: 'delete',
   description: 'deletes a topic in kafka',
   help: `
     Deletes a topic in Kafka.
@@ -43,12 +72,20 @@ module.exports = {
 
     Examples:
 
-    $ heroku kafka:topics:delete --topic page_visits
+    $ heroku kafka:delete page-visits
+    $ heroku kafka:delete HEROKU_KAFKA_BROWN_URL page-visits
 `,
   needsApp: true,
   needsAuth: true,
-  flags: [
-    {name: 'topic', char: 't', description: 'topic name to delete', hasValue: true, required: true}
+  args: [
+    {
+      name: 'TOPIC',
+      optional: false
+    },
+    {
+      name: 'CLUSTER',
+      optional: true
+    }
   ],
   run: cli.command(co.wrap(deleteTopic))
 };

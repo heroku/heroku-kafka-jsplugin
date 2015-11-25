@@ -62,12 +62,85 @@ HerokuKafkaClusters.prototype.waitStatus = function* (cluster) {
   }
 };
 
+HerokuKafkaClusters.prototype.createTopic = function* (cluster, topicName, flags) {
+  var addon = yield this.addonForSingleClusterCommand(cluster);
+  if (addon) {
+    var response = yield this.request({
+      method: 'POST',
+      body: {
+        topic:
+          {
+            name: topicName,
+            retention_time_ms: flags['retention-time'],
+            replication_factor: flags['replication-factor'],
+            partition_count: flags['partition-count'],
+            compaction: flags['compaction'] || false
+          }
+      },
+      path: `/client/kafka/${VERSION}/clusters/${addon.name}/topics`
+    }).catch(function (err) { return err; });
+    return this.handleResponse(response);
+  } else {
+    return null;
+  }
+};
+
+HerokuKafkaClusters.prototype.configureTopic = function* (cluster, topicName, flags) {
+  var addon = yield this.addonForSingleClusterCommand(cluster);
+  if (addon) {
+    var response = yield this.request({
+      method: 'PUT',
+      body: {
+        topic:
+          {
+            name: topicName,
+            retention_time_ms: flags['retention-time'],
+            compaction: flags['compaction'] || false
+          }
+      },
+      path: `/client/kafka/${VERSION}/clusters/${addon.name}/topics/${topicName}`
+    }).catch(function (err) { return err; });
+    return this.handleResponse(response);
+  } else {
+    return null;
+  }
+};
+
+
+HerokuKafkaClusters.prototype.deleteTopic = function* (cluster, topicName) {
+  var addon = yield this.addonForSingleClusterCommand(cluster);
+  if (addon) {
+    var response = yield this.request({
+      method: 'DELETE',
+      body: {
+        topic: { name: topicName }
+      },
+      path: `/client/kafka/${VERSION}/clusters/${addon.name}/topics/${topicName}`
+    }).catch(function (err) { return err; });
+    return this.handleResponse(response);
+  } else {
+    return null;
+  }
+};
+
 HerokuKafkaClusters.prototype.request = function (params) {
   var defaultParams = {
     host: this.host(),
-    auth: `${this.context.auth.username}:${this.context.auth.password}`
+    auth: `${this.context.auth.username}:${this.context.auth.password}`,
+    accept: 'application/json'
   };
   return this.heroku.request(_.extend(defaultParams, params));
+};
+
+HerokuKafkaClusters.prototype.handleResponse = function (response) {
+  if (response.statusCode == 422) {
+    return response.body.message;
+  } else if (response.statusCode == undefined || (response.statusCode < 300 && response.statusCode >= 200)) {
+    return null;
+  } else {
+    cli.hush("Error connecting to backend API");
+    return "Error, please try again later.";
+  }
 };
 
 HerokuKafkaClusters.prototype.host = function () {

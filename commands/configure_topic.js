@@ -1,8 +1,6 @@
 'use strict';
 
 let FLAGS = [
-  {name: 'partitions',          char: 'p', description: 'number of partitions to give the topic',                            hasValue: true,  optional: false},
-  {name: 'replication-factor',  char: 'r', description: 'number of replicas the topic should be created across',             hasValue: true,  optional: true},
   {name: 'retention-time',      char: 't', description: 'The length of time messages in the topic should be retained for.',  hasValue: true,  optional: true},
   {name: 'compaction',          char: 'c', description: 'Whether to use compaction for this topi',                           hasValue: false, optional: true}
 ];
@@ -36,14 +34,14 @@ function* printWaitingDots() {
   process.stdout.write('.');
 }
 
-function* createTopic (context, heroku) {
+function* configureTopic (context, heroku) {
   if (context.args.CLUSTER) {
-    process.stdout.write(`Creating ${context.args.TOPIC} on ${context.args.CLUSTER}`);
+    process.stdout.write(`Configuring ${context.args.TOPIC} on ${context.args.CLUSTER}`);
   } else {
-    process.stdout.write(`Creating ${context.args.TOPIC}`);
+    process.stdout.write(`Configuring ${context.args.TOPIC}`);
   }
   var flags = extractFlags(context.flags);
-  var creation = new HerokuKafkaClusters(heroku, process.env, context).createTopic(context.args.CLUSTER, context.args.TOPIC, flags);
+  var creation = new HerokuKafkaClusters(heroku, process.env, context).configureTopic(context.args.CLUSTER, context.args.TOPIC, flags);
   yield printWaitingDots();
 
   var err = yield creation;
@@ -59,15 +57,15 @@ function* createTopic (context, heroku) {
 
 module.exports = {
   topic: 'kafka',
-  command: 'create',
-  description: 'Creates a topic in kafka',
+  command: 'configure',
+  description: 'Configures a topic in kafka',
   help: `
-    Creates a topic in Kafka.
+    Configures a topic in Kafka.
 
     Examples:
 
-    $ heroku kafka:create page-visits --partitions 100
-    $ heroku kafka:create HEROKU_KAFKA_BROWN_URL page-visits --partitions 100 --replication-factor 3 --retention-time 86400000 --compaction
+    $ heroku kafka:configure page-visits --retention-time 86400000
+    $ heroku kafka:configure HEROKU_KAFKA_BROWN_URL page-visits --partitions 100 --replication-factor 3 --retention-time 86400000 --compaction
 `,
   needsApp: true,
   needsAuth: true,
@@ -82,5 +80,5 @@ module.exports = {
     }
   ],
   flags: FLAGS,
-  run: cli.command(co.wrap(createTopic))
+  run: cli.command(co.wrap(configureTopic))
 };

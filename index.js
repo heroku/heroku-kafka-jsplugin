@@ -6,6 +6,7 @@ exports.topic = {
 
 exports.commands = [
   require('./commands/create_topic.js'),
+  require('./commands/configure_topic.js'),
   require('./commands/delete_topic.js'),
   require('./commands/fail.js'),
   require('./commands/info.js'),
