@@ -138,7 +138,8 @@ HerokuKafkaClusters.prototype.handleResponse = function (response) {
   } else if (response.statusCode == undefined || (response.statusCode < 300 && response.statusCode >= 200)) {
     return null;
   } else {
-    return "Error";
+    cli.hush("Error connecting to backend API");
+    return "Error, please try again later.";
   }
 };
 
