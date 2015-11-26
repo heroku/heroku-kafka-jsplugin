@@ -22,6 +22,7 @@ function* kafkaInfo (context, heroku) {
 module.exports = {
   topic: 'kafka',
   command: 'info',
+  default: true,
   description: 'shows information about the state of your Heroku Kafka cluster',
   args: [
     {
