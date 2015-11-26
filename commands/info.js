@@ -3,16 +3,19 @@
 let cli = require('heroku-cli-util');
 let co = require('co');
 let HerokuKafkaClusters = require('./clusters.js').HerokuKafkaClusters;
-let columnify = require('columnify');
 let _ = require('underscore');
 
 function* kafkaInfo (context, heroku) {
   var infos = yield new HerokuKafkaClusters(heroku, process.env, context).info(context.args.CLUSTER);
   if (infos) {
     _.each(infos, function(info) {
-      console.log('=== ' + (info.attachment_name || 'HEROKU_KAFKA'));
-      console.log(columnify(info.info, {showHeaders: false, preserveNewLines: true}));
+      cli.styledHeader(info.attachment_name || 'HEROKU_KAFKA');
       console.log();
+      var out = {};
+      _.each(info.info, function(infoLine) {
+        out[infoLine.name] = infoLine.values;
+      });
+      cli.styledHash(out);
     });
   } else {
     process.exit(1);
