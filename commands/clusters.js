@@ -135,6 +135,7 @@ HerokuKafkaClusters.prototype.deleteTopic = function* (cluster, topicName) {
 };
 
 HerokuKafkaClusters.prototype.request = function (params) {
+  cli.hush(`picked shogun host: ${this.host()}`);
   var defaultParams = {
     host: this.host(),
     auth: `${this.context.auth.username}:${this.context.auth.password}`,
