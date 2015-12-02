@@ -37,7 +37,7 @@ function* fail (context, heroku) {
   var clusters = new HerokuKafkaClusters(heroku, process.env, context);
   var addon = yield clusters.addonForSingleClusterCommand(context.args.CLUSTER);
   if (addon) {
-    if (context.flags.confirm !== context.app) {
+    if (!context.flags.confirm) {
       console.log(`
   !    WARNING: Destructive Action
   !    This command will affect the cluster: ${addon.name}, which is on ${context.app}
@@ -52,11 +52,14 @@ function* fail (context, heroku) {
       if (confirm === context.app) {
         yield doFail(context, heroku, clusters);
       } else {
-        console.log(`  !    Confirmation did not match ${context.app}. Aborted.`);
+        cli.error(`Confirmation did not match ${context.app}. Aborted.`);
         process.exit(1);
       }
-    } else {
+    } else if (context.flags.confirm === heroku.app) {
       yield doFail(context, heroku, clusters);
+    } else {
+      cli.error(`Confirmed app ${context.flags.confirm} did not match the selected app ${context.app}.`);
+      process.exit(1);
     }
   } else {
     process.exit(1);
