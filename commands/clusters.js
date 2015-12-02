@@ -52,7 +52,7 @@ HerokuKafkaClusters.prototype.fail = function* (cluster, catastrophic, zk) {
     var response = yield this.request({
       method: 'POST',
       body: { catastrophic: catastrophic, zookeeper: zk },
-      path: `/client/kafka/${VERSION}/clusters/${addon.kafka.name}/induce-failure`
+      path: `/client/kafka/${VERSION}/clusters/${addon.name}/induce-failure`
     });
     return response;
   } else {

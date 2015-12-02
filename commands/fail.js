@@ -21,10 +21,11 @@ function* doFail(context, heroku, clusters) {
   var fail = clusters.fail(context.args.CLUSTER, context.flags.catastrophic, context.flags.zookeeper);
   process.stdout.write('Eenie meenie miney moe');
   yield printWaitingDots();
+  process.stdout.write('\n');
 
   var failResponse = yield fail;
   if (failResponse) {
-    process.stdout.write(` ${failResponse.message}\n`);
+    process.stdout.write(` ${failResponse.message}`);
     process.exit(0);
   } else {
     process.exit(1);
@@ -89,7 +90,10 @@ module.exports = {
      hasValue: false},
     {name: 'zookeeper', char: 'z',
      description: 'induce failure on zookeeper node rather than on Kafka itself',
-     hasValue: false}
+     hasValue: false},
+    {name: 'confirm', char: 'a',
+     description: 'Override the confirmation prompt. Needs the app name, or the command will fail.',
+     hasValue: true}
   ],
   run: cli.command(co.wrap(fail))
 };
