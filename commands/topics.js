@@ -83,7 +83,7 @@ class TopicList {
     cli.error(error);
     this.client.close();
   }
-  
+
   finished() {
     this.client.close();
   }
