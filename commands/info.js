@@ -26,7 +26,7 @@ module.exports = {
   topic: 'kafka',
   command: 'info',
   default: true,
-  description: 'shows information about the state of your Heroku Kafka cluster',
+  description: 'Shows information about the state of your Heroku Kafka cluster',
   args: [
     {
       name: 'CLUSTER',
@@ -39,7 +39,7 @@ module.exports = {
     Examples:
 
     $ heroku kafka:info
-    $ heroku kafka:info kafka-adjacent-1337
+    $ heroku kafka:info HEROKU_KAFKA_BROWN_URL
 `,
   needsApp: true,
   needsAuth: true,

@@ -65,7 +65,7 @@ module.exports = {
     Examples:
 
     $ heroku kafka:configure page-visits --retention-time 86400000
-    $ heroku kafka:configure HEROKU_KAFKA_BROWN_URL page-visits --partitions 100 --replication-factor 3 --retention-time 86400000 --compaction
+    $ heroku kafka:configure HEROKU_KAFKA_BROWN_URL page-visits --retention-time 86400000 --compaction
 `,
   needsApp: true,
   needsAuth: true,
