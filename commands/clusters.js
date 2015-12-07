@@ -84,7 +84,7 @@ HerokuKafkaClusters.prototype.createTopic = function* (cluster, topicName, flags
             name: topicName,
             retention_time_ms: flags['retention-time'],
             replication_factor: flags['replication-factor'],
-            partition_count: flags['partition-count'],
+            partition_count: flags['partitions'],
             compaction: flags['compaction'] || false
           }
       },

@@ -4,6 +4,7 @@ require('chai').should();
 var PartitionPlan = require('../commands/partition_plan').PartitionPlan;
 var checkValidTopicName = require('../commands/shared').checkValidTopicName;
 var checkValidTopicNameForDeletion = require('../commands/shared').checkValidTopicNameForDeletion;
+var index = require('../index.js');
 
 describe('PartitionPlan', function () {
   it('plans have the right number of partitions', function () {
@@ -97,5 +98,13 @@ describe('checkValidTopicNameForDeletion', function () {
 
   it('__consumer_offsets cannot be deleted', function () {
     checkValidTopicNameForDeletion('__consumer_offsets', ['__consumer_offsets']).invalid.should.equal(true);
+  });
+});
+
+describe('commands', function () {
+  index.commands.forEach(function(command) {
+    it(`${command.topic}:${command.command} takes a CLUSTER argument`, function () {
+      command.args.map(function (arg) { return arg.name; }).should.include('CLUSTER');
+    });
   });
 });

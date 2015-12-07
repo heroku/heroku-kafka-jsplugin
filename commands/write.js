@@ -7,7 +7,7 @@ let co = require('co');
 function* write(context, heroku) {
   let config = yield heroku.apps(context.app).configVars().info();
   let kafkaURL = config['HEROKU_KAFKA_URL'].replace(/kafka:\/\//g,'');
-  let topicName = context.flags.topic;
+  let topicName = context.args.TOPIC;
   let partition = context.flags.partition || 0;
   let message = context.args.message;
 
@@ -56,11 +56,22 @@ module.exports = {
   needsApp: true,
   needsAuth: true,
   flags: [
-    {name: 'topic', char: 't', description: 'topic name to write to', hasValue: true, required: true},
     {name: 'partition', char: 't', description: 'partition to write to', hasValue: true, optional: true}
   ],
   args: [
-    {name: 'message', required: true, hidden:false}
+    {
+      name: 'message',
+      required: true,
+      hidden:false
+    },
+    {
+      name: 'TOPIC',
+      optional: false
+    },
+    {
+      name: 'CLUSTER',
+      optional: true
+    }
   ],
   run: cli.command(co.wrap(write))
 };
