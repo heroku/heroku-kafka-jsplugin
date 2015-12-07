@@ -34,7 +34,15 @@ module.exports = {
     Examples:
 
     $ heroku kafka:list
+    $ heroku kafka:list HEROKU_KAFKA_BROWN_URL
 `,
+
+  args: [
+    {
+      name: 'CLUSTER',
+      optional: true
+    }
+  ],
   needsApp: true,
   needsAuth: true,
   run: cli.command(co.wrap(listTopics))
