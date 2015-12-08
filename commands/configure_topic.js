@@ -1,8 +1,9 @@
 'use strict';
 
 let FLAGS = [
-  {name: 'retention-time',      char: 't', description: 'The length of time messages in the topic should be retained for.',  hasValue: true,  optional: true},
-  {name: 'compaction',          char: 'c', description: 'Whether to use compaction for this topi',                           hasValue: false, optional: true}
+  {name: 'retention-time', char: 't', description: 'The length of time messages in the topic should be retained for.',  hasValue: true,  optional: true},
+  {name: 'compaction',     char: 'c', description: 'Enables compaction on the topic if passed',                          hasValue: false, optional: true}
+  {name: 'no-compaction',  char: 'c', description: 'Disables compaction on the topic if passed',                         hasValue: false, optional: true}
 ];
 let DOT_WAITING_TIME = 200;
 
@@ -35,7 +36,10 @@ function* printWaitingDots() {
 }
 
 function* configureTopic (context, heroku) {
-  if (context.args.CLUSTER) {
+  if (context.flags['no-compaction'] && context.flags['compaction']) {
+    cli.error("can't pass both no-compaction and compaction");
+    process.exit(1);
+  } else if (context.args.CLUSTER) {
     process.stdout.write(`Configuring ${context.args.TOPIC} on ${context.args.CLUSTER}`);
   } else {
     process.stdout.write(`Configuring ${context.args.TOPIC}`);

@@ -103,11 +103,10 @@ HerokuKafkaClusters.prototype.configureTopic = function* (cluster, topicName, fl
       method: 'PUT',
       body: {
         topic:
-          {
+          _.extend({
             name: topicName,
             retention_time_ms: flags['retention-time'],
-            compaction: flags['compaction'] || false
-          }
+          }, this.compactionSettingFromFlags(flags))
       },
       path: `/client/kafka/${VERSION}/clusters/${addon.name}/topics/${topicName}`
     }).catch(function (err) { return err; });
@@ -117,6 +116,15 @@ HerokuKafkaClusters.prototype.configureTopic = function* (cluster, topicName, fl
   }
 };
 
+HerokuKafkaClusters.prototype.compactionSettingFromFlags = function* (flags) {
+  if (flags['no-compaction']) {
+    return { compaction: false };
+  } else if (flags['compaction']) {
+    return { compaction: true };
+  } else {
+    return {};
+  }
+}
 
 HerokuKafkaClusters.prototype.deleteTopic = function* (cluster, topicName) {
   var addon = yield this.addonForSingleClusterCommand(cluster);
