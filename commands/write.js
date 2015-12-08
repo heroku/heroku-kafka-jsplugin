@@ -45,9 +45,9 @@ function* write(context, heroku) {
 module.exports = {
   topic: 'kafka',
   command: 'topics:write',
-  description: 'writes a message to a kafka topic',
+  description: 'writes a message to a Kafka topic',
   help: `
-    Writes a message to the specified kafka topic.
+    Writes a message to the specified Kafka topic.
 
     Examples:
 

@@ -23,7 +23,7 @@ function* kafkaTopic (context, heroku) {
 module.exports = {
   topic: 'kafka',
   command: 'topic',
-  description: 'shows information about a topic in your Heroku kafka cluster',
+  description: 'Shows information about a topic in Kafka',
   args: [
     {
       name: 'TOPIC',
@@ -35,12 +35,12 @@ module.exports = {
     }
   ],
   help: `
-    Shows information about a topic in your kafka cluster
+    Shows information about a topic in your Kafka cluster
 
     Examples:
 
     $ heroku kafka:info page-visits
-    $ heroku kafka:info page-visits kafka-adjacent-1337
+    $ heroku kafka:info page-visits HEROKU_KAFKA_BROWN_URL
 `,
   needsApp: true,
   needsAuth: true,

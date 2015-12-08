@@ -60,7 +60,7 @@ function* createTopic (context, heroku) {
 module.exports = {
   topic: 'kafka',
   command: 'create',
-  description: 'Creates a topic in kafka',
+  description: 'Creates a topic in Kafka',
   help: `
     Creates a topic in Kafka.
 
