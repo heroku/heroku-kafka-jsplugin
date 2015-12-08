@@ -21,7 +21,7 @@ function* kafkaWait (context, heroku) {
 module.exports = {
   topic: 'kafka',
   command: 'wait',
-  description: 'Waits until kafka is ready to use',
+  description: 'Waits until Kafka is ready to use',
   args: [
     {
       name: 'CLUSTER',
@@ -29,6 +29,8 @@ module.exports = {
     }
   ],
   help: `
+    Waits until Kafka is ready to use.
+
     Examples:
 
     $ heroku kafka:wait

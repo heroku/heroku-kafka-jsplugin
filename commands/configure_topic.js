@@ -58,7 +58,7 @@ function* configureTopic (context, heroku) {
 module.exports = {
   topic: 'kafka',
   command: 'configure',
-  description: 'Configures a topic in kafka',
+  description: 'Configures a topic in Kafka',
   help: `
     Configures a topic in Kafka.
 

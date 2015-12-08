@@ -23,7 +23,7 @@ function* kafkaTopic (context, heroku) {
 module.exports = {
   topic: 'kafka',
   command: 'topic',
-  description: 'Shows information about a topic in kafka',
+  description: 'Shows information about a topic in Kafka',
   args: [
     {
       name: 'TOPIC',
@@ -35,7 +35,7 @@ module.exports = {
     }
   ],
   help: `
-    Shows information about a topic in your kafka cluster
+    Shows information about a topic in your Kafka cluster
 
     Examples:
 

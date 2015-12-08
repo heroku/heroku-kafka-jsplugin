@@ -62,9 +62,9 @@ function* tail(context, heroku) {
 module.exports = {
   topic: 'kafka',
   command: 'topics:tail',
-  description: 'tails a topic in kafka',
+  description: 'tails a topic in Kafka',
   help: `
-    Tails a topic in kafka, printing it to stdout
+    Tails a topic in Kafka, printing it to stdout
 
     Examples:
 

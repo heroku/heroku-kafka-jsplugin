@@ -26,7 +26,7 @@ module.exports = {
   topic: 'kafka',
   command: 'info',
   default: true,
-  description: 'Shows information about the state of your Heroku Kafka cluster',
+  description: 'Shows information about the state of your Kafka cluster',
   args: [
     {
       name: 'CLUSTER',
@@ -34,7 +34,7 @@ module.exports = {
     }
   ],
   help: `
-    Shows the state of your Heroku Kafka cluster.
+    Shows information about the state of your Heroku Kafka cluster.
 
     Examples:
 
