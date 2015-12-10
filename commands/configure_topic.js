@@ -2,8 +2,8 @@
 
 let FLAGS = [
   {name: 'retention-time', char: 't', description: 'The length of time messages in the topic should be retained for.',  hasValue: true,  optional: true},
-  {name: 'compaction',     char: 'c', description: 'Enables compaction on the topic if passed',                          hasValue: false, optional: true}
-  {name: 'no-compaction',  char: 'c', description: 'Disables compaction on the topic if passed',                         hasValue: false, optional: true}
+  {name: 'compaction',     char: 'c', description: 'Enables compaction on the topic if passed',                         hasValue: false, optional: true},
+  {name: 'no-compaction',  char: 'c', description: 'Disables compaction on the topic if passed',                        hasValue: false, optional: true}
 ];
 let DOT_WAITING_TIME = 200;
 
