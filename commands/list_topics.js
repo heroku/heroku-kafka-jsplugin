@@ -9,16 +9,21 @@ function* listTopics (context, heroku) {
   if (topics) {
     cli.styledHeader('Kafka Topics on ' + (topics.attachment_name || 'HEROKU_KAFKA'));
     console.log();
-    cli.table(topics.topics,
-      {
-        columns:
-        [
-          {key: 'name', label: 'Name'},
-          {key: 'messages', label: 'Messages'},
-          {key: 'bytes', label: 'Traffic'}
-        ]
-      }
-    );
+    if (topics.topics.length == 0) {
+      console.log("No topics found on this Kafka");
+      console.log("Use heroku kafka:create to create a topic.");
+    } else {
+      cli.table(topics.topics,
+        {
+          columns:
+          [
+            {key: 'name', label: 'Name'},
+            {key: 'messages', label: 'Messages'},
+            {key: 'bytes', label: 'Traffic'}
+          ]
+        }
+      );
+    }
   } else {
     process.exit(1);
   }
