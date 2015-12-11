@@ -3,18 +3,13 @@
 let cli = require('heroku-cli-util');
 let co = require('co');
 let HerokuKafkaClusters = require('./clusters.js').HerokuKafkaClusters;
-let _ = require('underscore');
 
 function* kafkaTopic (context, heroku) {
   var topic = yield new HerokuKafkaClusters(heroku, process.env, context).topic(context.args.CLUSTER, context.args.TOPIC);
   if (topic) {
     cli.styledHeader((topic.attachment_name || 'HEROKU_KAFKA') + ' :: ' + topic.topic);
     console.log();
-    var out = {};
-    _.each(topic.info, function(infoLine) {
-      out[infoLine.name] = infoLine.values;
-    });
-    cli.styledHash(out);
+    cli.styledNameValues(topic.info);
   } else {
     process.exit(1);
   }

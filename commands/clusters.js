@@ -105,7 +105,7 @@ HerokuKafkaClusters.prototype.configureTopic = function* (cluster, topicName, fl
         topic:
           _.extend({
             name: topicName,
-            retention_time_ms: flags['retention-time'],
+            retention_time_ms: flags['retention-time']
           }, this.compactionSettingFromFlags(flags))
       },
       path: `/client/kafka/${VERSION}/clusters/${addon.name}/topics/${topicName}`
@@ -124,7 +124,7 @@ HerokuKafkaClusters.prototype.compactionSettingFromFlags = function* (flags) {
   } else {
     return {};
   }
-}
+};
 
 HerokuKafkaClusters.prototype.deleteTopic = function* (cluster, topicName) {
   var addon = yield this.addonForSingleClusterCommand(cluster);

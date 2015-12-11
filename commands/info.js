@@ -11,11 +11,7 @@ function* kafkaInfo (context, heroku) {
     _.each(infos, function(info) {
       cli.styledHeader(info.attachment_name || 'HEROKU_KAFKA');
       console.log();
-      var out = {};
-      _.each(info.info, function(infoLine) {
-        out[infoLine.name] = infoLine.values;
-      });
-      cli.styledHash(out);
+      cli.styledNameValues(info.info);
     });
   } else {
     process.exit(1);
