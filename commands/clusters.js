@@ -153,7 +153,7 @@ HerokuKafkaClusters.prototype.request = function (params) {
 };
 
 HerokuKafkaClusters.prototype.handleResponse = function (response) {
-  if (response.statusCode == 422) {
+  if (response.statusCode >= 400 || response.statusCode <= 499) {
     return response.body.message;
   } else if (response.statusCode == undefined || (response.statusCode < 300 && response.statusCode >= 200)) {
     return null;
