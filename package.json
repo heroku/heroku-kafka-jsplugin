@@ -31,5 +31,8 @@
     "eslint": "*",
     "mocha": "*",
     "netrc": "*"
+  },
+  "publishConfig": {
+      "registry": "https://heroku-npm.herokuapp.com"
   }
 }
