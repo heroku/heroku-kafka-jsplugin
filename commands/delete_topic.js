@@ -88,9 +88,9 @@ module.exports = {
     }
   ],
   flags: [
-    {name: 'confirm'
+    {name: 'confirm',
      description: 'Override the confirmation prompt. Needs the app name, or the command will fail.',
      hasValue: true}
-  ]
+  ],
   run: cli.command(co.wrap(deleteTopic))
 };
