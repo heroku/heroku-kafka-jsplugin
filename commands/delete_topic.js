@@ -50,7 +50,7 @@ function* deleteTopic (context, heroku) {
       if (confirm === context.app) {
         yield doDeletion(context, heroku, clusters);
       } else {
-        console.log(`  !    Confirmation did not match ${context.args.TOPIC}. Aborted.`);
+        console.log(`  !    Confirmation did not match ${context.app}. Aborted.`);
         process.exit(1);
       }
     } else {
@@ -87,5 +87,10 @@ module.exports = {
       optional: true
     }
   ],
+  flags: [
+    {name: 'confirm'
+     description: 'Override the confirmation prompt. Needs the app name, or the command will fail.',
+     hasValue: true}
+  ]
   run: cli.command(co.wrap(deleteTopic))
 };
