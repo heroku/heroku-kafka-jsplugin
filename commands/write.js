@@ -56,7 +56,7 @@ module.exports = {
   needsApp: true,
   needsAuth: true,
   flags: [
-    {name: 'partition', char: 't', description: 'partition to write to', hasValue: true, optional: true}
+    {name: 'partition', description: 'partition to write to', hasValue: true, optional: true}
   ],
   args: [
     {

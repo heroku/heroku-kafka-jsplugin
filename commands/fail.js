@@ -88,13 +88,13 @@ module.exports = {
     }
   ],
   flags: [
-    {name: 'catastrophic', char: 'c',
+    {name: 'catastrophic',
      description: 'induce unrecoverable server failure on the single node',
      hasValue: false},
-    {name: 'zookeeper', char: 'z',
+    {name: 'zookeeper',
      description: 'induce failure on zookeeper node rather than on Kafka itself',
      hasValue: false},
-    {name: 'confirm', char: 'a',
+    {name: 'confirm',
      description: 'Override the confirmation prompt. Needs the app name, or the command will fail.',
      hasValue: true}
   ],
