@@ -1,10 +1,10 @@
 'use strict';
 
 let FLAGS = [
-  {name: 'partitions',          char: 'p', description: 'number of partitions to give the topic',                            hasValue: true,  optional: false},
-  {name: 'replication-factor',  char: 'r', description: 'number of replicas the topic should be created across',             hasValue: true,  optional: true},
-  {name: 'retention-time',      char: 't', description: 'The length of time messages in the topic should be retained for.',  hasValue: true,  optional: true},
-  {name: 'compaction',          char: 'c', description: 'Whether to use compaction for this topic',                          hasValue: false, optional: true}
+  {name: 'partitions',          description: 'number of partitions to give the topic',                            hasValue: true,  optional: false},
+  {name: 'replication-factor',  description: 'number of replicas the topic should be created across',             hasValue: true,  optional: true},
+  {name: 'retention-time',      description: 'The length of time messages in the topic should be retained for.',  hasValue: true,  optional: true},
+  {name: 'compaction',          description: 'Whether to use compaction for this topic',                          hasValue: false, optional: true}
 ];
 let DOT_WAITING_TIME = 200;
 
