@@ -4,7 +4,7 @@ let _ = require('underscore');
 let cli = require('heroku-cli-util');
 
 let VERSION = "v0";
-let DEFAULT_HOST = "postgres-api.heroku.com";
+let DEFAULT_HOST = "kafka-api.heroku.com";
 
 function HerokuKafkaClusters(heroku, env, context) {
   this.heroku = heroku;
