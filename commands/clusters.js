@@ -61,8 +61,7 @@ HerokuKafkaClusters.prototype.fail = function* (cluster, catastrophic, zk) {
   }
 };
 
-HerokuKafkaClusters.prototype.waitStatus = function* (cluster) {
-  var addon = yield this.addonForSingleClusterCommand(cluster);
+HerokuKafkaClusters.prototype.waitStatus = function* (addon) {
   if (addon) {
     var response = yield this.request({
       path: `/client/kafka/${VERSION}/clusters/${addon.name}/wait_status`

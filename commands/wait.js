@@ -7,14 +7,19 @@ var Spinner = require('node-spinner');
 function* kafkaWait (context, heroku) {
   var finished = false;
   var s = Spinner();
-  while (!finished) {
-    var waitStatus = yield new HerokuKafkaClusters(heroku, process.env, context).waitStatus(context.args.CLUSTER);
-    if (!waitStatus || !waitStatus['waiting?']) {
-      finished = true;
-    } else {
-      process.stdout.write("\r \033[36m" + waitStatus.message + "\033[m " + s.next());
-      yield sleep(500);
+  var addon = yield new HerokuKafkaClusters(heroku, process.env, context).addonForSingleClusterCommand(context.args.CLUSTER);
+  if (addon) {
+    while (!finished) {
+      var waitStatus = yield new HerokuKafkaClusters(heroku, process.env, context).waitStatus(addon);
+      if (!waitStatus || !waitStatus['waiting?']) {
+        finished = true;
+      } else {
+        process.stdout.write("\r \033[36m" + waitStatus.message + "\033[m " + s.next());
+        yield sleep(500);
+      }
     }
+  } else {
+    process.exit(1)
   }
 }
 
