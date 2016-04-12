@@ -24,3 +24,8 @@ Additional commands, type "heroku help COMMAND" for more details:
 ``` sh-session
 $ heroku plugins:install heroku-kafka
 ```
+
+## Deploying
+
+Bump the version number (on master, don't do a PR), then `npm publish`.
+Whilst this remains a private thing you'll need Heroku NPM creds from the CLI team.
