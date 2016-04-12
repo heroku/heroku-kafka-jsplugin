@@ -7,7 +7,7 @@ let _ = require('underscore');
 
 function* kafkaInfo (context, heroku) {
   var infos = yield new HerokuKafkaClusters(heroku, process.env, context).info(context.args.CLUSTER);
-  if (infos) {
+  if (infos.length !== 0) {
     _.each(infos, function(info) {
       cli.styledHeader(info.attachment_name || 'HEROKU_KAFKA');
       console.log();
