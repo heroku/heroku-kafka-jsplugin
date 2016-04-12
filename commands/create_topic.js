@@ -51,6 +51,7 @@ function* createTopic (context, heroku) {
   if (err) {
     process.stdout.write("\n");
     cli.error(err);
+    process.exit(1);
   } else {
     process.stdout.write(' done.\n');
     process.stdout.write(`Use \`heroku kafka:topic ${context.args.TOPIC}\` to monitor your topic.\n`);
