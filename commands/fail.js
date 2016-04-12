@@ -55,7 +55,7 @@ function* fail (context, heroku) {
         cli.error(`Confirmation did not match ${context.app}. Aborted.`);
         process.exit(1);
       }
-    } else if (context.flags.confirm === heroku.app) {
+    } else if (context.flags.confirm === context.app) {
       yield doFail(context, heroku, clusters);
     } else {
       cli.error(`Confirmed app ${context.flags.confirm} did not match the selected app ${context.app}.`);
