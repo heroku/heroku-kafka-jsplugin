@@ -115,7 +115,7 @@ HerokuKafkaClusters.prototype.configureTopic = function* (cluster, topicName, fl
   }
 };
 
-HerokuKafkaClusters.prototype.compactionSettingFromFlags = function* (flags) {
+HerokuKafkaClusters.prototype.compactionSettingFromFlags = function (flags) {
   if (flags['no-compaction']) {
     return { compaction: false };
   } else if (flags['compaction']) {
