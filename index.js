@@ -13,4 +13,5 @@ exports.commands = [
   require('./commands/list_topics.js'),
   require('./commands/topic.js'),
   require('./commands/wait.js'),
+  require('./commands/tail.js')
 ];

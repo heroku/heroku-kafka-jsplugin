@@ -19,6 +19,7 @@
     "eslint": "^1.2.1",
     "heroku-cli-util": "^5.7.1",
     "kafkaesque": "^0.1.1",
+    "no-kafka": "github:hunterloftis/kafka",
     "node-spinner": "0.0.4",
     "node-zookeeper-client": "^0.2.2",
     "underscore": "^1.8.3"
