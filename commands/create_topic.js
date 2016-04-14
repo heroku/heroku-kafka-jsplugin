@@ -4,7 +4,8 @@ let FLAGS = [
   {name: 'partitions',          description: 'number of partitions to give the topic',                            hasValue: true,  optional: false},
   {name: 'replication-factor',  description: 'number of replicas the topic should be created across',             hasValue: true,  optional: true},
   {name: 'retention-time',      description: 'The length of time messages in the topic should be retained for.',  hasValue: true,  optional: true},
-  {name: 'compaction',          description: 'Whether to use compaction for this topic',                          hasValue: false, optional: true}
+  {name: 'compaction',          description: 'Whether to use compaction for this topic',                          hasValue: false, optional: true},
+  {name: 'confirm',             description: 'Override the confirmation prompt. Needs the app name, or the command will fail.', hasValue: true, optional: true}
 ];
 let DOT_WAITING_TIME = 200;
 
@@ -37,13 +38,43 @@ function* printWaitingDots() {
 }
 
 function* createTopic (context, heroku) {
+  var clusters = new HerokuKafkaClusters(heroku, process.env, context);
+  var addon = yield clusters.addonForSingleClusterCommand(context.args.CLUSTER);
+  if (addon) {
+    if (context.flags['replication-factor'] === '1') {
+      var confirmed = yield clusters.checkConfirmation(context, `
+    !    WARNING: Dangerous Action
+    !    This command will create a topic with no replication on the cluster: ${addon.name}, which is on ${context.app}
+    !    Data written to this topic will be lost if any single broker suffers catastrophic failure.
+    !
+    !    To proceed, type "${context.app}" or re-run this command with --confirm ${context.app}
+    `);
+
+      if (confirmed) {
+        console.log(`
+    !    Proceeding to create a non-replicated topic...
+    `);
+        yield doCreation(context, heroku, clusters);
+      } else {
+        process.exit(1);
+      }
+    } else {
+      yield doCreation(context, heroku, clusters);
+    }
+  } else {
+    process.exit(1);
+  }
+}
+
+function* doCreation(context, heroku, clusters) {
   if (context.args.CLUSTER) {
     process.stdout.write(`Creating ${context.args.TOPIC} on ${context.args.CLUSTER}`);
   } else {
     process.stdout.write(`Creating ${context.args.TOPIC}`);
   }
   var flags = extractFlags(context.flags);
-  var creation = new HerokuKafkaClusters(heroku, process.env, context).createTopic(context.args.CLUSTER, context.args.TOPIC, flags);
+
+  var creation = clusters.createTopic(context.args.CLUSTER, context.args.TOPIC, flags);
   yield printWaitingDots();
 
   var err = yield creation;
