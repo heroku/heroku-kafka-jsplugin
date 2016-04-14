@@ -19,6 +19,16 @@ Additional commands, type "heroku help COMMAND" for more details:
   kafka:wait [CLUSTER]             #  Waits until the kafka cluster is ready to use
 ```
 
+## Development
+
+For normal development, the initial setup is: 
+``` sh-session
+$ heroku plugins:link .
+$ npm install
+```
+
+If you add a new command, change a command's args/flags or other metadata, you need to re-run `plugins:link`
+
 ## Install
 
 ``` sh-session
