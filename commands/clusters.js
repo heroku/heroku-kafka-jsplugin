@@ -2,6 +2,7 @@
 
 let _ = require('underscore');
 let cli = require('heroku-cli-util');
+let prompt = require('co-prompt');
 
 let VERSION = "v0";
 let DEFAULT_HOST = "kafka-api.heroku.com";
@@ -216,6 +217,21 @@ HerokuKafkaClusters.prototype.addonForSingleClusterCommand = function* (cluster)
 HerokuKafkaClusters.prototype.findByClusterName = function (addons, cluster) {
   return addons.kafkas.filter(function (addon) { return _.contains(addon.config_vars, cluster) || addon.name == cluster; });
 };
+
+HerokuKafkaClusters.prototype.checkConfirmation = function* (context, message) {
+  if (context.flags.confirm !== context.app) {
+    console.log(message);
+    var confirm = yield prompt('> ');
+    if (confirm === context.app) {
+      return true;
+    } else {
+      console.log(`  !    Confirmation did not match ${context.app}. Aborted.`);
+      return false;
+    }
+  } else {
+    return true;
+  }
+}
 
 HerokuKafkaClusters.prototype.addons = function* () {
   let allAddons = yield this.heroku.apps(this.app).addons().listByApp();

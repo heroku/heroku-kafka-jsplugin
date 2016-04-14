@@ -6,7 +6,6 @@ let cli = require('heroku-cli-util');
 let co = require('co');
 let HerokuKafkaClusters = require('./clusters.js').HerokuKafkaClusters;
 let sleep = require('co-sleep');
-let prompt = require('co-prompt');
 
 function* printWaitingDots() {
   yield sleep(DOT_WAITING_TIME);
@@ -37,8 +36,7 @@ function* fail (context, heroku) {
   var clusters = new HerokuKafkaClusters(heroku, process.env, context);
   var addon = yield clusters.addonForSingleClusterCommand(context.args.CLUSTER);
   if (addon) {
-    if (!context.flags.confirm) {
-      console.log(`
+    var confirmed = yield clusters.checkConfirmation(context, `
   !    WARNING: Destructive Action
   !    This command will affect the cluster: ${addon.name}, which is on ${context.app}
   !
@@ -46,16 +44,9 @@ function* fail (context, heroku) {
   !    You should only run this command in controlled testing scenarios.
   !
   !    To proceed, type "${context.app}" or re-run this command with --confirm ${context.app}
-
   `);
-      var confirm = yield prompt('> ');
-      if (confirm === context.app) {
-        yield doFail(context, heroku, clusters);
-      } else {
-        cli.error(`Confirmation did not match ${context.app}. Aborted.`);
-        process.exit(1);
-      }
-    } else if (context.flags.confirm === context.app) {
+
+    if (confirmed) {
       yield doFail(context, heroku, clusters);
     } else {
       cli.error(`Confirmed app ${context.flags.confirm} did not match the selected app ${context.app}.`);

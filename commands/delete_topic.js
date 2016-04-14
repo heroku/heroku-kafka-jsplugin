@@ -6,7 +6,6 @@ let cli = require('heroku-cli-util');
 let co = require('co');
 let HerokuKafkaClusters = require('./clusters.js').HerokuKafkaClusters;
 let sleep = require('co-sleep');
-let prompt = require('co-prompt');
 
 function* printWaitingDots() {
   yield sleep(DOT_WAITING_TIME);
@@ -38,23 +37,17 @@ function* deleteTopic (context, heroku) {
   var clusters = new HerokuKafkaClusters(heroku, process.env, context);
   var addon = yield clusters.addonForSingleClusterCommand(context.args.CLUSTER);
   if (addon) {
-    if (context.flags.confirm !== context.app) {
-      console.log(`
+    var confirmed = yield clusters.checkConfirmation(context, `
   !    WARNING: Destructive Action
   !    This command will affect the cluster: ${addon.name}, which is on ${context.app}
   !
   !    To proceed, type "${context.app}" or re-run this command with --confirm ${context.app}
-
   `);
-      var confirm = yield prompt('> ');
-      if (confirm === context.app) {
-        yield doDeletion(context, heroku, clusters);
-      } else {
-        console.log(`  !    Confirmation did not match ${context.app}. Aborted.`);
-        process.exit(1);
-      }
-    } else {
+
+    if (confirmed) {
       yield doDeletion(context, heroku, clusters);
+    } else {
+      process.exit(2);
     }
   } else {
     process.exit(1);
