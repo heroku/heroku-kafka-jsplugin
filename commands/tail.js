@@ -4,26 +4,33 @@ const cli = require('heroku-cli-util');
 const co = require('co');
 const kafka = require('no-kafka');
 
+const HerokuKafkaClusters = require('./clusters.js').HerokuKafkaClusters;
+const clusterConfig = require('./shared.js').clusterConfig;
+
 const CLIENT_ID = 'heroku-tail-consumer';
 const IDLE_TIMEOUT = 1000;
 const MAX_LENGTH = 80;
 
 function* tail(context, heroku) {
-  let config = yield heroku.apps(context.app).configVars().info();
-  if (!config.KAFKA_URL || !config.KAFKA_CLIENT_CERT || !config.KAFKA_CLIENT_CERT_KEY) {
-    cli.error('No Kafka addon found');
-    process.exit();
+  let clusters = new HerokuKafkaClusters(heroku, process.env, context);
+  let addon = yield clusters.addonForSingleClusterCommand();
+  if (!addon) {
+    process.exit(1);
   }
+  let appConfig = yield heroku.apps(context.app).configVars().info();
+  let config = clusterConfig(addon, appConfig);
+
   let consumer = new kafka.SimpleConsumer({
     idleTimeout: IDLE_TIMEOUT,
     clientId: CLIENT_ID,
-    connectionString: config.KAFKA_URL,
+    connectionString: config.url,
     ssl: {
-      clientCert: config.KAFKA_CLIENT_CERT,
-      clientCertKey: config.KAFKA_CLIENT_CERT_KEY
+      clientCert: config.clientCert,
+      clientCertKey: config.clientCertKey
     }
   });
   yield consumer.init();
+
   consumer.subscribe(context.args.TOPIC, (messageSet, topic, partition) => {
     messageSet.forEach((m) => {
       let buffer = m.message.value;
@@ -38,15 +45,19 @@ module.exports = {
   topic: 'kafka',
   command: 'tail',
   description: 'Tails a topic in Kafka',
+  args: [
+    { name: 'TOPIC', optional: false },
+    { name: 'CLUSTER', optional: true }
+  ],
   help: `
     Tails a topic in Kafka.
 
     Examples:
 
     $ heroku kafka:tail page-visits
+    $ heroku kafka:tail page-visits kafka-aerodynamic-32763
 `,
   needsApp: true,
   needsAuth: true,
-  args: [{ name: 'TOPIC', optional: false }],
   run: cli.command(co.wrap(tail))
 };
