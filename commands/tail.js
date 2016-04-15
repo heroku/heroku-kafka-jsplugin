@@ -34,6 +34,10 @@ function* tail(context, heroku) {
   consumer.subscribe(context.args.TOPIC, (messageSet, topic, partition) => {
     messageSet.forEach((m) => {
       let buffer = m.message.value;
+      if (buffer == null) {
+        console.log(context.args.TOPIC, partition, m.offset, 0, "NULL");
+        return;
+      }
       let length = Math.min(buffer.length, MAX_LENGTH);
       let body = buffer.toString('utf8', 0, length);
       console.log(context.args.TOPIC, partition, m.offset, buffer.length, body);
