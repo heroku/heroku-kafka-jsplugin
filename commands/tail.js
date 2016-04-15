@@ -24,7 +24,7 @@ function* tail(context, heroku) {
     }
   });
   yield consumer.init();
-  consumer.subscribe(context.args.TOPIC, 0, (messageSet, topic, partition) => {
+  consumer.subscribe(context.args.TOPIC, (messageSet, topic, partition) => {
     messageSet.forEach((m) => {
       let buffer = m.message.value;
       let length = Math.min(buffer.length, MAX_LENGTH);
