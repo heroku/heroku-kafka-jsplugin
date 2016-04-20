@@ -19,7 +19,7 @@ function* kafkaWait (context, heroku) {
       }
     }
   } else {
-    process.exit(1)
+    process.exit(1);
   }
 }
 

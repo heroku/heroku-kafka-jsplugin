@@ -13,16 +13,14 @@
   ],
   "license": "ISC",
   "dependencies": {
-    "co": "^4.6.0",
-    "co-prompt": "^1.0.0",
+    "co": "4.6.0",
+    "co-prompt": "1.0.0",
     "co-sleep": "0.0.1",
-    "eslint": "^1.2.1",
-    "heroku-cli-util": "^5.7.1",
-    "kafkaesque": "^0.1.1",
+    "eslint": "1.2.1",
+    "heroku-cli-util": "5.7.1",
     "no-kafka": "github:hunterloftis/kafka",
     "node-spinner": "0.0.4",
-    "node-zookeeper-client": "^0.2.2",
-    "underscore": "^1.8.3"
+    "underscore": "1.8.3"
   },
   "scripts": {
     "test": "eslint index.js commands/ && mocha"
@@ -30,8 +28,7 @@
   "devDependencies": {
     "chai": "*",
     "eslint": "*",
-    "mocha": "*",
-    "netrc": "*"
+    "mocha": "*"
   },
   "publishConfig": {
     "registry": "https://heroku-npm.herokuapp.com"

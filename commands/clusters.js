@@ -231,7 +231,7 @@ HerokuKafkaClusters.prototype.checkConfirmation = function* (context, message) {
   } else {
     return true;
   }
-}
+};
 
 HerokuKafkaClusters.prototype.addons = function* () {
   let allAddons = yield this.heroku.apps(this.app).addons().listByApp();
