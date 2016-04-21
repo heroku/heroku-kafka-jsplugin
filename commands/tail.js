@@ -13,7 +13,7 @@ const MAX_LENGTH = 80;
 
 function* tail(context, heroku) {
   let clusters = new HerokuKafkaClusters(heroku, process.env, context);
-  let addon = yield clusters.addonForSingleClusterCommand();
+  let addon = yield clusters.addonForSingleClusterCommand(context.args.CLUSTER);
   if (!addon) {
     process.exit(1);
   }
