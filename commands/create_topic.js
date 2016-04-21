@@ -92,7 +92,7 @@ function* doCreation(context, heroku, clusters) {
 module.exports = {
   topic: 'kafka',
   command: 'create',
-  description: 'Creates a topic in Kafka',
+  description: 'creates a topic in Kafka',
   help: `
     Creates a topic in Kafka.
 

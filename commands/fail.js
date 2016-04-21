@@ -61,7 +61,7 @@ function* fail (context, heroku) {
 module.exports = {
   topic: 'kafka',
   command: 'fail',
-  description: 'Triggers failure on one node in the cluster',
+  description: 'triggers failure on one node in the cluster',
   help: `
     Triggers failure on one node in the cluster.
 

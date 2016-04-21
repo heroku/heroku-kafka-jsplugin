@@ -30,7 +30,7 @@ module.exports = {
     }
   ],
   help: `
-    shows information about the state of your Heroku Kafka cluster.
+    Shows information about the state of your Heroku Kafka cluster.
 
     Examples:
 

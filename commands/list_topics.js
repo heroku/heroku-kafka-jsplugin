@@ -32,7 +32,7 @@ function* listTopics (context, heroku) {
 module.exports = {
   topic: 'kafka',
   command: 'list',
-  description: 'Lists available Kafka topics',
+  description: 'lists available Kafka topics',
   help: `
     Lists available Kafka topics.
 
