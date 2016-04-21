@@ -5,15 +5,16 @@
 A plugin to manage Heroku Kafka.
 
 ```
-kafka:configure TOPIC [CLUSTER]  #  configures a topic in Kafka
-kafka:create TOPIC [CLUSTER]     #  creates a topic in Kafka
-kafka:delete TOPIC [CLUSTER]     #  deletes a topic in Kafka
-kafka:fail [CLUSTER]             #  triggers failure on one node in the cluster
-kafka:info [CLUSTER]             #  shows information about the state of your Kafka cluster
-kafka:list [CLUSTER]             #  lists available Kafka topics
-kafka:tail TOPIC [CLUSTER]       #  tails a topic in Kafka
-kafka:topic TOPIC [CLUSTER]      #  shows information about a topic in Kafka
-kafka:wait [CLUSTER]             #  waits until Kafka is ready to use
+kafka:configure TOPIC [CLUSTER]     #  configures a topic in Kafka
+kafka:create TOPIC [CLUSTER]        #  creates a topic in Kafka
+kafka:delete TOPIC [CLUSTER]        #  deletes a topic in Kafka
+kafka:fail [CLUSTER]                #  triggers failure on one node in the cluster
+kafka:info [CLUSTER]                #  shows information about the state of your Kafka cluster
+kafka:list [CLUSTER]                #  lists available Kafka topics
+kafka:tail TOPIC [CLUSTER]          #  tails a topic in Kafka
+kafka:topic TOPIC [CLUSTER]         #  shows information about a topic in Kafka
+kafka:wait [CLUSTER]                #  waits until Kafka is ready to use
+kafka:write TOPIC MESSAGE [CLUSTER] #  write message to Kafka topic
 ```
 
 ## Development
