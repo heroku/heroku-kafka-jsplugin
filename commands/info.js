@@ -22,7 +22,7 @@ module.exports = {
   topic: 'kafka',
   command: 'info',
   default: true,
-  description: 'Shows information about the state of your Kafka cluster',
+  description: 'shows information about the state of your Kafka cluster',
   args: [
     {
       name: 'CLUSTER',
@@ -30,12 +30,16 @@ module.exports = {
     }
   ],
   help: `
-    Shows information about the state of your Heroku Kafka cluster.
+    shows information about the state of your Heroku Kafka cluster.
 
     Examples:
 
     $ heroku kafka:info
     $ heroku kafka:info HEROKU_KAFKA_BROWN_URL
+
+    To get started with Heroku Kafka:
+
+    $ heroku addons:create heroku-kafka
 `,
   needsApp: true,
   needsAuth: true,
