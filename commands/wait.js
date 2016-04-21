@@ -5,21 +5,29 @@ var HerokuKafkaClusters = require('./clusters.js').HerokuKafkaClusters;
 var Spinner = require('node-spinner');
 
 function* kafkaWait (context, heroku) {
-  var finished = false;
-  var s = Spinner();
-  var addon = yield new HerokuKafkaClusters(heroku, process.env, context).addonForSingleClusterCommand(context.args.CLUSTER);
-  if (addon) {
-    while (!finished) {
-      var waitStatus = yield new HerokuKafkaClusters(heroku, process.env, context).waitStatus(addon);
-      if (!waitStatus || !waitStatus['waiting?']) {
-        finished = true;
-      } else {
-        process.stdout.write("\r \033[36m" + waitStatus.message + "\033[m " + s.next());
-        yield sleep(500);
-      }
-    }
-  } else {
+  var clusters = new HerokuKafkaClusters(heroku, process.env, context);
+  var addons = yield clusters.addonsForManyClusterCommand(context.args.CLUSTER);
+  if (!addons) {
     process.exit(1);
+  } else {
+    for (var i = 0; i < addons.length; i++) {
+      var addon = addons[i];
+      yield kafkaWaitSingle(clusters, addon);
+    }
+  }
+}
+
+function* kafkaWaitSingle (clusters, addon) {
+  var s = Spinner();
+  var finished = false;
+  while (!finished) {
+    var waitStatus = yield clusters.waitStatus(addon);
+    if (!waitStatus || !waitStatus['waiting?']) {
+      finished = true;
+    } else {
+      process.stdout.write("\r \033[36m" + waitStatus.message + "\033[m " + s.next());
+      yield sleep(500);
+    }
   }
 }
 
