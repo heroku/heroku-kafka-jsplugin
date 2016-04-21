@@ -1,7 +1,7 @@
 'use strict';
 exports.topic = {
   name: 'kafka',
-  description: ''
+  description: 'manage heroku kafka clusters'
 };
 
 exports.commands = [

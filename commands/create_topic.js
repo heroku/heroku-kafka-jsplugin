@@ -1,11 +1,11 @@
 'use strict';
 
 let FLAGS = [
-  {name: 'partitions',          description: 'number of partitions to give the topic',                            hasValue: true,  optional: false},
-  {name: 'replication-factor',  description: 'number of replicas the topic should be created across',             hasValue: true,  optional: true},
-  {name: 'retention-time',      description: 'The length of time messages in the topic should be retained for.',  hasValue: true,  optional: true},
-  {name: 'compaction',          description: 'Whether to use compaction for this topic',                          hasValue: false, optional: true},
-  {name: 'confirm',             description: 'Override the confirmation prompt. Needs the app name, or the command will fail.', hasValue: true, optional: true}
+  {name: 'partitions',          description: 'number of partitions to give the topic',                                            hasValue: true,  optional: false},
+  {name: 'replication-factor',  description: 'number of replicas the topic should be created across',                             hasValue: true,  optional: true},
+  {name: 'retention-time',      description: 'the length of time messages in the topic should be retained for in milliseconds.',  hasValue: true,  optional: true},
+  {name: 'compaction',          description: 'whether to use compaction for this topic',                                          hasValue: false, optional: true},
+  {name: 'confirm',             description: 'override the confirmation prompt. Needs the app name, or the command will fail.',   hasValue: true, optional: true}
 ];
 let DOT_WAITING_TIME = 200;
 
@@ -92,7 +92,7 @@ function* doCreation(context, heroku, clusters) {
 module.exports = {
   topic: 'kafka',
   command: 'create',
-  description: 'Creates a topic in Kafka',
+  description: 'creates a topic in Kafka',
   help: `
     Creates a topic in Kafka.
 

@@ -1,9 +1,9 @@
 'use strict';
 
 let FLAGS = [
-  {name: 'retention-time', description: 'The length of time messages in the topic should be retained for.',  hasValue: true,  optional: true},
-  {name: 'compaction',     description: 'Enables compaction on the topic if passed',                         hasValue: false, optional: true},
-  {name: 'no-compaction',  description: 'Disables compaction on the topic if passed',                        hasValue: false, optional: true}
+  {name: 'retention-time', description: 'The length of time in milliseconds messages in the topic should be retained for.',  hasValue: true,  optional: true},
+  {name: 'compaction',     description: 'Enables compaction on the topic if passed',                                         hasValue: false, optional: true},
+  {name: 'no-compaction',  description: 'Disables compaction on the topic if passed',                                        hasValue: false, optional: true}
 ];
 let DOT_WAITING_TIME = 200;
 
@@ -62,7 +62,7 @@ function* configureTopic (context, heroku) {
 module.exports = {
   topic: 'kafka',
   command: 'configure',
-  description: 'Configures a topic in Kafka',
+  description: 'configures a topic in Kafka',
   help: `
     Configures a topic in Kafka.
 

@@ -48,7 +48,7 @@ function* tail(context, heroku) {
 module.exports = {
   topic: 'kafka',
   command: 'tail',
-  description: 'Tails a topic in Kafka',
+  description: 'tails a topic in Kafka',
   args: [
     { name: 'TOPIC', optional: false },
     { name: 'CLUSTER', optional: true }

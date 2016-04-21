@@ -18,7 +18,7 @@ function* kafkaTopic (context, heroku) {
 module.exports = {
   topic: 'kafka',
   command: 'topic',
-  description: 'Shows information about a topic in Kafka',
+  description: 'shows information about a topic in Kafka',
   args: [
     {
       name: 'TOPIC',
