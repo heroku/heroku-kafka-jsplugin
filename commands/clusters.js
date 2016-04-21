@@ -6,6 +6,7 @@ let prompt = require('co-prompt');
 
 let VERSION = "v0";
 let DEFAULT_HOST = "kafka-api.heroku.com";
+let DEFAULT_ADDON_NAME = "heroku-kafka";
 
 function HerokuKafkaClusters(heroku, env, context) {
   this.heroku = heroku;
@@ -164,12 +165,22 @@ HerokuKafkaClusters.prototype.handleResponse = function (response) {
 };
 
 HerokuKafkaClusters.prototype.host = function () {
-  if (this.env.SHOGUN) {
+  if (this.env.HEROKU_KAFKA_HOST) {
+    return this.env.HEROKU_KAFKA_HOST;
+  } else if (this.env.SHOGUN) {
     return `shogun-${this.env.SHOGUN}.herokuapp.com`;
   } else if (this.env.DEPLOY) {
     return `shogun-${this.env.DEPLOY}.herokuapp.com`;
   } else {
     return DEFAULT_HOST;
+  }
+};
+
+HerokuKafkaClusters.prototype.addonName = function () {
+  if (this.env.HEROKU_KAFKA_ADDON_NAME) {
+    return this.env.HEROKU_KAFKA_ADDON_NAME;
+  } else {
+    return DEFAULT_ADDON_NAME;
   }
 };
 
@@ -185,11 +196,11 @@ HerokuKafkaClusters.prototype.addonsForManyClusterCommand = function* (cluster) 
     return filteredAddons;
   } else if (cluster !== undefined) {
     cli.error(`couldn't find the kafka cluster ${cluster}, but found these addons: ${addons.allAddons.map(function (addon) { return addon.name; }).join(', ')}`);
-    cli.error(`\nTo get started with Heroku Kafka, run:\n$ heroku addons:create heroku-kafka.`);
+    cli.error(`\nTo get started with Heroku Kafka, run:\n$ heroku addons:create ${this.addonName()}.`);
     return null;
   } else {
     cli.error(`kafka addon not found, but found these addons: ${addons.allAddons.map(function (addon) { return addon.name; }).join(', ')}`);
-    cli.error(`\nTo get started with Heroku Kafka, run:\n$ heroku addons:create heroku-kafka.`);
+    cli.error(`\nTo get started with Heroku Kafka, run:\n$ heroku addons:create ${this.addonName()}.`);
     return null;
   }
 };
@@ -237,7 +248,8 @@ HerokuKafkaClusters.prototype.checkConfirmation = function* (context, message) {
 
 HerokuKafkaClusters.prototype.addons = function* () {
   let allAddons = yield this.heroku.apps(this.app).addons().listByApp();
-  let kafkaAddons = allAddons.filter(function (addon) { return addon.addon_service.name.startsWith('heroku-kafka'); });
+  let addonName = this.addonName();
+  let kafkaAddons = allAddons.filter(function (addon) { return addon.addon_service.name === addonName; });
   return {
     kafkas: kafkaAddons,
     allAddons: allAddons
