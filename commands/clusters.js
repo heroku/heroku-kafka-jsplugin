@@ -184,10 +184,12 @@ HerokuKafkaClusters.prototype.addonsForManyClusterCommand = function* (cluster) 
   if (filteredAddons.length !== 0) {
     return filteredAddons;
   } else if (cluster !== undefined) {
-    cli.error(`couldn't find the kafka cluster ${cluster}, but found these addons instead: ${addons.allAddons.map(function (addon) { return addon.name; }).join(',')}`);
+    cli.error(`couldn't find the kafka cluster ${cluster}, but found these addons: ${addons.allAddons.map(function (addon) { return addon.name; }).join(', ')}`);
+    cli.error(`\nTo get started with Heroku Kafka, run:\n$ heroku addons:create heroku-kafka.`);
     return null;
   } else {
-    cli.error(`kafka addon not found, but found these addons: ${addons.allAddons.map(function (addon) { return addon.name; }).join(',')}`);
+    cli.error(`kafka addon not found, but found these addons: ${addons.allAddons.map(function (addon) { return addon.name; }).join(', ')}`);
+    cli.error(`\nTo get started with Heroku Kafka, run:\n$ heroku addons:create heroku-kafka.`);
     return null;
   }
 };
