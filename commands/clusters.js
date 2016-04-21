@@ -64,10 +64,16 @@ HerokuKafkaClusters.prototype.fail = function* (cluster, catastrophic, zk) {
 };
 
 HerokuKafkaClusters.prototype.waitStatus = function* (addon) {
+  let errorResponse = {
+    message: "unknown",
+    "waiting?": true,
+    "healthy?": false
+  };
+
   if (addon) {
     var response = yield this.request({
       path: `/client/kafka/${VERSION}/clusters/${addon.name}/wait_status`
-    });
+    }).catch(function () { return errorResponse; });
     return response;
   } else {
     return null;
