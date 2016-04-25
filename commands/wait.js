@@ -19,12 +19,17 @@ function* kafkaWait (context, heroku) {
 
 function* kafkaWaitSingle (clusters, addon) {
   var s = Spinner();
+  var checked = false;
   var finished = false;
   while (!finished) {
     var waitStatus = yield clusters.waitStatus(addon);
     if (!waitStatus || !waitStatus['waiting?']) {
       finished = true;
+      if (checked) {
+        console.log("");
+      }
     } else {
+      checked = true;
       process.stdout.write("\r \033[36m" + waitStatus.message + "\033[m " + s.next());
       yield sleep(500);
     }
