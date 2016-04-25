@@ -73,7 +73,15 @@ HerokuKafkaClusters.prototype.waitStatus = function* (addon) {
   if (addon) {
     var response = yield this.request({
       path: `/client/kafka/${VERSION}/clusters/${addon.name}/wait_status`
-    }).catch(function () { return errorResponse; });
+    }).catch(function (err) {
+      if (err.statusCode === 410) {
+        return Object.assign({ "deprovisioned?": true }, errorResponse);
+      } else if (err.statusCode === 404) {
+        return Object.assign({ "missing?": true }, errorResponse);
+      } else {
+        return errorResponse;
+      }
+    });
     return response;
   } else {
     return null;

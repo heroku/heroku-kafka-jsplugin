@@ -28,6 +28,12 @@ function* kafkaWaitSingle (clusters, addon) {
       if (checked) {
         console.log("");
       }
+    } else if (waitStatus['deprovisioned?']) {
+      finished = true;
+      cli.warn('This cluster was deprovisioned.');
+    } else if (waitStatus['missing?']) {
+      finished = true;
+      cli.warn('This cluster could not be found.');
     } else {
       checked = true;
       process.stdout.write("\r \033[36m" + waitStatus.message + "\033[m " + s.next());
