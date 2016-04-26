@@ -3,7 +3,7 @@
   "version": "0.1.7",
   "description": "heroku plugin to manage heroku kafka",
   "main": "index.js",
-  "author": "Tom Crayford tcrayford@heroku.com",
+  "author": "Heroku kafka@heroku.com",
   "repository": "heroku/heroku-kafka-jsplugin",
   "bugs": {
     "url": "https://github.com/heroku/heroku-kafka-jsplugin/issues"
@@ -29,8 +29,5 @@
     "chai": "*",
     "eslint": "*",
     "mocha": "*"
-  },
-  "publishConfig": {
-    "registry": "https://heroku-npm.herokuapp.com"
   }
 }
