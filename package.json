@@ -1,6 +1,6 @@
 {
   "name": "heroku-kafka",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "heroku plugin to manage heroku kafka",
   "main": "index.js",
   "author": "Heroku kafka@heroku.com",
