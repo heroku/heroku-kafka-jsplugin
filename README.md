@@ -1,6 +1,6 @@
 ## Heroku Kafka Plugin
 
-[![Build Status](https://travis-ci.com/heroku/heroku-kafka-jsplugin.svg?token=VcVi2JSDK1qKAnP5dnx8&branch=master)](https://travis-ci.com/heroku/heroku-kafka-jsplugin)
+[![Build Status](https://travis-ci.org/heroku/heroku-kafka-jsplugin.svg?branch=master)](https://travis-ci.org/heroku/heroku-kafka-jsplugin)
 
 A plugin to manage Heroku Kafka.
 
