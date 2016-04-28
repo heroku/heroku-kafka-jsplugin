@@ -10,6 +10,7 @@ let DOT_WAITING_TIME = 200;
 let cli = require('heroku-cli-util');
 let co = require('co');
 let HerokuKafkaClusters = require('./clusters.js').HerokuKafkaClusters;
+let parseDuration = require('./shared').parseDuration;
 let sleep = require('co-sleep');
 let _ = require('underscore');
 
@@ -19,8 +20,17 @@ function extractFlags(contextFlags) {
   // (if there happen to be any).
   var out = {};
   _.each(FLAGS, function (flag) {
-    if (contextFlags[flag.name] !== undefined) {
-      out[flag.name] = contextFlags[flag.name];
+    let value = contextFlags[flag.name];
+    if (value !== undefined) {
+      if (flag.name === 'retention-time') {
+        let parsed = parseDuration(value);
+        if (value == null) {
+          cli.error(`could not parse retention time '${value}'`);
+          process.exit(1);
+        }
+        value = parsed;
+      }
+      out[flag.name] = value;
     }
   });
   return out;
@@ -68,8 +78,8 @@ module.exports = {
 
     Examples:
 
-    $ heroku kafka:configure page-visits --retention-time 86400000
-    $ heroku kafka:configure HEROKU_KAFKA_BROWN_URL page-visits --retention-time 86400000 --compaction
+    $ heroku kafka:configure page-visits --retention-time '1 day'
+    $ heroku kafka:configure HEROKU_KAFKA_BROWN_URL page-visits --retention-time '1 day' --compaction
 `,
   needsApp: true,
   needsAuth: true,
