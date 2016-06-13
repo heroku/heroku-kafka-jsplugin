@@ -29,20 +29,32 @@ function* tail(context, heroku) {
       clientCertKey: config.clientCertKey
     }
   });
-  yield consumer.init();
+  try {
+    yield consumer.init();
+  } catch (e) {
+    cli.error("Could not connect to kafka");
+    cli.debug(e);
+    process.exit(1);
+  }
 
-  consumer.subscribe(context.args.TOPIC, (messageSet, topic, partition) => {
-    messageSet.forEach((m) => {
-      let buffer = m.message.value;
-      if (buffer == null) {
-        console.log(context.args.TOPIC, partition, m.offset, 0, "NULL");
-        return;
-      }
-      let length = Math.min(buffer.length, MAX_LENGTH);
-      let body = buffer.toString('utf8', 0, length);
-      console.log(context.args.TOPIC, partition, m.offset, buffer.length, body);
+  try {
+    consumer.subscribe(context.args.TOPIC, (messageSet, topic, partition) => {
+      messageSet.forEach((m) => {
+        let buffer = m.message.value;
+        if (buffer == null) {
+          console.log(context.args.TOPIC, partition, m.offset, 0, "NULL");
+          return;
+        }
+        let length = Math.min(buffer.length, MAX_LENGTH);
+        let body = buffer.toString('utf8', 0, length);
+        console.log(context.args.TOPIC, partition, m.offset, buffer.length, body);
+      });
     });
-  });
+  } catch (e) {
+    cli.error("Could not subscribe to topic");
+    cli.debug(e);
+    process.exit(1);
+  }
 }
 
 module.exports = {
