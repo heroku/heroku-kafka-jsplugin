@@ -13,9 +13,7 @@ let DOT_WAITING_TIME = 200;
 let cli = require('heroku-cli-util');
 let co = require('co');
 let HerokuKafkaClusters = require('./clusters.js').HerokuKafkaClusters;
-let parseDuration = require('./shared').parseDuration;
 let sleep = require('co-sleep');
-let _ = require('underscore');
 
 function* printWaitingDots() {
   yield sleep(DOT_WAITING_TIME);
