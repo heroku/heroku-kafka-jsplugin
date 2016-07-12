@@ -63,6 +63,22 @@ HerokuKafkaClusters.prototype.fail = function* (cluster, catastrophic, zk) {
   }
 };
 
+HerokuKafkaClusters.prototype.upgrade = function* (cluster, flags) {
+  var addon = yield this.addonForSingleClusterCommand(cluster);
+  if (addon) {
+    var response = yield this.request({
+      method: 'PUT',
+      body: {
+        version: flags.version
+      },
+      path: `/client/kafka/${VERSION}/clusters/${addon.name}/upgrade`
+    }).catch(function (err) { return err; });
+    return this.handleResponse(response);
+  } else {
+    return null;
+  }
+};
+
 HerokuKafkaClusters.prototype.waitStatus = function* (addon) {
   let errorResponse = {
     message: "unknown",

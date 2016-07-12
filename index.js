@@ -9,6 +9,7 @@ exports.commands = [
   require('./commands/configure_topic.js'),
   require('./commands/delete_topic.js'),
   require('./commands/fail.js'),
+  require('./commands/upgrade.js'),
   require('./commands/info.js'),
   require('./commands/list_topics.js'),
   require('./commands/topic.js'),
