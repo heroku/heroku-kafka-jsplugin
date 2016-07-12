@@ -63,13 +63,13 @@ HerokuKafkaClusters.prototype.fail = function* (cluster, catastrophic, zk) {
   }
 };
 
-HerokuKafkaClusters.prototype.upgrade = function* (cluster, flags) {
+HerokuKafkaClusters.prototype.upgrade = function* (cluster, version) {
   var addon = yield this.addonForSingleClusterCommand(cluster);
   if (addon) {
     var response = yield this.request({
       method: 'PUT',
       body: {
-        version: flags.version
+        version: version
       },
       path: `/client/kafka/${VERSION}/clusters/${addon.name}/upgrade`
     }).catch(function (err) { return err; });

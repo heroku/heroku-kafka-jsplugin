@@ -17,20 +17,6 @@ let parseDuration = require('./shared').parseDuration;
 let sleep = require('co-sleep');
 let _ = require('underscore');
 
-function extractFlags(contextFlags) {
-  // This just ensures that we only ever get the flags we expect,
-  // and don't get any additional keys out of the heroku cli flags object
-  // (if there happen to be any).
-  var out = {};
-  _.each(FLAGS, function (flag) {
-    let value = contextFlags[flag.name];
-    if (value !== undefined) {
-      out[flag.name] = value;
-    }
-  });
-  return out;
-}
-
 function* printWaitingDots() {
   yield sleep(DOT_WAITING_TIME);
   process.stdout.write('.');
@@ -48,18 +34,14 @@ function* upgradeCluster (context, heroku) {
     process.exit(1);
   }
 
-  var flags = extractFlags(context.flags);
-
-  console.log('flags', JSON.stringify(flags));
-
-  if (flags.version === undefined) {
+  if (context.flags.version === undefined) {
     cli.error("The --version flag is not optional");
     process.exit(1);
   }
 
   var confirmed = yield clusters.checkConfirmation(context, `
   !    WARNING: Dangerous Action
-  !    This command will upgrade the brokers of the cluster to version ${flags.version}.
+  !    This command will upgrade the brokers of the cluster to version ${context.flags.version}.
   !
   !    To proceed, type "${context.app}" or re-run this command with --confirm ${context.app}
   `);
@@ -69,12 +51,12 @@ function* upgradeCluster (context, heroku) {
   }
 
   if (context.args.CLUSTER) {
-    process.stdout.write(`Upgrading ${context.args.CLUSTER} to version ${flags.version}`);
+    process.stdout.write(`Upgrading ${context.args.CLUSTER} to version ${context.flags.version}`);
   } else {
-    process.stdout.write(`Upgrading to version ${flags.version}`);
+    process.stdout.write(`Upgrading to version ${context.flags.version}`);
   }
 
-  var upgrade = clusters.upgrade(context.args.CLUSTER, flags);
+  var upgrade = clusters.upgrade(context.args.CLUSTER, context.flags.version);
   yield printWaitingDots();
 
   var err = yield upgrade;
