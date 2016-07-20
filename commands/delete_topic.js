@@ -37,18 +37,10 @@ function* deleteTopic (context, heroku) {
   var clusters = new HerokuKafkaClusters(heroku, process.env, context);
   var addon = yield clusters.addonForSingleClusterCommand(context.args.CLUSTER);
   if (addon) {
-    var confirmed = yield clusters.checkConfirmation(context, `
-  !    WARNING: Destructive Action
-  !    This command will affect the cluster: ${addon.name}, which is on ${context.app}
-  !
-  !    To proceed, type "${context.app}" or re-run this command with --confirm ${context.app}
-  `);
+    yield cli.confirmApp(context.app, context.flags.confirm,
+                         `This command will affect the cluster: ${addon.name}, which is on ${context.app}`);
 
-    if (confirmed) {
-      yield doDeletion(context, heroku, clusters);
-    } else {
-      process.exit(2);
-    }
+    yield doDeletion(context, heroku, clusters);
   } else {
     process.exit(1);
   }
@@ -71,19 +63,8 @@ module.exports = {
   needsApp: true,
   needsAuth: true,
   args: [
-    {
-      name: 'TOPIC',
-      optional: false
-    },
-    {
-      name: 'CLUSTER',
-      optional: true
-    }
-  ],
-  flags: [
-    {name: 'confirm',
-     description: 'Override the confirmation prompt. Needs the app name, or the command will fail.',
-     hasValue: true}
+    { name: 'TOPIC' },
+    { name: 'CLUSTER', optional: true }
   ],
   run: cli.command(co.wrap(deleteTopic))
 };

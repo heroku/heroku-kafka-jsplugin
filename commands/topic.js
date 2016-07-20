@@ -20,14 +20,8 @@ module.exports = {
   command: 'topic',
   description: 'shows information about a topic in Kafka',
   args: [
-    {
-      name: 'TOPIC',
-      optional: false
-    },
-    {
-      name: 'CLUSTER',
-      optional: true
-    }
+    { name: 'TOPIC' },
+    { name: 'CLUSTER', optional: true }
   ],
   help: `
     Shows information about a topic in your Kafka cluster

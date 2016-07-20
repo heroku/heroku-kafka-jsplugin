@@ -1,21 +1,21 @@
 'use strict';
 
-const _ = require('underscore');
+const _ = require('lodash');
 
 function clusterConfig(addon, config) {
   if (!addon) {
     return null;
   }
-  let urlVar = _.find(addon.config_vars, function(key) {
+  let urlVar = _.find(addon.config_vars, function(val, key) {
     return key.match(/KAFKA_URL|HEROKU_KAFKA_[A-Z]+_URL/);
   });
-  let trustedCertVar = _.find(addon.config_vars, function(key) {
+  let trustedCertVar = _.find(addon.config_vars, function(val, key) {
     return key.match(/KAFKA_TRUSTED_CERT|HEROKU_KAFKA_[A-Z]+_TRUSTED_CERT/);
   });
-  let clientCertVar = _.find(addon.config_vars, function(key) {
+  let clientCertVar = _.find(addon.config_vars, function(val, key) {
     return key.match(/KAFKA_CLIENT_CERT|HEROKU_KAFKA_[A-Z]+_CLIENT_CERT/);
   });
-  let clientCertKeyVar = _.find(addon.config_vars, function(key) {
+  let clientCertKeyVar = _.find(addon.config_vars, function(val, key) {
     return key.match(/KAFKA_CLIENT_CERT_KEY|HEROKU_KAFKA_[A-Z]+_CLIENT_CERT_KEY/);
   });
   return {

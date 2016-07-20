@@ -1,12 +1,5 @@
 'use strict';
 
-let FLAGS = [
-  {name: 'partitions',          description: 'number of partitions to give the topic',                                          hasValue: true,  optional: false},
-  {name: 'replication-factor',  description: 'number of replicas the topic should be created across',                           hasValue: true,  optional: true},
-  {name: 'retention-time',      description: 'length of time messages in the topic should be retained for',                     hasValue: true,  optional: true},
-  {name: 'compaction',          description: 'whether to use compaction for this topic',                                        hasValue: false, optional: true},
-  {name: 'confirm',             description: 'override the confirmation prompt (needs the app name, or the command will fail)', hasValue: true,  optional: true}
-];
 let DOT_WAITING_TIME = 200;
 
 let cli = require('heroku-cli-util');
@@ -14,29 +7,6 @@ let co = require('co');
 let HerokuKafkaClusters = require('./clusters.js').HerokuKafkaClusters;
 let parseDuration = require('./shared').parseDuration;
 let sleep = require('co-sleep');
-let _ = require('underscore');
-
-function extractFlags(contextFlags) {
-  // This just ensures that we only ever get the flags we expect,
-  // and don't get any additional keys out of the heroku cli flags object
-  // (if there happen to be any).
-  var out = {};
-  _.each(FLAGS, function (flag) {
-    let value = contextFlags[flag.name];
-    if (value !== undefined) {
-      if (flag.name === 'retention-time') {
-        let parsed = parseDuration(value);
-        if (value == null) {
-          cli.error(`could not parse retention time '${value}'`);
-          process.exit(1);
-        }
-        value = parsed;
-      }
-      out[flag.name] = value;
-    }
-  });
-  return out;
-}
 
 function* printWaitingDots() {
   yield sleep(DOT_WAITING_TIME);
@@ -52,25 +22,11 @@ function* createTopic (context, heroku) {
   var addon = yield clusters.addonForSingleClusterCommand(context.args.CLUSTER);
   if (addon) {
     if (context.flags['replication-factor'] === '1') {
-      var confirmed = yield clusters.checkConfirmation(context, `
-    !    WARNING: Dangerous Action
-    !    This command will create a topic with no replication on the cluster: ${addon.name}, which is on ${context.app}
-    !    Data written to this topic will be lost if any single broker suffers catastrophic failure.
-    !
-    !    To proceed, type "${context.app}" or re-run this command with --confirm ${context.app}
-    `);
+      yield cli.confirmApp(context.app, context.flags.confirm, `This command will create a topic with no replication on the cluster: ${addon.name}, which is on ${context.app}.\nData written to this topic will be lost if any single broker suffers catastrophic failure.`);
 
-      if (confirmed) {
-        console.log(`
-    !    Proceeding to create a non-replicated topic...
-    `);
-        yield doCreation(context, heroku, clusters);
-      } else {
-        process.exit(1);
-      }
-    } else {
-      yield doCreation(context, heroku, clusters);
+      cli.warn(`Proceeding to create a non-replicated topic...`);
     }
+    yield doCreation(context, heroku, clusters);
   } else {
     process.exit(1);
   }
@@ -82,7 +38,16 @@ function* doCreation(context, heroku, clusters) {
   } else {
     process.stdout.write(`Creating ${context.args.TOPIC}`);
   }
-  var flags = extractFlags(context.flags);
+  var flags = Object.assign({}, context.flags);
+  if ('retention-time' in flags) {
+    let value = flags['retention-time'];
+    let parsed = parseDuration(value);
+    if (parsed == null) {
+      cli.error(`could not parse retention time '${value}'`);
+      process.exit(1);
+    }
+    flags['retention-time'] = parsed;
+  }
 
   var creation = clusters.createTopic(context.args.CLUSTER, context.args.TOPIC, flags);
   yield printWaitingDots();
@@ -108,21 +73,20 @@ module.exports = {
 
     Examples:
 
-    $ heroku kafka:create page-visits --partitions 100
-    $ heroku kafka:create HEROKU_KAFKA_BROWN_URL page-visits --partitions 100 --replication-factor 3 --retention-time '1 day' --compaction
-`,
+  $ heroku kafka:create page-visits --partitions 100
+  $ heroku kafka:create HEROKU_KAFKA_BROWN_URL page-visits --partitions 100 --replication-factor 3 --retention-time '1 day' --compaction
+  `,
   needsApp: true,
   needsAuth: true,
   args: [
-    {
-      name: 'TOPIC',
-      optional: false
-    },
-    {
-      name: 'CLUSTER',
-      optional: true
-    }
+    { name: 'TOPIC' },
+    { name: 'CLUSTER', optional: true }
   ],
-  flags: FLAGS,
+  flags: [
+    { name: 'partitions', description: 'number of partitions to give the topic', hasValue: true, required: true },
+    { name: 'replication-factor', description: 'number of replicas the topic should be created across', hasValue: true },
+    { name: 'retention-time', description: 'length of time messages in the topic should be retained for', hasValue: true },
+    { name: 'compaction', description: 'whether to use compaction for this topic', hasValue: false }
+  ],
   run: cli.command(co.wrap(createTopic))
 };

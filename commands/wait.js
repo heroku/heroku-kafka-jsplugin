@@ -47,10 +47,7 @@ module.exports = {
   command: 'wait',
   description: 'waits until Kafka is ready to use',
   args: [
-    {
-      name: 'CLUSTER',
-      optional: true
-    }
+    { name: 'CLUSTER', optional: true }
   ],
   help: `
     Waits until Kafka is ready to use.

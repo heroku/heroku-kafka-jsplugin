@@ -1,10 +1,5 @@
 'use strict';
 
-let FLAGS = [
-  {name: 'retention-time', description: 'length of time messages in the topic should be retained for',  hasValue: true,  optional: true},
-  {name: 'compaction',     description: 'enables compaction on the topic if passed',                    hasValue: false, optional: true},
-  {name: 'no-compaction',  description: 'disables compaction on the topic if passed',                   hasValue: false, optional: true}
-];
 let DOT_WAITING_TIME = 200;
 
 let cli = require('heroku-cli-util');
@@ -12,29 +7,6 @@ let co = require('co');
 let HerokuKafkaClusters = require('./clusters.js').HerokuKafkaClusters;
 let parseDuration = require('./shared').parseDuration;
 let sleep = require('co-sleep');
-let _ = require('underscore');
-
-function extractFlags(contextFlags) {
-  // This just ensures that we only ever get the flags we expect,
-  // and don't get any additional keys out of the heroku cli flags object
-  // (if there happen to be any).
-  var out = {};
-  _.each(FLAGS, function (flag) {
-    let value = contextFlags[flag.name];
-    if (value !== undefined) {
-      if (flag.name === 'retention-time') {
-        let parsed = parseDuration(value);
-        if (value == null) {
-          cli.error(`could not parse retention time '${value}'`);
-          process.exit(1);
-        }
-        value = parsed;
-      }
-      out[flag.name] = value;
-    }
-  });
-  return out;
-}
 
 function* printWaitingDots() {
   yield sleep(DOT_WAITING_TIME);
@@ -54,7 +26,18 @@ function* configureTopic (context, heroku) {
   } else {
     process.stdout.write(`Configuring ${context.args.TOPIC}`);
   }
-  var flags = extractFlags(context.flags);
+
+  var flags = Object.assign({}, context.flags);
+  if ('retention-time' in flags) {
+    let value = flags['retention-time'];
+    let parsed = parseDuration(value);
+    if (parsed == null) {
+      cli.error(`could not parse retention time '${value}'`);
+      process.exit(1);
+    }
+    flags['retention-time'] = parsed;
+  }
+
   var creation = new HerokuKafkaClusters(heroku, process.env, context).configureTopic(context.args.CLUSTER, context.args.TOPIC, flags);
   yield printWaitingDots();
 
@@ -78,21 +61,19 @@ module.exports = {
 
     Examples:
 
-    $ heroku kafka:configure page-visits --retention-time '1 day'
-    $ heroku kafka:configure HEROKU_KAFKA_BROWN_URL page-visits --retention-time '1 day' --compaction
-`,
+  $ heroku kafka:configure page-visits --retention-time '1 day'
+  $ heroku kafka:configure HEROKU_KAFKA_BROWN_URL page-visits --retention-time '1 day' --compaction
+  `,
   needsApp: true,
   needsAuth: true,
   args: [
-    {
-      name: 'TOPIC',
-      optional: false
-    },
-    {
-      name: 'CLUSTER',
-      optional: true
-    }
+    { name: 'TOPIC' },
+    { name: 'CLUSTER', optional: true }
   ],
-  flags: FLAGS,
+  flags: [
+    { name: 'retention-time', description: 'length of time messages in the topic should be retained for', hasValue: true },
+    { name: 'compaction', description: 'enables compaction on the topic if passed', hasValue: false },
+    { name: 'no-compaction', description: 'disables compaction on the topic if passed', hasValue: false }
+  ],
   run: cli.command(co.wrap(configureTopic))
 };

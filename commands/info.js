@@ -3,12 +3,11 @@
 let cli = require('heroku-cli-util');
 let co = require('co');
 let HerokuKafkaClusters = require('./clusters.js').HerokuKafkaClusters;
-let _ = require('underscore');
 
 function* kafkaInfo (context, heroku) {
   var infos = yield new HerokuKafkaClusters(heroku, process.env, context).info(context.args.CLUSTER);
   if (infos.length !== 0) {
-    _.each(infos, function(info) {
+    infos.forEach(function(info) {
       cli.styledHeader(info.attachment_name || 'HEROKU_KAFKA');
       console.log();
       cli.styledNameValues(info.info);
@@ -24,10 +23,7 @@ module.exports = {
   default: true,
   description: 'shows information about the state of your Kafka cluster',
   args: [
-    {
-      name: 'CLUSTER',
-      optional: true
-    }
+    { name: 'CLUSTER', optional: true }
   ],
   help: `
     Shows information about the state of your Heroku Kafka cluster.

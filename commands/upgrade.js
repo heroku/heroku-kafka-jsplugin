@@ -1,13 +1,5 @@
 'use strict';
 
-let FLAGS = [
-  {name: 'version',
-    description: 'requested kafka version for upgrade',
-    hasValue: true},
-  {name: 'confirm',
-    description: 'Override the confirmation prompt. Needs the app name, or the command will fail.',
-    hasValue: true}
-];
 let DOT_WAITING_TIME = 200;
 
 let cli = require('heroku-cli-util');
@@ -32,21 +24,8 @@ function* upgradeCluster (context, heroku) {
     process.exit(1);
   }
 
-  if (context.flags.version === undefined) {
-    cli.error("The --version flag is not optional");
-    process.exit(1);
-  }
-
-  var confirmed = yield clusters.checkConfirmation(context, `
-  !    WARNING: Dangerous Action
-  !    This command will upgrade the brokers of the cluster to version ${context.flags.version}.
-  !
-  !    To proceed, type "${context.app}" or re-run this command with --confirm ${context.app}
-  `);
-
-  if (!confirmed) {
-    process.exit(1);
-  }
+  yield cli.confirmApp(context.app, context.flags.confirm,
+                       `This command will upgrade the brokers of the cluster to version ${context.flags.version}.`);
 
   if (context.args.CLUSTER) {
     process.stdout.write(`Upgrading ${context.args.CLUSTER} to version ${context.flags.version}`);
@@ -79,16 +58,17 @@ module.exports = {
 
     Example:
 
-    $ heroku kafka:upgrade --version 0.9
-`,
+  $ heroku kafka:upgrade --version 0.9
+  `,
   needsApp: true,
   needsAuth: true,
   args: [
-    {
-      name: 'CLUSTER',
-      optional: true
-    }
+    { name: 'CLUSTER', optional: true }
   ],
-  flags: FLAGS,
+  flags: [
+    { name: 'version',
+      description: 'requested kafka version for upgrade',
+      hasValue: true, required: true }
+  ],
   run: cli.command(co.wrap(upgradeCluster))
 };

@@ -54,13 +54,13 @@ module.exports = {
   command: 'write',
   description: 'writes a message to a Kafka topic',
   args: [
-    { name: 'TOPIC', optional: false },
-    { name: 'MESSAGE', optional: false },
+    { name: 'TOPIC' },
+    { name: 'MESSAGE' },
     { name: 'CLUSTER', optional: true }
   ],
   flags: [
-    {name: 'key', description: 'the key for this message',  hasValue: true},
-    {name: 'partition', description: 'the partition to write to',  hasValue: true}
+    { name: 'key', description: 'the key for this message',  hasValue: true },
+    { name: 'partition', description: 'the partition to write to',  hasValue: true }
   ],
   help: `
     Writes a message to the specified Kafka topic.

@@ -1,8 +1,7 @@
 'use strict';
 
-let _ = require('underscore');
+let _ = require('lodash');
 let cli = require('heroku-cli-util');
-let prompt = require('co-prompt');
 
 let VERSION = "v0";
 let DEFAULT_HOST = "kafka-api.heroku.com";
@@ -18,7 +17,7 @@ function HerokuKafkaClusters(heroku, env, context) {
 HerokuKafkaClusters.prototype.info = function* (cluster) {
   var that = this;
   var addons = yield this.addonsForManyClusterCommand(cluster);
-  var responses = yield _.map(addons, function(addon) {
+  var responses = yield addons.map(function(addon) {
     return that.request({
       path: `/client/kafka/${VERSION}/clusters/${addon.name}`
     });
@@ -134,7 +133,7 @@ HerokuKafkaClusters.prototype.configureTopic = function* (cluster, topicName, fl
       method: 'PUT',
       body: {
         topic:
-          _.extend({
+          Object.assign({
             name: topicName,
             retention_time_ms: flags['retention-time']
           }, this.compactionSettingFromFlags(flags))
@@ -180,7 +179,7 @@ HerokuKafkaClusters.prototype.request = function (params) {
     auth: `${this.context.auth.username}:${this.context.auth.password}`,
     accept: 'application/json'
   };
-  return this.heroku.request(_.extend(defaultParams, params));
+  return this.heroku.request(Object.assign(defaultParams, params));
 };
 
 HerokuKafkaClusters.prototype.handleResponse = function (response) {
@@ -258,28 +257,17 @@ HerokuKafkaClusters.prototype.addonForSingleClusterCommand = function* (cluster)
 };
 
 HerokuKafkaClusters.prototype.findByClusterName = function (addons, cluster) {
-  return addons.kafkas.filter(function (addon) { return _.contains(addon.config_vars, cluster) || addon.name == cluster; });
-};
-
-HerokuKafkaClusters.prototype.checkConfirmation = function* (context, message) {
-  if (context.flags.confirm !== context.app) {
-    console.log(message);
-    var confirm = yield prompt('> ');
-    if (confirm === context.app) {
-      return true;
-    } else {
-      console.log(`  !    Confirmation did not match ${context.app}. Aborted.`);
-      return false;
-    }
-  } else {
-    return true;
-  }
+  return addons.kafkas.filter(function (addon) {
+    return _.includes(addon.config_vars, cluster) || addon.name == cluster;
+  });
 };
 
 HerokuKafkaClusters.prototype.addons = function* () {
   let allAddons = yield this.heroku.apps(this.app).addons().listByApp();
   let addonName = this.addonName();
-  let kafkaAddons = allAddons.filter(function (addon) { return addon.addon_service.name === addonName; });
+  let kafkaAddons = allAddons.filter(function (addon) {
+    return addon.addon_service.name === addonName;
+  });
   return {
     kafkas: kafkaAddons,
     allAddons: allAddons

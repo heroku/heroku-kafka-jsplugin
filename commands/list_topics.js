@@ -43,10 +43,7 @@ module.exports = {
 `,
 
   args: [
-    {
-      name: 'CLUSTER',
-      optional: true
-    }
+    { name: 'CLUSTER', optional: true }
   ],
   needsApp: true,
   needsAuth: true,
