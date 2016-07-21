@@ -132,7 +132,8 @@ HerokuKafkaClusters.prototype.configureTopic = function * (cluster, topicName, f
       body: {
         topic: Object.assign({
           name: topicName,
-          retention_time_ms: flags['retention-time']
+          retention_time_ms: flags['retention-time'],
+          replication_factor: flags['replication-factor']
         }, this.compactionSettingFromFlags(flags))
       },
       path: `/client/kafka/${VERSION}/clusters/${addon.name}/topics/${topicName}`

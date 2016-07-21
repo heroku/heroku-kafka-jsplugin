@@ -73,7 +73,8 @@ module.exports = {
   flags: [
     { name: 'retention-time', description: 'length of time messages in the topic should be retained for', hasValue: true },
     { name: 'compaction', description: 'enables compaction on the topic if passed', hasValue: false },
-    { name: 'no-compaction', description: 'disables compaction on the topic if passed', hasValue: false }
+    { name: 'no-compaction', description: 'disables compaction on the topic if passed', hasValue: false },
+    {name: 'replication-factor', description: 'number of replicas each partition in the topic has', hasValue: true}
   ],
   run: cli.command(co.wrap(configureTopic))
 }
