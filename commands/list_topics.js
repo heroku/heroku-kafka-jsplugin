@@ -1,31 +1,30 @@
-'use strict';
+'use strict'
 
-let cli = require('heroku-cli-util');
-let co = require('co');
-let HerokuKafkaClusters = require('./clusters.js').HerokuKafkaClusters;
+let cli = require('heroku-cli-util')
+let co = require('co')
+let HerokuKafkaClusters = require('./clusters.js').HerokuKafkaClusters
 
-function* listTopics (context, heroku) {
-  var topics = yield new HerokuKafkaClusters(heroku, process.env, context).topics(context.args.CLUSTER);
+function * listTopics (context, heroku) {
+  var topics = yield new HerokuKafkaClusters(heroku, process.env, context).topics(context.args.CLUSTER)
   if (topics) {
-    cli.styledHeader('Kafka Topics on ' + (topics.attachment_name || 'HEROKU_KAFKA'));
-    console.log();
-    if (topics.topics.length == 0) {
-      console.log("No topics found on this Kafka");
-      console.log("Use heroku kafka:create to create a topic.");
+    cli.styledHeader('Kafka Topics on ' + (topics.attachment_name || 'HEROKU_KAFKA'))
+    console.log()
+    if (topics.topics.length === 0) {
+      console.log('No topics found on this Kafka')
+      console.log('Use heroku kafka:create to create a topic.')
     } else {
       cli.table(topics.topics,
         {
-          columns:
-          [
+          columns: [
             {key: 'name', label: 'Name'},
             {key: 'messages', label: 'Messages'},
             {key: 'bytes', label: 'Traffic'}
           ]
         }
-      );
+      )
     }
   } else {
-    process.exit(1);
+    process.exit(1)
   }
 }
 
@@ -48,4 +47,4 @@ module.exports = {
   needsApp: true,
   needsAuth: true,
   run: cli.command(co.wrap(listTopics))
-};
+}

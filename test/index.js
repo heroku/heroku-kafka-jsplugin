@@ -1,19 +1,22 @@
-'use strict';
+'use strict'
 
-require('chai').should();
-var index = require('../index.js');
-var shared = require('../commands/shared.js');
+const expect = require('chai').expect
+const mocha = require('mocha')
+const describe = mocha.describe
+const it = mocha.it
+
+var index = require('../index.js')
+var shared = require('../commands/shared.js')
 
 describe('commands', function () {
-  index.commands.forEach(function(command) {
+  index.commands.forEach(function (command) {
     it(`${command.topic}:${command.command} takes a CLUSTER argument`, function () {
-      command.args.map(function (arg) { return arg.name; }).should.include('CLUSTER');
-    });
-  });
-});
+      expect(command.args.map(function (arg) { return arg.name })).to.include('CLUSTER')
+    })
+  })
+})
 
-
-describe('parseDuration', function() {
+describe('parseDuration', function () {
   let cases = [
     ['10', 10],
     ['10ms', 10],
@@ -40,14 +43,14 @@ describe('parseDuration', function() {
     ['10 d', 10 * 1000 * 60 * 60 * 24],
     ['1 day', 1 * 1000 * 60 * 60 * 24],
     ['10 days', 10 * 1000 * 60 * 60 * 24]
-  ];
-  cases.forEach(function(testcase) {
-    let duration = testcase[0];
-    let expected = testcase[1];
+  ]
+  cases.forEach(function (testcase) {
+    let duration = testcase[0]
+    let expected = testcase[1]
 
-    it(`parses '${duration}' as '${expected}'`, function() {
-      let actual = shared.parseDuration(duration);
-      actual.should.equal(expected);
+    it(`parses '${duration}' as '${expected}'`, function () {
+      let actual = shared.parseDuration(duration)
+      expect(actual).to.equal(expected)
     })
-  });
-});
+  })
+})

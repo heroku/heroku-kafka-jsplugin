@@ -1,50 +1,50 @@
-'use strict';
+'use strict'
 
-let DOT_WAITING_TIME = 200;
+let DOT_WAITING_TIME = 200
 
-let cli = require('heroku-cli-util');
-let co = require('co');
-let HerokuKafkaClusters = require('./clusters.js').HerokuKafkaClusters;
-let sleep = require('co-sleep');
+let cli = require('heroku-cli-util')
+let co = require('co')
+let HerokuKafkaClusters = require('./clusters.js').HerokuKafkaClusters
+let sleep = require('co-sleep')
 
-function* printWaitingDots() {
-  yield sleep(DOT_WAITING_TIME);
-  process.stdout.write('.');
-  yield sleep(DOT_WAITING_TIME);
-  process.stdout.write('.');
-  yield sleep(DOT_WAITING_TIME);
-  process.stdout.write('.');
+function * printWaitingDots () {
+  yield sleep(DOT_WAITING_TIME)
+  process.stdout.write('.')
+  yield sleep(DOT_WAITING_TIME)
+  process.stdout.write('.')
+  yield sleep(DOT_WAITING_TIME)
+  process.stdout.write('.')
 }
 
-function* upgradeCluster (context, heroku) {
-  var clusters = new HerokuKafkaClusters(heroku, process.env, context);
-  var addon = yield clusters.addonForSingleClusterCommand(context.args.CLUSTER);
+function * upgradeCluster (context, heroku) {
+  var clusters = new HerokuKafkaClusters(heroku, process.env, context)
+  var addon = yield clusters.addonForSingleClusterCommand(context.args.CLUSTER)
 
   if (!addon) {
-    process.exit(1);
+    process.exit(1)
   }
 
   yield cli.confirmApp(context.app, context.flags.confirm,
-                       `This command will upgrade the brokers of the cluster to version ${context.flags.version}.`);
+    `This command will upgrade the brokers of the cluster to version ${context.flags.version}.`)
 
   if (context.args.CLUSTER) {
-    process.stdout.write(`Upgrading ${context.args.CLUSTER} to version ${context.flags.version}`);
+    process.stdout.write(`Upgrading ${context.args.CLUSTER} to version ${context.flags.version}`)
   } else {
-    process.stdout.write(`Upgrading to version ${context.flags.version}`);
+    process.stdout.write(`Upgrading to version ${context.flags.version}`)
   }
 
-  var upgrade = clusters.upgrade(context.args.CLUSTER, context.flags.version);
-  yield printWaitingDots();
+  var upgrade = clusters.upgrade(context.args.CLUSTER, context.flags.version)
+  yield printWaitingDots()
 
-  var err = yield upgrade;
+  var err = yield upgrade
 
   if (err) {
-    process.stdout.write("\n");
-    cli.error(err);
-    process.exit(1);
+    process.stdout.write('\n')
+    cli.error(err)
+    process.exit(1)
   } else {
-    process.stdout.write(' done.\n');
-    process.stdout.write(`Use \`heroku kafka:info\` to monitor the upgrade.\n`);
+    process.stdout.write(' done.\n')
+    process.stdout.write(`Use \`heroku kafka:info\` to monitor the upgrade.\n`)
   }
 }
 
@@ -68,7 +68,7 @@ module.exports = {
   flags: [
     { name: 'version',
       description: 'requested kafka version for upgrade',
-      hasValue: true, required: true }
+    hasValue: true, required: true }
   ],
   run: cli.command(co.wrap(upgradeCluster))
-};
+}

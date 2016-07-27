@@ -1,23 +1,23 @@
-'use strict';
+'use strict'
 
-const cli = require('heroku-cli-util');
-const co = require('co');
-const kafka = require('no-kafka');
+const cli = require('heroku-cli-util')
+const co = require('co')
+const kafka = require('no-kafka')
 
-const HerokuKafkaClusters = require('./clusters.js').HerokuKafkaClusters;
-const clusterConfig = require('./shared.js').clusterConfig;
+const HerokuKafkaClusters = require('./clusters.js').HerokuKafkaClusters
+const clusterConfig = require('./shared.js').clusterConfig
 
-const CLIENT_ID = 'heroku-write-producer';
-const IDLE_TIMEOUT = 1000;
+const CLIENT_ID = 'heroku-write-producer'
+const IDLE_TIMEOUT = 1000
 
-function* write(context, heroku) {
-  let clusters = new HerokuKafkaClusters(heroku, process.env, context);
-  let addon = yield clusters.addonForSingleClusterCommand(context.args.CLUSTER);
+function * write (context, heroku) {
+  let clusters = new HerokuKafkaClusters(heroku, process.env, context)
+  let addon = yield clusters.addonForSingleClusterCommand(context.args.CLUSTER)
   if (!addon) {
-    process.exit(1);
+    process.exit(1)
   }
-  let appConfig = yield heroku.apps(context.app).configVars().info();
-  let config = clusterConfig(addon, appConfig);
+  let appConfig = yield heroku.apps(context.app).configVars().info()
+  let config = clusterConfig(addon, appConfig)
 
   let producer = new kafka.Producer({
     idleTimeout: IDLE_TIMEOUT,
@@ -27,26 +27,26 @@ function* write(context, heroku) {
       clientCert: config.clientCert,
       clientCertKey: config.clientCertKey
     }
-  });
-  yield producer.init();
+  })
+  yield producer.init()
 
-  const topicName = context.args.TOPIC;
-  const partition = parseInt(context.flags.partition) || 0;
-  const key = context.flags.key;
+  const topicName = context.args.TOPIC
+  const partition = parseInt(context.flags.partition) || 0
+  const key = context.flags.key
 
-  const message = { value: context.args.MESSAGE };
+  const message = { value: context.args.MESSAGE }
   if (key) {
-    message.key = key;
+    message.key = key
   }
 
   const payload = {
     topic: topicName,
     partition: partition,
     message: message
-  };
+  }
 
-  yield producer.send(payload);
-  producer.end();
+  yield producer.send(payload)
+  producer.end()
 }
 
 module.exports = {
@@ -59,8 +59,8 @@ module.exports = {
     { name: 'CLUSTER', optional: true }
   ],
   flags: [
-    { name: 'key', description: 'the key for this message',  hasValue: true },
-    { name: 'partition', description: 'the partition to write to',  hasValue: true }
+    { name: 'key', description: 'the key for this message', hasValue: true },
+    { name: 'partition', description: 'the partition to write to', hasValue: true }
   ],
   help: `
     Writes a message to the specified Kafka topic.
@@ -73,4 +73,4 @@ module.exports = {
   needsApp: true,
   needsAuth: true,
   run: cli.command(co.wrap(write))
-};
+}

@@ -1,50 +1,48 @@
-'use strict';
+'use strict'
 
-let DOT_WAITING_TIME = 200;
+let DOT_WAITING_TIME = 200
 
-let cli = require('heroku-cli-util');
-let co = require('co');
-let HerokuKafkaClusters = require('./clusters.js').HerokuKafkaClusters;
-let sleep = require('co-sleep');
+let cli = require('heroku-cli-util')
+let co = require('co')
+let HerokuKafkaClusters = require('./clusters.js').HerokuKafkaClusters
+let sleep = require('co-sleep')
 
-function* printWaitingDots() {
-  yield sleep(DOT_WAITING_TIME);
-  process.stdout.write('.');
-  yield sleep(DOT_WAITING_TIME);
-  process.stdout.write('.');
-  yield sleep(DOT_WAITING_TIME);
-  process.stdout.write('.');
+function * printWaitingDots () {
+  yield sleep(DOT_WAITING_TIME)
+  process.stdout.write('.')
+  yield sleep(DOT_WAITING_TIME)
+  process.stdout.write('.')
+  yield sleep(DOT_WAITING_TIME)
+  process.stdout.write('.')
 }
 
-function* doFail(context, heroku, clusters) {
-  var fail = clusters.fail(context.args.CLUSTER, context.flags.catastrophic, context.flags.zookeeper);
-  process.stdout.write('Eenie meenie miney moe');
-  yield printWaitingDots();
-  process.stdout.write('\n');
+function * doFail (context, heroku, clusters) {
+  var fail = clusters.fail(context.args.CLUSTER, context.flags.catastrophic, context.flags.zookeeper)
+  process.stdout.write('Eenie meenie miney moe')
+  yield printWaitingDots()
+  process.stdout.write('\n')
 
-  var failResponse = yield fail;
+  var failResponse = yield fail
   if (failResponse) {
-    process.stdout.write(` ${failResponse.message}`);
-    process.exit(0);
+    process.stdout.write(` ${failResponse.message}`)
+    process.exit(0)
   } else {
-    process.exit(1);
+    process.exit(1)
   }
 }
 
-
-function* fail (context, heroku) {
-  var clusters = new HerokuKafkaClusters(heroku, process.env, context);
-  var addon = yield clusters.addonForSingleClusterCommand(context.args.CLUSTER);
+function * fail (context, heroku) {
+  var clusters = new HerokuKafkaClusters(heroku, process.env, context)
+  var addon = yield clusters.addonForSingleClusterCommand(context.args.CLUSTER)
   if (addon) {
     yield cli.confirmApp(context.app, context.flags.confirm,
-                         `This command will affect the cluster: ${addon.name}, which is on ${context.app}\n\nThis command will forcibly terminate nodes in your cluster at random.\nYou should only run this command in controlled testing scenarios.`);
+      `This command will affect the cluster: ${addon.name}, which is on ${context.app}\n\nThis command will forcibly terminate nodes in your cluster at random.\nYou should only run this command in controlled testing scenarios.`)
 
-    yield doFail(context, heroku, clusters);
+    yield doFail(context, heroku, clusters)
   } else {
-    process.exit(1);
+    process.exit(1)
   }
 }
-
 
 module.exports = {
   topic: 'kafka',
@@ -69,10 +67,10 @@ module.exports = {
   flags: [
     { name: 'catastrophic',
       description: 'induce unrecoverable server failure on the single node',
-      hasValue: false },
+    hasValue: false },
     { name: 'zookeeper',
       description: 'induce failure on zookeeper node rather than on Kafka itself',
-      hasValue: false }
+    hasValue: false }
   ],
   run: cli.command(co.wrap(fail))
-};
+}

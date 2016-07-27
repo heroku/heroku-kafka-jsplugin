@@ -1,43 +1,43 @@
-var cli = require('heroku-cli-util');
-var co = require('co');
-var sleep = require('co-sleep');
-var HerokuKafkaClusters = require('./clusters.js').HerokuKafkaClusters;
-var Spinner = require('node-spinner');
+var cli = require('heroku-cli-util')
+var co = require('co')
+var sleep = require('co-sleep')
+var HerokuKafkaClusters = require('./clusters.js').HerokuKafkaClusters
+var Spinner = require('node-spinner')
 
-function* kafkaWait (context, heroku) {
-  var clusters = new HerokuKafkaClusters(heroku, process.env, context);
-  var addons = yield clusters.addonsForManyClusterCommand(context.args.CLUSTER);
+function * kafkaWait (context, heroku) {
+  var clusters = new HerokuKafkaClusters(heroku, process.env, context)
+  var addons = yield clusters.addonsForManyClusterCommand(context.args.CLUSTER)
   if (!addons) {
-    process.exit(1);
+    process.exit(1)
   } else {
     for (var i = 0; i < addons.length; i++) {
-      var addon = addons[i];
-      yield kafkaWaitSingle(clusters, addon);
+      var addon = addons[i]
+      yield kafkaWaitSingle(clusters, addon)
     }
   }
 }
 
-function* kafkaWaitSingle (clusters, addon) {
-  var s = Spinner();
-  var checked = false;
-  var finished = false;
+function * kafkaWaitSingle (clusters, addon) {
+  var s = Spinner()
+  var checked = false
+  var finished = false
   while (!finished) {
-    var waitStatus = yield clusters.waitStatus(addon);
+    var waitStatus = yield clusters.waitStatus(addon)
     if (!waitStatus || !waitStatus['waiting?']) {
-      finished = true;
+      finished = true
       if (checked) {
-        console.log("");
+        console.log('')
       }
     } else if (waitStatus['deprovisioned?']) {
-      finished = true;
-      cli.warn('This cluster was deprovisioned.');
+      finished = true
+      cli.warn('This cluster was deprovisioned.')
     } else if (waitStatus['missing?']) {
-      finished = true;
-      cli.warn('This cluster could not be found.');
+      finished = true
+      cli.warn('This cluster could not be found.')
     } else {
-      checked = true;
-      process.stdout.write("\r \033[36m" + waitStatus.message + "\033[m " + s.next());
-      yield sleep(500);
+      checked = true
+      process.stdout.write('\r ${cli.color.blue(waitStatus.message)} ' + s.next())
+      yield sleep(500)
     }
   }
 }
@@ -60,4 +60,4 @@ module.exports = {
   needsApp: true,
   needsAuth: true,
   run: cli.command(co.wrap(kafkaWait))
-};
+}

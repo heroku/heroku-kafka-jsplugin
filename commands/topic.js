@@ -1,17 +1,17 @@
-'use strict';
+'use strict'
 
-let cli = require('heroku-cli-util');
-let co = require('co');
-let HerokuKafkaClusters = require('./clusters.js').HerokuKafkaClusters;
+let cli = require('heroku-cli-util')
+let co = require('co')
+let HerokuKafkaClusters = require('./clusters.js').HerokuKafkaClusters
 
-function* kafkaTopic (context, heroku) {
-  var topic = yield new HerokuKafkaClusters(heroku, process.env, context).topic(context.args.CLUSTER, context.args.TOPIC);
+function * kafkaTopic (context, heroku) {
+  var topic = yield new HerokuKafkaClusters(heroku, process.env, context).topic(context.args.CLUSTER, context.args.TOPIC)
   if (topic) {
-    cli.styledHeader((topic.attachment_name || 'HEROKU_KAFKA') + ' :: ' + topic.topic);
-    console.log();
-    cli.styledNameValues(topic.info);
+    cli.styledHeader((topic.attachment_name || 'HEROKU_KAFKA') + ' :: ' + topic.topic)
+    console.log()
+    cli.styledNameValues(topic.info)
   } else {
-    process.exit(1);
+    process.exit(1)
   }
 }
 
@@ -34,4 +34,4 @@ module.exports = {
   needsApp: true,
   needsAuth: true,
   run: cli.command(co.wrap(kafkaTopic))
-};
+}

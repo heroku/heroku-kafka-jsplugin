@@ -1,8 +1,8 @@
-'use strict';
+'use strict'
 exports.topic = {
   name: 'kafka',
   description: 'manage heroku kafka clusters'
-};
+}
 
 exports.commands = [
   require('./commands/create_topic.js'),
@@ -16,4 +16,4 @@ exports.commands = [
   require('./commands/wait.js'),
   require('./commands/write.js'),
   require('./commands/tail.js')
-];
+]
