@@ -48,7 +48,7 @@ function * configureTopic (context, heroku) {
     cli.error(err)
   } else {
     process.stdout.write(' done.\n')
-    process.stdout.write(`Use \`heroku kafka:topic ${context.args.TOPIC}\` to monitor your topic`)
+    process.stdout.write(`Use \`heroku kafka:topic ${context.args.TOPIC}\` to monitor your topic.\n`)
   }
 }
 
