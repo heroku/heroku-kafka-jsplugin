@@ -255,7 +255,7 @@ HerokuKafkaClusters.prototype.addonForSingleClusterCommand = function * (cluster
 
 HerokuKafkaClusters.prototype.findByClusterName = function (addons, cluster) {
   return addons.kafkas.filter(function (addon) {
-    return addon.config_vars.some(function(cVar) { return cVar === cluster }) || addon.name === cluster
+    return addon.config_vars.some(function (cVar) { return cVar === cluster }) || addon.name === cluster
   })
 }
 

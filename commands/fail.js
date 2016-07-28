@@ -24,7 +24,7 @@ function * doFail (context, heroku, clusters) {
 
   var failResponse = yield fail
   if (failResponse) {
-    process.stdout.write(` ${failResponse.message}`)
+    process.stdout.write(` ${failResponse.message}\n`)
     process.exit(0)
   } else {
     process.exit(1)

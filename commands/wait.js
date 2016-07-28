@@ -36,7 +36,7 @@ function * kafkaWaitSingle (clusters, addon) {
       cli.warn('This cluster could not be found.')
     } else {
       checked = true
-      process.stdout.write('\r ${cli.color.blue(waitStatus.message)} ' + s.next())
+      process.stdout.write(`\r ${cli.color.blue(waitStatus.message)} ` + s.next())
       yield sleep(500)
     }
   }
