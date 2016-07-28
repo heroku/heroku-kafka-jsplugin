@@ -16,7 +16,6 @@
     "co": "4.6.0",
     "co-sleep": "0.0.1",
     "heroku-cli-util": "5.7.1",
-    "lodash": "4.13.1",
     "no-kafka": "github:hunterloftis/kafka",
     "node-spinner": "0.0.4"
   },

@@ -1,6 +1,5 @@
 'use strict'
 
-let _ = require('lodash')
 let cli = require('heroku-cli-util')
 
 let VERSION = 'v0'
@@ -256,7 +255,7 @@ HerokuKafkaClusters.prototype.addonForSingleClusterCommand = function * (cluster
 
 HerokuKafkaClusters.prototype.findByClusterName = function (addons, cluster) {
   return addons.kafkas.filter(function (addon) {
-    return _.includes(addon.config_vars, cluster) || addon.name === cluster
+    return addon.config_vars.some(function(cVar) { return cVar === cluster }) || addon.name === cluster
   })
 }
 
