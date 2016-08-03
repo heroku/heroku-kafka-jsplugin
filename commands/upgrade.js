@@ -43,8 +43,10 @@ function * upgradeCluster (context, heroku) {
     cli.error(err)
     process.exit(1)
   } else {
-    process.stdout.write(' done.\n')
-    process.stdout.write(`Use \`heroku kafka:info\` to monitor the upgrade.\n`)
+    process.stdout.write(' started.\n\n')
+    process.stdout.write('Upgrading versions on a cluster involves rolling restarts\n')
+    process.stdout.write('and takes some time, depending on the size of the cluster\n\n')
+    process.stdout.write(`Use \`heroku kafka:wait\` to monitor the upgrade.\n`)
   }
 }
 
