@@ -66,5 +66,10 @@ module.exports = {
     { name: 'TOPIC' },
     { name: 'CLUSTER', optional: true }
   ],
+  flags: [
+    { name: 'confirm',
+      description: 'pass the app name to skip the manual confirmation prompt',
+      hasValue: true, required: false }
+  ],
   run: cli.command(co.wrap(deleteTopic))
 }

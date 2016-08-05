@@ -86,7 +86,10 @@ module.exports = {
     { name: 'partitions', description: 'number of partitions to give the topic', hasValue: true, required: true },
     { name: 'replication-factor', description: 'number of replicas the topic should be created across', hasValue: true },
     { name: 'retention-time', description: 'length of time messages in the topic should be retained for', hasValue: true },
-    { name: 'compaction', description: 'whether to use compaction for this topic', hasValue: false }
+    { name: 'compaction', description: 'whether to use compaction for this topic', hasValue: false },
+    { name: 'confirm',
+      description: 'pass the app name to skip the manual confirmation prompt',
+      hasValue: true, required: false }
   ],
   run: cli.command(co.wrap(createTopic))
 }

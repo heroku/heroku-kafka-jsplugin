@@ -70,7 +70,10 @@ module.exports = {
     hasValue: false },
     { name: 'zookeeper',
       description: 'induce failure on zookeeper node rather than on Kafka itself',
-    hasValue: false }
+    hasValue: false },
+    { name: 'confirm',
+      description: 'pass the app name to skip the manual confirmation prompt',
+      hasValue: true, required: false }
   ],
   run: cli.command(co.wrap(fail))
 }

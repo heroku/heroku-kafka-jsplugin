@@ -70,7 +70,10 @@ module.exports = {
   flags: [
     { name: 'version',
       description: 'requested kafka version for upgrade',
-    hasValue: true, required: true }
+    hasValue: true, required: true },
+    { name: 'confirm',
+      description: 'pass the app name to skip the manual confirmation prompt',
+      hasValue: true, required: false }
   ],
   run: cli.command(co.wrap(upgradeCluster))
 }
