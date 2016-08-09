@@ -1,63 +1,75 @@
-var cli = require('heroku-cli-util')
-var co = require('co')
-var sleep = require('co-sleep')
-var HerokuKafkaClusters = require('./clusters.js').HerokuKafkaClusters
-var Spinner = require('node-spinner')
+'use strict'
 
-function * kafkaWait (context, heroku) {
-  var clusters = new HerokuKafkaClusters(heroku, process.env, context)
-  var addons = yield clusters.addonsForManyClusterCommand(context.args.CLUSTER)
-  if (!addons) {
-    process.exit(1)
-  } else {
-    for (var i = 0; i < addons.length; i++) {
-      var addon = addons[i]
-      yield kafkaWaitSingle(clusters, addon)
-    }
-  }
-}
+const cli = require('heroku-cli-util')
+const co = require('co')
 
-function * kafkaWaitSingle (clusters, addon) {
-  var s = Spinner()
-  var checked = false
-  var finished = false
-  while (!finished) {
-    var waitStatus = yield clusters.waitStatus(addon)
-    if (!waitStatus || !waitStatus['waiting?']) {
-      finished = true
-      if (checked) {
-        console.log('')
+const HerokuKafkaClusters = require('../lib/clusters').HerokuKafkaClusters
+
+function * run (context, heroku) {
+  const fetcher = require('../lib/fetcher')(heroku)
+  const app = context.app
+  const cluster = context.args.cluster
+
+  const shogun = new HerokuKafkaClusters(heroku, process.env, context)
+
+  let waitFor = co.wrap(function * waitFor (cluster) {
+    const wait = require('co-wait')
+    let interval = parseInt(context.flags['wait-interval'])
+    if (!interval || interval < 0) interval = 5
+
+    let status
+    let waiting = false
+
+    while (true) {
+      status = yield shogun.waitStatus(cluster)
+
+      if (!status['waiting?']) {
+        if (waiting) cli.action.done(status.message)
+        return
+      } else if (status['deprovisioned?']) {
+        cli.warn('This cluster was deprovisioned.')
+        return
+      } else if (status['missing?']) {
+        cli.warn('This cluster could not be found.')
+        return
       }
-    } else if (waitStatus['deprovisioned?']) {
-      finished = true
-      cli.warn('This cluster was deprovisioned.')
-    } else if (waitStatus['missing?']) {
-      finished = true
-      cli.warn('This cluster could not be found.')
-    } else {
-      checked = true
-      process.stdout.write(`\r ${cli.color.blue(waitStatus.message)} ` + s.next())
-      yield sleep(500)
+
+      if (!waiting) {
+        waiting = true
+        cli.action.start(`Waiting for cluster ${cli.color.addon(cluster.name)}`)
+      }
+
+      cli.action.status(status.message)
+
+      yield wait(interval * 1000)
     }
+  })
+
+  let clusters = []
+  if (cluster) {
+    clusters = yield [fetcher.addon(app, cluster)]
+  } else {
+    clusters = yield fetcher.all(app)
   }
+
+  for (let cluster of clusters) yield waitFor(cluster)
 }
 
 module.exports = {
   topic: 'kafka',
   command: 'wait',
   description: 'waits until Kafka is ready to use',
-  args: [
-    { name: 'CLUSTER', optional: true }
-  ],
+  args: [{name: 'CLUSTER', optional: true}],
+  flags: [{name: 'wait-interval', description: 'how frequently to poll in seconds (to avoid rate limiting)', hasValue: true}],
   help: `
     Waits until Kafka is ready to use.
 
     Examples:
 
     $ heroku kafka:wait
-    $ heroku kafka:wait HEROKU_KAFKA_BROWN_URL
+    $ heroku kafka:wait HEROKU_KAFKA_BROWN
 `,
   needsApp: true,
   needsAuth: true,
-  run: cli.command(co.wrap(kafkaWait))
+  run: cli.command({preauth: true}, co.wrap(run))
 }

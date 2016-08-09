@@ -1,0 +1,64 @@
+'use strict'
+
+let cli = require('heroku-cli-util')
+let co = require('co')
+let deprecated = require('../lib/shared').deprecated
+let withCluster = require('../lib/clusters').withCluster
+let request = require('../lib/clusters').request
+
+const VERSION = 'v0'
+
+function * deleteTopic (context, heroku) {
+  yield withCluster(heroku, context.app, context.args.CLUSTER, function * (addon) {
+    yield cli.confirmApp(context.app, context.flags.confirm,
+                         `This command will affect the cluster: ${addon.name}, which is on ${context.app}`)
+
+    yield cli.action(`Deleting topic ${context.args.TOPIC}`, co(function * () {
+      const topicName = context.args.TOPIC
+      return yield request(heroku, {
+        method: 'DELETE',
+        body: {
+          topic: { name: topicName }
+        },
+        path: `/client/kafka/${VERSION}/clusters/${addon.name}/topics/${topicName}`
+      })
+    }))
+
+    cli.log('Your topic has been marked for deletion, and will be removed from the cluster shortly')
+  })
+}
+
+let cmd = {
+  topic: 'kafka',
+  command: 'topics:delete',
+  description: 'deletes a topic in Kafka',
+  help: `
+    Deletes a topic in Kafka.
+    Note that topics are deleted asynchronously, so even though this command has returned,
+    a topic may still exist.
+
+    Examples:
+
+    $ heroku kafka:topics:delete page-visits
+    $ heroku kafka:topics:delete page-visits HEROKU_KAFKA_BROWN_URL
+`,
+  needsApp: true,
+  needsAuth: true,
+  args: [
+    { name: 'TOPIC' },
+    { name: 'CLUSTER', optional: true }
+  ],
+  flags: [
+    { name: 'confirm',
+      description: 'pass the app name to skip the manual confirmation prompt',
+      hasValue: true }
+  ],
+  run: cli.command(co.wrap(deleteTopic))
+}
+
+module.exports = {
+  cmd,
+  deprecated: Object.assign({}, cmd, { command: 'delete',
+                                       hidden: true,
+                                       run: cli.command(co.wrap(deprecated(deleteTopic, cmd.command))) })
+}

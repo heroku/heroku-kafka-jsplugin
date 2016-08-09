@@ -1,94 +1,62 @@
 'use strict'
+
 let cli = require('heroku-cli-util')
+let co = require('co')
+let deprecated = require('../lib/shared').deprecated
+let withCluster = require('../lib/clusters').withCluster
+let request = require('../lib/clusters').request
 
-class TopicList {
-  constructor (client) {
-    this.client = client
-  }
-  list (callback) {
-    var that = this
-    var out = {}
-    that.listTopics(function (topics) {
-      if (topics.length === 0) {
-        console.log('No topics found')
-        that.finished()
-      }
-      for (var i = 0; i < topics.length; i++) {
-        var topicName = topics[i]
-        var remainingTopics = topics.length
-        var remainingPartitions = 0
+const VERSION = 'v0'
 
-        that.getTopicPartitions(topicName, function (topicName, partitionsAndReplicas) {
-          remainingTopics--
-
-          var partitions = Object.keys(partitionsAndReplicas)
-          remainingPartitions += partitions.length
-
-          out[topicName] = {
-            partitions: partitionsAndReplicas,
-            partitionStates: {}
-          }
-
-          for (var j = 0; j < partitions.length; j++) {
-            var partition = partitions[j]
-            that.getPartitionState(topicName, partition, function (topicName, partition, partitionState) {
-              out[topicName].partitionStates[partition] = partitionState
-              remainingPartitions--
-              if (remainingTopics === 0 && remainingPartitions === 0) {
-                callback(out)
-              }
-            })
-          }
-        })
-      }
+function * listTopics (context, heroku) {
+  yield withCluster(heroku, context.app, context.args.CLUSTER, function * (addon) {
+    let topics = yield request(heroku, {
+      path: `/client/kafka/${VERSION}/clusters/${addon.name}/topics`
     })
-  }
 
-  listTopics (callback) {
-    var that = this
-    this.client.getChildren('/brokers/topics', function (error, existingTopics) {
-      if (error) {
-        that.error(error)
-      } else {
-        callback(existingTopics)
-      }
-    })
-  }
+    cli.styledHeader('Kafka Topics on ' + (topics.attachment_name || 'HEROKU_KAFKA'))
+    cli.log()
+    if (topics.topics.length === 0) {
+      cli.log('No topics found on this Kafka')
+      cli.log('Use heroku kafka:create to create a topic.')
+    } else {
+      cli.table(topics.topics,
+        {
+          columns: [
+            {key: 'name', label: 'Name'},
+            {key: 'messages', label: 'Messages'},
+            {key: 'bytes', label: 'Traffic'}
+          ]
+        }
+      )
+    }
+  })
+}
 
-  getTopicPartitions (topicName, callback) {
-    var that = this
-    var path = `/brokers/topics/${topicName}`
-    this.client.getData(path, function (error, data) {
-      if (error) {
-        that.error(error)
-      } else {
-        callback(topicName, JSON.parse(data.toString('utf-8')).partitions)
-      }
-    })
-  }
+let cmd = {
+  topic: 'kafka',
+  command: 'topics',
+  description: 'lists available Kafka topics',
+  help: `
+    Lists available Kafka topics.
 
-  getPartitionState (topicName, partition, callback) {
-    var that = this
-    var path = `/brokers/topics/${topicName}/partitions/${partition}/state`
-    this.client.getData(path, function (error, data) {
-      if (error) {
-        that.error(error)
-      } else {
-        callback(topicName, partition, JSON.parse(data.toString('utf-8')))
-      }
-    })
-  }
+    Examples:
 
-  error (error) {
-    cli.error(error)
-    this.client.close()
-  }
+    $ heroku kafka:topics
+    $ heroku kafka:topics HEROKU_KAFKA_BROWN_URL
+`,
 
-  finished () {
-    this.client.close()
-  }
+  args: [
+    { name: 'CLUSTER', optional: true }
+  ],
+  needsApp: true,
+  needsAuth: true,
+  run: cli.command(co.wrap(listTopics))
 }
 
 module.exports = {
-  TopicList: TopicList
+  cmd,
+  deprecated: Object.assign({}, cmd, { command: 'list',
+                                       hidden: true,
+                                       run: cli.command(co.wrap(deprecated(listTopics, cmd.command))) })
 }

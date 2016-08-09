@@ -14,18 +14,25 @@
   "license": "ISC",
   "dependencies": {
     "co": "4.6.0",
-    "co-sleep": "0.0.1",
-    "heroku-cli-util": "5.7.1",
+    "co-wait": "0.0.0",
+    "debug": "2.2.0",
+    "heroku-cli-addons": "1.0.5",
+    "heroku-cli-util": "6.0.15",
+    "lodash.uniqby": "4.6.1",
     "no-kafka": "github:hunterloftis/kafka",
     "node-spinner": "0.0.4"
   },
   "scripts": {
-    "test": "standard && mocha"
+    "test": "standard && mocha",
+    "qtest": "mocha",
+    "standardize": "standard --fix"
   },
   "devDependencies": {
-    "chai": "*",
+    "chai": "^3.5.0",
     "eslint": "^2.1.0",
-    "mocha": "*",
-    "standard": "*"
+    "mocha": "^3.0.2",
+    "nock": "^8.0.0",
+    "proxyquire": "^1.7.10",
+    "standard": "8.0.0"
   }
 }
