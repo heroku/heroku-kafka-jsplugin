@@ -24,6 +24,42 @@ HerokuKafkaClusters.prototype.info = function * (cluster) {
   return responses
 }
 
+HerokuKafkaClusters.prototype.maintenanceInfo = function * (cluster) {
+  var addon = yield this.addonForSingleClusterCommand(cluster)
+  if (addon) {
+    return yield this.request({
+      path: `/client/kafka/${VERSION}/clusters/${addon.name}/maintenance_window`
+    })
+  } else {
+    return null
+  }
+}
+
+HerokuKafkaClusters.prototype.runMaintenance = function * (cluster) {
+  var addon = yield this.addonForSingleClusterCommand(cluster)
+  if (addon) {
+    return yield this.request({
+      method: 'POST',
+      path: `/client/kafka/${VERSION}/clusters/${addon.name}/maintenance`
+    })
+  } else {
+    return null
+  }
+}
+
+HerokuKafkaClusters.prototype.changeMaintenanceWindow = function * (cluster, description) {
+  var addon = yield this.addonForSingleClusterCommand(cluster)
+  if (addon) {
+    return yield this.request({
+      method: 'POST',
+      path: `/client/kafka/${VERSION}/clusters/${addon.name}/maintenance`,
+      body: { description: description},
+    })
+  } else {
+    return null
+  }
+}
+
 HerokuKafkaClusters.prototype.topic = function * (cluster, topic) {
   var addon = yield this.addonForSingleClusterCommand(cluster)
   if (addon) {
