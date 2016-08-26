@@ -15,5 +15,6 @@ exports.commands = [
   require('./commands/topic.js'),
   require('./commands/wait.js'),
   require('./commands/write.js'),
-  require('./commands/tail.js')
+  require('./commands/tail.js'),
+  require('./commands/zookeeper.js')
 ]

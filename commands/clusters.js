@@ -102,6 +102,22 @@ HerokuKafkaClusters.prototype.waitStatus = function * (addon) {
   }
 }
 
+HerokuKafkaClusters.prototype.setZookeeper = function * (cluster, enabled) {
+  var addon = yield this.addonForSingleClusterCommand(cluster)
+  if (addon) {
+    var response = yield this.request({
+      method: 'POST',
+      body: {
+        enabled: enabled
+      },
+      path: `/client/kafka/${VERSION}/clusters/${addon.name}/zookeeper`
+    }).catch(function (err) { return err })
+    return this.handleResponse(response)
+  } else {
+    return null
+  }
+}
+
 HerokuKafkaClusters.prototype.createTopic = function * (cluster, topicName, flags) {
   var addon = yield this.addonForSingleClusterCommand(cluster)
   if (addon) {
