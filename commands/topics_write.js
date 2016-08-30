@@ -14,6 +14,10 @@ const IDLE_TIMEOUT = 1000
 
 function * write (context, heroku) {
   yield withCluster(heroku, context.app, context.args.CLUSTER, function * (addon) {
+    if (addon.plan.name.startsWith('heroku-kafka:private-')) {
+      cli.exit(1, '`kafka:topics:write` is not available in Heroku Private Spaces')
+    }
+
     let appConfig = yield heroku.get(`/apps/${context.app}/config-vars`)
     let attachment = yield heroku.get(`/apps/${context.app}/addon-attachments/${addon.name}`)
     let config = clusterConfig(attachment, appConfig)
@@ -73,7 +77,7 @@ let cmd = {
     { name: 'partition', description: 'the partition to write to', hasValue: true }
   ],
   help: `
-    Writes a message to the specified Kafka topic.
+    Writes a message to the specified Kafka topic. Note: kafka:tail is not available in Heroku Private Spaces.
 
     Examples:
 

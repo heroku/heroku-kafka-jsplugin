@@ -15,6 +15,10 @@ const MAX_LENGTH = 80
 
 function * tail (context, heroku) {
   yield withCluster(heroku, context.app, context.args.CLUSTER, function * (addon) {
+    if (addon.plan.name.startsWith('heroku-kafka:private-')) {
+      cli.exit(1, '`kafka:topics:tail` is not available in Heroku Private Spaces')
+    }
+
     let appConfig = yield heroku.get(`/apps/${context.app}/config-vars`)
     let attachment = yield heroku.get(`/apps/${context.app}/addon-attachments/${addon.name}`)
     let config = clusterConfig(attachment, appConfig)
@@ -63,7 +67,7 @@ let cmd = {
     { name: 'CLUSTER', optional: true }
   ],
   help: `
-    Tails a topic in Kafka.
+    Tails a topic in Kafka. Note: kafka:tail is not available in Heroku Private Spaces.
 
     Examples:
 
