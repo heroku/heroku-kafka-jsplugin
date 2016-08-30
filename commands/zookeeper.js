@@ -20,6 +20,10 @@ function * zookeeper (context, heroku) {
   }
 
   yield withCluster(heroku, context.app, context.args.CLUSTER, function * (addon) {
+    if (!addon.plan.name.startsWith('heroku-kafka:private-')) {
+      cli.exit(1, '`kafka:zookeeper` is only available in Heroku Private Spaces')
+    }
+
     yield cli.action(msg, co(function * () {
       return yield request(heroku, {
         method: 'POST',

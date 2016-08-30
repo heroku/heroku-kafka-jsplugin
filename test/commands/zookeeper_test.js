@@ -12,8 +12,9 @@ const expectExit = require('../expect_exit')
 const cli = require('heroku-cli-util')
 const nock = require('nock')
 
+let planName
 const withCluster = function * (heroku, app, cluster, callback) {
-  yield callback({ name: 'kafka-1' })
+  yield callback({ name: 'kafka-1', plan: { name: planName } })
 }
 
 const cmd = proxyquire('../../commands/zookeeper', {
@@ -30,6 +31,7 @@ describe('kafka:zookeeper', () => {
   }
 
   beforeEach(() => {
+    planName = 'heroku-kafka:private-3'
     kafka = nock('https://kafka-api.heroku.com:443')
     cli.mockConsole()
     cli.exit.mock()
@@ -38,6 +40,13 @@ describe('kafka:zookeeper', () => {
   afterEach(() => {
     nock.cleanAll()
     kafka.done()
+  })
+
+  it('warns and exits with an error if used with a non-Private Spaces cluster', () => {
+    planName = 'heroku-kafka:beta-3'
+    return expectExit(1, cmd.run({app: 'myapp', args: { VALUE: 'enable' }}))
+      .then(() => expect(cli.stdout).to.be.empty)
+      .then(() => expect(cli.stderr).to.equal(' ▸    `kafka:zookeeper` is only available in Heroku Private Spaces\n'))
   })
 
   describe('with unknown value specified', () => {
