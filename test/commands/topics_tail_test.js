@@ -12,8 +12,9 @@ const expectExit = require('../expect_exit')
 const cli = require('heroku-cli-util')
 const nock = require('nock')
 
+let planName
 const withCluster = function * (heroku, app, cluster, callback) {
-  yield callback({ name: 'kafka-1' })
+  yield callback({ name: 'kafka-1', plan: { name: planName } })
 }
 
 let consumer
@@ -51,6 +52,7 @@ describe('kafka:topics:tail', () => {
   }
 
   beforeEach(() => {
+    planName = 'heroku-kafka:beta-3'
     consumer = {
       init: () => { return Promise.resolve() },
       subscribe: (topic, callback) => {}
@@ -65,6 +67,13 @@ describe('kafka:topics:tail', () => {
   afterEach(() => {
     nock.cleanAll()
     api.done()
+  })
+
+  it('warns and exits with an error if used with a Private Spaces cluster', () => {
+    planName = 'heroku-kafka:private-3'
+    return expectExit(1, cmd.run({app: 'myapp', args: { TOPIC: 'topic-1' }}))
+      .then(() => expect(cli.stdout).to.be.empty)
+      .then(() => expect(cli.stderr).to.equal(' ▸    `kafka:topics:tail` is not available in Heroku Private Spaces\n'))
   })
 
   it('warns and exits with an error if it cannot connect', () => {
