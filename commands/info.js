@@ -74,6 +74,7 @@ function * run (context, heroku) {
 
 let cmd = {
   topic: 'kafka',
+  description: 'display cluster information',
   needsApp: true,
   needsAuth: true,
   args: [{name: 'CLUSTER', optional: true}],
