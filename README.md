@@ -7,7 +7,6 @@ A plugin to manage Heroku Kafka.
 ```
 kafka:fail [CLUSTER]                                   #  triggers failure on one node in the cluster
 kafka:info [CLUSTER]                                   #  display cluster information
-kafka:jmx VALUE [CLUSTER]                              #  enable or disable JMX access to your Kafka cluster
 kafka:topics [CLUSTER]                                 #  lists available Kafka topics
 kafka:topics:compaction TOPIC VALUE [CLUSTER]          #  configures topic compaction in Kafka
 kafka:topics:create TOPIC [CLUSTER]                    #  creates a topic in Kafka
@@ -19,7 +18,6 @@ kafka:topics:tail TOPIC [CLUSTER]                      #  tails a topic in Kafka
 kafka:topics:write TOPIC MESSAGE [CLUSTER]             #  writes a message to a Kafka topic
 kafka:upgrade [CLUSTER]                                #  upgrades kafka broker version
 kafka:wait [CLUSTER]                                   #  waits until Kafka is ready to use
-kafka:zookeeper VALUE [CLUSTER]                        #  enable or disable Zookeeper access to your Kafka cluster
 ```
 
 ## Install

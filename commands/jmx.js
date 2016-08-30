@@ -33,6 +33,7 @@ function * jmx (context, heroku) {
 }
 
 module.exports = {
+  hidden: true,
   topic: 'kafka',
   command: 'jmx',
   description: 'enable or disable JMX access to your Kafka cluster',
