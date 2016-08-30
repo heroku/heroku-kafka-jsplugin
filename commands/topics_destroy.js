@@ -8,7 +8,7 @@ let request = require('../lib/clusters').request
 
 const VERSION = 'v0'
 
-function * deleteTopic (context, heroku) {
+function * destroyTopic (context, heroku) {
   yield withCluster(heroku, context.app, context.args.CLUSTER, function * (addon) {
     yield cli.confirmApp(context.app, context.flags.confirm,
                          `This command will affect the cluster: ${addon.name}, which is on ${context.app}`)
@@ -30,7 +30,7 @@ function * deleteTopic (context, heroku) {
 
 let cmd = {
   topic: 'kafka',
-  command: 'topics:delete',
+  command: 'topics:destroy',
   description: 'deletes a topic in Kafka',
   help: `
     Deletes a topic in Kafka.
@@ -39,8 +39,8 @@ let cmd = {
 
     Examples:
 
-    $ heroku kafka:topics:delete page-visits
-    $ heroku kafka:topics:delete page-visits HEROKU_KAFKA_BROWN_URL
+    $ heroku kafka:topics:destroy page-visits
+    $ heroku kafka:topics:destroy page-visits HEROKU_KAFKA_BROWN_URL
 `,
   needsApp: true,
   needsAuth: true,
@@ -53,12 +53,12 @@ let cmd = {
       description: 'pass the app name to skip the manual confirmation prompt',
       hasValue: true }
   ],
-  run: cli.command(co.wrap(deleteTopic))
+  run: cli.command(co.wrap(destroyTopic))
 }
 
 module.exports = {
   cmd,
   deprecated: Object.assign({}, cmd, { command: 'delete',
                                        hidden: true,
-                                       run: cli.command(co.wrap(deprecated(deleteTopic, cmd.command))) })
+                                       run: cli.command(co.wrap(deprecated(destroyTopic, cmd.command))) })
 }

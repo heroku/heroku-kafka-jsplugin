@@ -20,7 +20,7 @@ exports.commands = [
   // new versions of commands with deprecated variants
   require('./commands/topics.js').cmd,
   require('./commands/topics_create.js').cmd,
-  require('./commands/topics_delete.js').cmd,
+  require('./commands/topics_destroy.js').cmd,
   require('./commands/topics_info.js').cmd,
   require('./commands/topics_tail.js').cmd,
   require('./commands/topics_write.js').cmd,
@@ -32,7 +32,7 @@ exports.commands = [
 
   // aliases for deprecated commands
   require('./commands/topics_create.js').deprecated,
-  require('./commands/topics_delete.js').deprecated,
+  require('./commands/topics_destroy.js').deprecated,
   require('./commands/topics_info.js').deprecated,
   require('./commands/topics.js').deprecated,
   require('./commands/topics_tail.js').deprecated,

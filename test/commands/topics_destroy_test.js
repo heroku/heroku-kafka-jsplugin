@@ -25,7 +25,7 @@ const confirmApp = function * (app, confirm, msg) {
   lastMsg = msg
 }
 
-const cmd = proxyquire('../../commands/topics_delete', {
+const cmd = proxyquire('../../commands/topics_destroy', {
   '../lib/clusters': {
     withCluster
   }
