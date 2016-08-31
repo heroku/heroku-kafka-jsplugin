@@ -3,17 +3,11 @@
 const co = require('co')
 const cli = require('heroku-cli-util')
 
-function configVarNamesFromAttachment (config, attachment) {
-  const sortBy = require('lodash.sortby')
-
-  let value = config[attachment]
-  let keys = []
-  for (let key of Object.keys(config)) {
-    if (config[key] === value) {
-      keys.push(key)
-    }
-  }
-  return sortBy(keys, k => k !== 'KAFKA_URL', 'name')
+function configVarsFromName (attachments, name) {
+  return attachments
+    .filter((att) => att.addon.name === name)
+    .map((att) => att.name + '_URL')
+    .sort((name) => name !== 'KAFKA_URL')
 }
 
 function displayCluster (cluster) {
@@ -38,7 +32,7 @@ function * run (context, heroku) {
   const cluster = context.args.CLUSTER
 
   let addons = []
-  let config = heroku.get(`/apps/${app}/config-vars`)
+  let attachments = heroku.get(`/apps/${app}/addon-attachments`)
 
   if (cluster) {
     addons = yield [fetcher.addon(app, cluster)]
@@ -53,7 +47,7 @@ function * run (context, heroku) {
   let clusters = yield addons.map(addon => {
     return {
       addon,
-      config,
+      attachments,
       cluster: heroku.request({
         host: host(addon),
         method: 'get',
@@ -66,7 +60,7 @@ function * run (context, heroku) {
   })
 
   clusters = clusters.filter(cluster => cluster.cluster)
-  clusters.forEach(cluster => { cluster.configVars = configVarNamesFromAttachment(cluster.config, cluster.cluster.attachment_name) })
+  clusters.forEach(cluster => { cluster.configVars = configVarsFromName(cluster.attachments, cluster.addon.name) })
   clusters = sortBy(clusters, cluster => cluster.configVars[0] !== 'KAFKA_URL', 'configVars[0]')
 
   clusters.forEach(displayCluster)
