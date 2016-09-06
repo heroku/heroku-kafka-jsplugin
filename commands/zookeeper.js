@@ -37,7 +37,6 @@ function * zookeeper (context, heroku) {
 }
 
 module.exports = {
-  hidden: true,
   topic: 'kafka',
   command: 'zookeeper',
   description: 'enable or disable Zookeeper access to your Kafka cluster',
