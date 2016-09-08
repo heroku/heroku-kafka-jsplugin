@@ -8,6 +8,7 @@ let withCluster = require('../lib/clusters').withCluster
 let request = require('../lib/clusters').request
 
 const VERSION = 'v0'
+const DEFAULT_PARTITIONS = '32'
 
 function * createTopic (context, heroku) {
   var flags = Object.assign({}, context.flags)
@@ -18,6 +19,9 @@ function * createTopic (context, heroku) {
       cli.exit(1, `Could not parse retention time '${value}'; expected value like '36h' or '10d'`)
     }
     flags['retention-time'] = parsed
+  }
+  if (!('partitions' in flags)) {
+    flags['partitions'] = DEFAULT_PARTITIONS
   }
 
   yield withCluster(heroku, context.app, context.args.CLUSTER, function * (addon) {
@@ -72,7 +76,7 @@ let cmd = {
     { name: 'CLUSTER', optional: true }
   ],
   flags: [
-    { name: 'partitions', description: 'number of partitions to give the topic', hasValue: true, required: true },
+    { name: 'partitions', description: 'number of partitions to give the topic', hasValue: true },
     { name: 'replication-factor', description: 'number of replicas the topic should be created across', hasValue: true },
     { name: 'retention-time', description: 'length of time messages in the topic should be retained (at least 24h)', hasValue: true },
     { name: 'compaction', description: 'whether to use compaction for this topic', hasValue: false },
