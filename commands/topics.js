@@ -17,8 +17,8 @@ function * listTopics (context, heroku) {
     cli.styledHeader('Kafka Topics on ' + (topics.attachment_name || 'HEROKU_KAFKA'))
     cli.log()
     if (topics.topics.length === 0) {
-      cli.log('No topics found on this Kafka')
-      cli.log('Use heroku kafka:create to create a topic.')
+      cli.log('No topics found on this Kafka cluster.')
+      cli.log('Use heroku kafka:topics:create to create a topic.')
     } else {
       cli.table(topics.topics,
         {

@@ -49,8 +49,8 @@ describe('kafka:topics', () => {
       return cmd.run({app: 'myapp', args: {}})
         .then(() => expect(cli.stdout).to.equal(`=== Kafka Topics on HEROKU_KAFKA_BLUE_URL
 
-No topics found on this Kafka
-Use heroku kafka:create to create a topic.
+No topics found on this Kafka cluster.
+Use heroku kafka:topics:create to create a topic.
 `))
         .then(() => expect(cli.stderr).to.be.empty)
     })
