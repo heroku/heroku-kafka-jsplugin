@@ -59,11 +59,11 @@ describe('kafka:info', () => {
 
   describe('with 2 dbs', () => {
     let plan = {name: 'heroku-kafka:beta-3'}
-    let config = {
-      KAFKA_URL: 'kafka+ssl://ec2-1-1-1-1.compute-1.amazonaws.com:9096,kafka+ssl://ec2-1-1-1-2.compute-1.amazonaws.com:9096,kafka+ssl://ec2-1-1-1-3.compute-1.amazonaws.com:9096',
-      HEROKU_KAFKA_COBALT_URL: 'kafka+ssl://ec2-1-1-1-1.compute-1.amazonaws.com:9096,kafka+ssl://ec2-1-1-1-2.compute-1.amazonaws.com:9096,kafka+ssl://ec2-1-1-1-3.compute-1.amazonaws.com:9096',
-      HEROKU_KAFKA_PURPLE_URL: 'kafka+ssl://ec2-1-1-2-1.compute-1.amazonaws.com:9096,kafka+ssl://ec2-1-1-2-2.compute-1.amazonaws.com:9096,kafka+ssl://ec2-1-1-2-3.compute-1.amazonaws.com:9096'
-    }
+    let attachments = [
+      { addon: { name: 'kafka-1' }, name: 'KAFKA' },
+      { addon: { name: 'kafka-1' }, name: 'HEROKU_KAFKA_COBALT' },
+      { addon: { name: 'kafka-2' }, name: 'HEROKU_KAFKA_PURPLE' }
+    ]
     let addonService = {name: 'heroku-kafka'}
     let addons = [
       {id: 1, name: 'kafka-1', addon_service: addonService, plan},
@@ -74,21 +74,19 @@ describe('kafka:info', () => {
         {name: 'Plan', values: ['Beta-3']},
         {name: 'Empty', values: []}
       ],
-      attachment_name: 'KAFKA_URL',
-      resource_url: config.KAFKA_URL
+      addon: { name: 'kafka-1' }
     }
     let clusterB = {
       info: [
         {name: 'Plan', values: ['Beta-3']}
       ],
-      attachment_name: 'HEROKU_KAFKA_PURPLE_URL',
-      resource_url: config.HEROKU_KAFKA_PURPLE_URL
+      addon: { name: 'kafka-2' }
     }
 
     it('shows kafka info', () => {
       all = addons
 
-      api.get('/apps/myapp/config-vars').reply(200, config)
+      api.get('/apps/myapp/addon-attachments').reply(200, attachments)
       kafka
         .get(infoUrl('kafka-1')).reply(200, clusterA)
         .get(infoUrl('kafka-2')).reply(200, clusterB)
@@ -108,7 +106,7 @@ Add-on: kafka-2
 
     it('shows kafka info for single cluster when arg sent in', () => {
       addon = addons[1]
-      api.get('/apps/myapp/config-vars').reply(200, config)
+      api.get('/apps/myapp/addon-attachments').reply(200, attachments)
 
       kafka
         .get(infoUrl('kafka-2'))
@@ -126,7 +124,7 @@ Add-on: kafka-2
     it('shows warning for 404', () => {
       all = addons
 
-      api.get('/apps/myapp/config-vars').reply(200, config)
+      api.get('/apps/myapp/addon-attachments').reply(200, attachments)
       kafka
         .get(infoUrl('kafka-1')).reply(404)
         .get(infoUrl('kafka-2')).reply(200, clusterB)
