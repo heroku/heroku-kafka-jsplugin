@@ -51,6 +51,32 @@ describe('parseDuration', function () {
   })
 })
 
+describe('isPrivate', function () {
+  let cases = [
+    [ { plan: { name: 'beta-standard-0' } }, false ],
+    [ { plan: { name: 'beta-standard-1' } }, false ],
+    [ { plan: { name: 'beta-standard-2' } }, false ],
+    [ { plan: { name: 'beta-extended-0' } }, false ],
+    [ { plan: { name: 'beta-extended-1' } }, false ],
+    [ { plan: { name: 'beta-extended-2' } }, false ],
+    [ { plan: { name: 'beta-private-standard-0' } }, true ],
+    [ { plan: { name: 'beta-private-standard-1' } }, true ],
+    [ { plan: { name: 'beta-private-standard-2' } }, true ],
+    [ { plan: { name: 'beta-private-extended-0' } }, true ],
+    [ { plan: { name: 'beta-private-extended-1' } }, true ],
+    [ { plan: { name: 'beta-private-extended-2' } }, true ]
+  ]
+  cases.forEach(function (testcase) {
+    let addon = testcase[0]
+    let expected = testcase[1]
+
+    it(`considers '${addon.plan.name}' to${expected ? '' : ' not'} be private'`, function () {
+      let actual = shared.isPrivate(addon)
+      expect(actual).to.equal(expected)
+    })
+  })
+})
+
 describe('parseBool', function () {
   let cases = [
     ['yes', true],
