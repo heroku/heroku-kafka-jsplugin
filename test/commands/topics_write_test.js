@@ -56,7 +56,7 @@ describe('kafka:topics:write', () => {
   }
 
   beforeEach(() => {
-    planName = 'heroku-kafka:beta-3'
+    planName = 'heroku-kafka:beta-standard-2'
     producer = {
       init: () => { return Promise.resolve() },
       send: (payload) => { return Promise.resolve() },
@@ -75,7 +75,7 @@ describe('kafka:topics:write', () => {
   })
 
   it('warns and exits with an error if used with a Private Spaces cluster', () => {
-    planName = 'heroku-kafka:private-3'
+    planName = 'heroku-kafka:beta-private-standard-2'
     return expectExit(1, cmd.run({app: 'myapp', args: { TOPIC: 'topic-1' }}))
       .then(() => expect(cli.stdout).to.be.empty)
       .then(() => expect(cli.stderr).to.equal(' ▸    `kafka:topics:write` is not available in Heroku Private Spaces\n'))

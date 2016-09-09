@@ -6,6 +6,7 @@ const kafka = require('no-kafka')
 
 const debug = require('../lib/debug')
 const clusterConfig = require('../lib/shared').clusterConfig
+const isPrivate = require('../lib/shared').isPrivate
 const deprecated = require('../lib/shared').deprecated
 const withCluster = require('../lib/clusters').withCluster
 
@@ -14,7 +15,7 @@ const IDLE_TIMEOUT = 1000
 
 function * write (context, heroku) {
   yield withCluster(heroku, context.app, context.args.CLUSTER, function * (addon) {
-    if (addon.plan.name.startsWith('heroku-kafka:private-')) {
+    if (isPrivate(addon)) {
       cli.exit(1, '`kafka:topics:write` is not available in Heroku Private Spaces')
     }
 
