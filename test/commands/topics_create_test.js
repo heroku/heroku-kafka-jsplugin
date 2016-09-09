@@ -124,4 +124,26 @@ describe('kafka:topics:create', () => {
                 expect(cli.stdout).to.equal('Use `heroku kafka:topics:info topic-1` to monitor your topic.\n')
               })
   })
+
+  it('defaults to 32 partitions', () => {
+    kafka.post(createUrl('kafka-1'),
+      {
+        topic: {
+          name: 'topic-1',
+          retention_time_ms: 10,
+          replication_factor: '3',
+          partition_count: '32',
+          compaction: false
+        }
+      }).reply(200)
+
+    return cmd.run({app: 'myapp',
+                    args: { TOPIC: 'topic-1' },
+                    flags: { 'replication-factor': '3',
+                             'retention-time': '10ms' }})
+              .then(() => {
+                expect(cli.stderr).to.equal('Creating topic topic-1... done\n')
+                expect(cli.stdout).to.equal('Use `heroku kafka:topics:info topic-1` to monitor your topic.\n')
+              })
+  })
 })
