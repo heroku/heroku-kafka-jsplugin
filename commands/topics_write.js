@@ -67,7 +67,7 @@ function * write (context, heroku) {
 let cmd = {
   topic: 'kafka',
   command: 'topics:write',
-  description: 'writes a message to a Kafka topic',
+  description: '(only outside Private Spaces) writes a message to a Kafka topic',
   args: [
     { name: 'TOPIC' },
     { name: 'MESSAGE' },

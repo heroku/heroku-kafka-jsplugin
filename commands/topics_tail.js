@@ -62,7 +62,7 @@ function * tail (context, heroku) {
 let cmd = {
   topic: 'kafka',
   command: 'topics:tail',
-  description: 'tails a topic in Kafka',
+  description: '(only outside Private Spaces) tails a topic in Kafka',
   args: [
     { name: 'TOPIC' },
     { name: 'CLUSTER', optional: true }

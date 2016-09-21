@@ -40,13 +40,13 @@ function * zookeeper (context, heroku) {
 module.exports = {
   topic: 'kafka',
   command: 'zookeeper',
-  description: 'enable or disable Zookeeper access to your Kafka cluster',
+  description: '(Private Spaces only) control direct access to Zookeeper of your Kafka cluster',
   args: [
     { name: 'VALUE' },
     { name: 'CLUSTER', optional: true }
   ],
   help: `
-    Enables or disables Zookeeper access to your Kafka cluster. Note that
+    Enables or disables Zookeeper access to your Kafka cluster. Note:
     Zookeeper access is only available in Heroku Private Spaces.
 
     Examples:
