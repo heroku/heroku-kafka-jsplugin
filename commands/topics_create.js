@@ -16,7 +16,7 @@ function * createTopic (context, heroku) {
     let value = flags['retention-time']
     let parsed = parseDuration(value)
     if (parsed == null) {
-      cli.exit(1, `Could not parse retention time '${value}'; expected value like '36h' or '10d'`)
+      cli.exit(1, `Could not parse retention time '${value}'; expected value like '10d' or '36h'`)
     }
     flags['retention-time'] = parsed
   }
@@ -66,7 +66,7 @@ let cmd = {
     Examples:
 
   $ heroku kafka:topics:create page-visits --partitions 100
-  $ heroku kafka:topics:create page-visits HEROKU_KAFKA_BROWN_URL --partitions 100 --replication-factor 3 --retention-time '1 day'
+  $ heroku kafka:topics:create page-visits HEROKU_KAFKA_BROWN_URL --partitions 100 --replication-factor 3 --retention-time 10d
   $ heroku kafka:topics:create page-visits HEROKU_KAFKA_BROWN_URL --partitions 100 --compaction
   `,
   needsApp: true,

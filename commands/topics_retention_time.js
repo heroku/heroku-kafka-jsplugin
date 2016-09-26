@@ -40,14 +40,14 @@ function * retentionTime (context, heroku) {
 module.exports = {
   topic: 'kafka',
   command: 'topics:retention-time',
-  description: 'configures topic retention time (e.g. 3d, 10h, 25m)',
+  description: 'configures topic retention time (e.g. 10d, 36h)',
   help: `
     Configures topic retention time in Kafka.
 
     Examples:
 
-  $ heroku kafka:topics:retention-time page-visits 3d
-  $ heroku kafka:topics:retention-time page-visits 18h HEROKU_KAFKA_BROWN_URL
+  $ heroku kafka:topics:retention-time page-visits 10d
+  $ heroku kafka:topics:retention-time page-visits 36h HEROKU_KAFKA_BROWN_URL
   `,
   needsApp: true,
   needsAuth: true,

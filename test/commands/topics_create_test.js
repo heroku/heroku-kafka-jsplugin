@@ -60,7 +60,7 @@ describe('kafka:topics:create', () => {
                                   args: { TOPIC: 'topic-1' },
                                   flags: { 'retention-time': '2 eons' }}))
       .then(() => expect(cli.stdout).to.be.empty)
-      .then(() => expect(cli.stderr).to.equal(` ▸    Could not parse retention time '2 eons'; expected value like '36h' or\n ▸    '10d'\n`))
+      .then(() => expect(cli.stderr).to.equal(` ▸    Could not parse retention time '2 eons'; expected value like '10d' or\n ▸    '36h'\n`))
   })
 
   it('requires app confirmation and warns if replication factor of 1 specified', () => {
