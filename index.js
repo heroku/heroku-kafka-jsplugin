@@ -14,6 +14,7 @@ exports.commands = [
   require('./commands/upgrade.js'),
   require('./commands/info.js').info,
   require('./commands/info.js').root,
+  require('./commands/diagnose.js').cmd,
   require('./commands/wait.js'),
   require('./commands/zookeeper.js'),
 
