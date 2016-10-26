@@ -30,6 +30,9 @@ function * write (context, heroku) {
       ssl: {
         clientCert: config.clientCert,
         clientCertKey: config.clientCertKey
+      },
+      logger: {
+        logLevel: 0
       }
     })
     try {
