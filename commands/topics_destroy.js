@@ -18,9 +18,9 @@ function * destroyTopic (context, heroku) {
       return yield request(heroku, {
         method: 'DELETE',
         body: {
-          topic: { name: topicName }
+          topic_name: { name: topicName }
         },
-        path: `/client/kafka/${VERSION}/clusters/${addon.name}/topics/${topicName}`
+        path: `/data/kafka/${VERSION}/clusters/${addon.name}/topics/${topicName}`
       })
     }))
 
