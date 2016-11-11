@@ -11,11 +11,19 @@ const VERSION = 'v0'
 function * listTopics (context, heroku) {
   yield withCluster(heroku, context.app, context.args.CLUSTER, function * (addon) {
     let topics = yield request(heroku, {
-      path: `/client/kafka/${VERSION}/clusters/${addon.name}/topics`
+      path: `/data/kafka/${VERSION}/clusters/${addon.name}/topics`
     })
-
     cli.styledHeader('Kafka Topics on ' + (topics.attachment_name || 'HEROKU_KAFKA'))
-    let topicData = topics.topics.filter((t) => t.name !== '__consumer_offsets')
+    let filtered = topics.topics.filter((t) => t.name !== '__consumer_offsets')
+    let topicData = filtered.map((t) => {
+      return {
+        name: t.name,
+        //TODO: format as human readable
+        messages: `${t.messages_in_per_second} messages/s`,
+        //TODO: format as human readable
+        bytes: `${t.bytes_in_per_second} bytes/s`,
+      }
+    });
     cli.log()
     if (topicData.length === 0) {
       cli.log('No topics found on this Kafka cluster.')
