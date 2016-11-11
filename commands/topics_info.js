@@ -7,18 +7,61 @@ let withCluster = require('../lib/clusters').withCluster
 let request = require('../lib/clusters').request
 
 const VERSION = 'v0'
+const ONE_HOUR_IN_MS = 3600000
+const TWENTY_FOUR_HOURS_IN_MS = 86400000
+const TWO_DAYS_IN_MS = 172800000
+
+
+
+function retention (retention_time_ms) {
+  if (retention_time_ms < ONE_HOUR_IN_MS) {
+    return `${Math.round(retention_time_ms / 1000.0)} seconds`
+  } else if (retention_time_ms < TWO_DAYS_IN_MS) {
+    return `${Math.round(retention_time_ms / ONE_HOUR_IN_MS)} hours`
+  } else {
+    return `${Math.round(retention_time_ms / TWENTY_FOUR_HOURS_IN_MS)} days`
+  }
+}
+
+function topicInfo(topic) {
+  let lines = [
+    //TODO: format as human
+    {name: 'Producers', values: [`${topic.messages_in_per_second} messages/second (${topic.bytes_in_per_second} bytes/second) total`]},
+    //TODO: format as human
+    {name: 'Consumers', values: [`${topic.bytes_out_per_second} total`]},
+    //TODO: pluralize
+    {name: 'Partitions', values: [`${topic.partitions} partitions`]},
+    {name: 'Replication Factor', values: [`${topic.replication_factor} (reccomend > 1)`]},
+  ];
+
+  if (topic.compaction_enabled) {
+    lines.push({name: 'Compaction', values: [`Compaction is enabled for ${topic.name}`]});
+  } else {
+    lines.push({name: 'Compaction', values: [`Compaction is disabled for ${topic.name}`]});
+    lines.push({name: 'Retention', values: [retention(topic.retention_time_ms)]});
+  }
+
+  return lines
+}
 
 function * kafkaTopic (context, heroku) {
   yield withCluster(heroku, context.app, context.args.CLUSTER, function * (addon) {
     const topic = context.args.TOPIC
 
     let info = yield request(heroku, {
-      path: `/client/kafka/${VERSION}/clusters/${addon.name}/topics/${topic}`
+      path: `/data/kafka/${VERSION}/clusters/${addon.name}/topics`
     })
 
-    cli.styledHeader((info.attachment_name || 'HEROKU_KAFKA') + ' :: ' + info.topic)
+    let forTopic = info.topics.filter((t) => t.name == topic);
+
+    if (forTopic.length === 0) {
+      cli.error(`topic not found ${topic}`)
+      cli.exit(1);
+    }
+
+    cli.styledHeader((info.attachment_name || 'HEROKU_KAFKA') + ' :: ' + topic)
     cli.log()
-    cli.styledNameValues(info.info)
+    cli.styledNameValues(topicInfo(forTopic[0]))
   })
 }
 
