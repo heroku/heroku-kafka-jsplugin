@@ -22,7 +22,7 @@ const cmd = proxyquire('../../commands/credentials_rotate', {
   }
 })
 
-describe('kafka:zookeeper', () => {
+describe('kafka:credentials', () => {
   let kafka
 
   let credentialsUrl = (cluster) => {
@@ -31,7 +31,7 @@ describe('kafka:zookeeper', () => {
 
   beforeEach(() => {
     planName = 'heroku-kafka:beta-private-standard-2'
-    kafka = nock('https://kafka-api.heroku.com')
+    kafka = nock('https://kafka-api.heroku.com:443')
     cli.mockConsole()
     cli.exit.mock()
   })
@@ -42,7 +42,7 @@ describe('kafka:zookeeper', () => {
   })
 
   it(`rotates credentials`, () => {
-    kafka.post(credentialsUrl('kafka-1'), { enabled: true }).reply(200, {message: 'Rotated'})
+    kafka.post(credentialsUrl('kafka-1')).reply(200, {message: 'Rotated'})
 
     return cmd.run({app: 'myapp', args: {CLUSTER: undefined}, flags: { reset: true }})
       .then(() => expect(cli.stderr).to.be.empty)
