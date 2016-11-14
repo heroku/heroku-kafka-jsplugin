@@ -8,11 +8,9 @@ let withCluster = require('../lib/clusters').withCluster
 let request = require('../lib/clusters').request
 
 const VERSION = 'v0'
-const ONE_HOUR_IN_MS = 3600000
-const TWENTY_FOUR_HOURS_IN_MS = 86400000
-const TWO_DAYS_IN_MS = 172800000
-
-
+const ONE_HOUR_IN_MS = 60 * 60 * 1000
+const TWENTY_FOUR_HOURS_IN_MS = ONE_HOUR_IN_MS * 24
+const TWO_DAYS_IN_MS = TWENTY_FOUR_HOURS_IN_MS * 2
 
 function retention (retentionTimeMs) {
   if (retentionTimeMs < ONE_HOUR_IN_MS) {
