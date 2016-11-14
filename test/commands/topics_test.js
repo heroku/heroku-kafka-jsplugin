@@ -25,7 +25,7 @@ describe('kafka:topics', () => {
   let kafka
 
   let topicsUrl = (cluster) => {
-    return `/client/kafka/v0/clusters/${cluster}/topics`
+    return `/data/kafka/v0/clusters/${cluster}/topics`
   }
 
   beforeEach(() => {
@@ -59,7 +59,7 @@ Use heroku kafka:topics:create to create a topic.
       kafka.get(topicsUrl('kafka-1')).reply(200, {
         attachment_name: 'HEROKU_KAFKA_BLUE_URL',
         topics: [
-          { name: '__consumer_offsets', messages: '9.0/sec', bytes: '2 bytes/sec' }
+          { name: '__consumer_offsets', messages_in_per_second: 9.0, bytes_in_per_second: 2 }
         ]
       })
 
@@ -78,8 +78,8 @@ Use heroku kafka:topics:create to create a topic.
       kafka.get(topicsUrl('kafka-1')).reply(200, {
         attachment_name: 'HEROKU_KAFKA_BLUE_URL',
         topics: [
-          { name: 'topic-1', messages: '10.0/sec', bytes: '0 bytes/sec' },
-          { name: 'topic-2', messages: '12.0/sec', bytes: '3 bytes/sec' }
+          { name: 'topic-1', messages_in_per_second: 10.0, bytes_in_per_second: 0 },
+          { name: 'topic-2', messages_in_per_second: 12.0, bytes_in_per_second: 3 }
         ]
       })
 
@@ -88,8 +88,8 @@ Use heroku kafka:topics:create to create a topic.
 
 Name     Messages  Traffic
 ───────  ────────  ───────────
-topic-1  10.0/sec  0 bytes/sec
-topic-2  12.0/sec  3 bytes/sec
+topic-1  10/sec    0 bytes/sec
+topic-2  12/sec    3 bytes/sec
 `))
         .then(() => expect(cli.stderr).to.be.empty)
     })
@@ -98,9 +98,9 @@ topic-2  12.0/sec  3 bytes/sec
       kafka.get(topicsUrl('kafka-1')).reply(200, {
         attachment_name: 'HEROKU_KAFKA_BLUE_URL',
         topics: [
-          { name: '__consumer_offsets', messages: '9.0/sec', bytes: '2 bytes/sec' },
-          { name: 'topic-1', messages: '10.0/sec', bytes: '0 bytes/sec' },
-          { name: 'topic-2', messages: '12.0/sec', bytes: '3 bytes/sec' }
+          { name: '__consumer_offsets', messages_in_per_second: '9.0', bytes: '2' },
+          { name: 'topic-1', messages_in_per_second: 10.0, bytes_in_per_second: 0 },
+          { name: 'topic-2', messages_in_per_second: 12.0, bytes_in_per_second: 3 }
         ]
       })
 
@@ -109,8 +109,8 @@ topic-2  12.0/sec  3 bytes/sec
 
 Name     Messages  Traffic
 ───────  ────────  ───────────
-topic-1  10.0/sec  0 bytes/sec
-topic-2  12.0/sec  3 bytes/sec
+topic-1  10/sec    0 bytes/sec
+topic-2  12/sec    3 bytes/sec
 `))
         .then(() => expect(cli.stderr).to.be.empty)
     })

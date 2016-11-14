@@ -18,12 +18,12 @@ function * listTopics (context, heroku) {
     let topicData = filtered.map((t) => {
       return {
         name: t.name,
-        //TODO: format as human readable
-        messages: `${t.messages_in_per_second} messages/s`,
-        //TODO: format as human readable
-        bytes: `${t.bytes_in_per_second} bytes/s`,
+        // TODO: format as human readable
+        messages: `${t.messages_in_per_second}/sec`,
+        // TODO: format as human readable
+        bytes: `${t.bytes_in_per_second} bytes/sec`
       }
-    });
+    })
     cli.log()
     if (topicData.length === 0) {
       cli.log('No topics found on this Kafka cluster.')

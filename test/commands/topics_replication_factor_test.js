@@ -25,7 +25,7 @@ describe('kafka:topics:replication-factor', () => {
   let kafka
 
   let topicConfigUrl = (cluster, topic) => {
-    return `/client/kafka/v0/clusters/${cluster}/topics/${topic}`
+    return `/data/kafka/v0/clusters/${cluster}/topics/${topic}`
   }
 
   beforeEach(() => {

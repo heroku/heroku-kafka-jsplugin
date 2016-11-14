@@ -24,8 +24,8 @@ const cmd = proxyquire('../../commands/topics_info', {
 describe('kafka:topics:info', () => {
   let kafka
 
-  let topicsUrl = (cluster, topic) => {
-    return `/client/kafka/v0/clusters/${cluster}/topics/${topic}`
+  let topicsUrl = (cluster) => {
+    return `/data/kafka/v0/clusters/${cluster}/topics`
   }
 
   beforeEach(() => {
@@ -40,24 +40,27 @@ describe('kafka:topics:info', () => {
   })
 
   it('displays the topic info', () => {
-    kafka.get(topicsUrl('kafka-1', 'topic-1')).reply(200, {
+    kafka.get(topicsUrl('kafka-1')).reply(200, {
       attachment_name: 'HEROKU_KAFKA_BLUE_URL',
-      topic: 'topic-1',
-      info: [
-        { name: 'Producers', values: [ '0.0 messages/second (0 Bytes/second) total' ] },
-        { name: 'Consumers', values: [ '0 Bytes/second total' ] },
-        { name: 'Partitions', values: [ '3 partitions' ] },
-        { name: 'Replication Factor', values: [ '3 (recommend > 1)' ] },
-        { name: 'Compaction', values: [ 'Compaction is disabled for topic-1' ] },
-        { name: 'Retention', values: [ '24 hours' ] }
+      topics: [
+        {
+          name: 'topic-1',
+          messages_in_per_second: 0,
+          bytes_in_per_second: 0,
+          bytes_out_per_second: 0,
+          replication_factor: 3,
+          partitions: 3,
+          compaction_enabled: false,
+          retention_time_ms: 86400000
+        }
       ]
     })
 
     return cmd.run({app: 'myapp', args: { TOPIC: 'topic-1' }})
       .then(() => expect(cli.stdout).to.equal(`=== HEROKU_KAFKA_BLUE_URL :: topic-1
 
-Producers:          0.0 messages/second (0 Bytes/second) total
-Consumers:          0 Bytes/second total
+Producers:          0 messages/second (0 bytes/second) total
+Consumers:          0 bytes/second total
 Partitions:         3 partitions
 Replication Factor: 3 (recommend > 1)
 Compaction:         Compaction is disabled for topic-1

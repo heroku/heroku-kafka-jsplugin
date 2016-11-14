@@ -13,32 +13,32 @@ const TWO_DAYS_IN_MS = 172800000
 
 
 
-function retention (retention_time_ms) {
-  if (retention_time_ms < ONE_HOUR_IN_MS) {
-    return `${Math.round(retention_time_ms / 1000.0)} seconds`
-  } else if (retention_time_ms < TWO_DAYS_IN_MS) {
-    return `${Math.round(retention_time_ms / ONE_HOUR_IN_MS)} hours`
+function retention (retentionTimeMs) {
+  if (retentionTimeMs < ONE_HOUR_IN_MS) {
+    return `${Math.round(retentionTimeMs / 1000.0)} seconds`
+  } else if (retentionTimeMs < TWO_DAYS_IN_MS) {
+    return `${Math.round(retentionTimeMs / ONE_HOUR_IN_MS)} hours`
   } else {
-    return `${Math.round(retention_time_ms / TWENTY_FOUR_HOURS_IN_MS)} days`
+    return `${Math.round(retentionTimeMs / TWENTY_FOUR_HOURS_IN_MS)} days`
   }
 }
 
-function topicInfo(topic) {
+function topicInfo (topic) {
   let lines = [
-    //TODO: format as human
+    // TODO: format as human
     {name: 'Producers', values: [`${topic.messages_in_per_second} messages/second (${topic.bytes_in_per_second} bytes/second) total`]},
-    //TODO: format as human
-    {name: 'Consumers', values: [`${topic.bytes_out_per_second} total`]},
-    //TODO: pluralize
+    // TODO: format as human
+    {name: 'Consumers', values: [`${topic.bytes_out_per_second} bytes/second total`]},
+    // TODO: pluralize
     {name: 'Partitions', values: [`${topic.partitions} partitions`]},
-    {name: 'Replication Factor', values: [`${topic.replication_factor} (reccomend > 1)`]},
-  ];
+    {name: 'Replication Factor', values: [`${topic.replication_factor} (recommend > 1)`]}
+  ]
 
   if (topic.compaction_enabled) {
-    lines.push({name: 'Compaction', values: [`Compaction is enabled for ${topic.name}`]});
+    lines.push({name: 'Compaction', values: [`Compaction is enabled for ${topic.name}`]})
   } else {
-    lines.push({name: 'Compaction', values: [`Compaction is disabled for ${topic.name}`]});
-    lines.push({name: 'Retention', values: [retention(topic.retention_time_ms)]});
+    lines.push({name: 'Compaction', values: [`Compaction is disabled for ${topic.name}`]})
+    lines.push({name: 'Retention', values: [retention(topic.retention_time_ms)]})
   }
 
   return lines
@@ -52,11 +52,11 @@ function * kafkaTopic (context, heroku) {
       path: `/data/kafka/${VERSION}/clusters/${addon.name}/topics`
     })
 
-    let forTopic = info.topics.filter((t) => t.name == topic);
+    let forTopic = info.topics.filter((t) => t.name === topic)
 
     if (forTopic.length === 0) {
       cli.error(`topic not found ${topic}`)
-      cli.exit(1);
+      cli.exit(1)
     }
 
     cli.styledHeader((info.attachment_name || 'HEROKU_KAFKA') + ' :: ' + topic)
