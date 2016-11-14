@@ -26,7 +26,6 @@ function topicInfo (topic) {
   let lines = [
     {name: 'Producers', values: [`${humanize.intComma(topic.messages_in_per_second)} ${humanize.pluralize(topic.messages_in_per_second, 'message')}/second (${humanize.fileSize(topic.bytes_in_per_second)}/second) total`]},
     {name: 'Consumers', values: [`${humanize.fileSize(topic.bytes_out_per_second)}/second total`]},
-    // TODO: pluralize
     {name: 'Partitions', values: [`${topic.partitions} ${humanize.pluralize(topic.partitions, 'partition')}`]},
     {name: 'Replication Factor', values: [`${topic.replication_factor} (recommend > 1)`]}
   ]
