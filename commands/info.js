@@ -2,6 +2,7 @@
 
 const co = require('co')
 const cli = require('heroku-cli-util')
+const humanize = require('humanize-plus')
 
 function configVarsFromName (attachments, name) {
   return attachments
@@ -24,21 +25,17 @@ function formatInfo (cluster) {
     lines.push({name: 'Robot TTL', values: [cluster.cluster.robot.robot_ttl]})
   }
 
-  // TODO: pluralize topics correctly
-  lines.push({name: 'Topics', values: [`${cluster.cluster.topics.length} topics, see heroku kafka:topics`]})
+  lines.push({name: 'Topics', values: [`${cluster.cluster.topics.length} ${humanize.pluralize(cluster.cluster.topics.length, 'topic')}, see heroku kafka:topics`]})
 
-  // TODO: format with commas
-  lines.push({name: 'Messages', values: [`${cluster.cluster.messages_in_per_sec} messages/s`]})
+  lines.push({name: 'Messages', values: [`${humanize.intComma(cluster.cluster.messages_in_per_sec)} ${humanize.pluralize(cluster.cluster.messages_in_per_sec, 'message')}/s`]})
 
-  // TODO: format as human readable sizes
-  lines.push({name: 'Traffic', values: [`${cluster.cluster.bytes_in_per_sec} bytes/s in / ${cluster.cluster.bytes_out_per_sec} bytes/s out`]})
+  lines.push({name: 'Traffic', values: [`${humanize.fileSize(cluster.cluster.bytes_in_per_sec)}/s in / ${humanize.fileSize(cluster.cluster.bytes_out_per_sec)}/s out`]})
 
-  // TODO: format as human readable size
   if (cluster.cluster.data_size && cluster.cluster.limits.limit_bytes) {
     let size = cluster.cluster.data_size
     let limit = cluster.cluster.limits.limit_bytes
     let percentage = ((size / limit) * 100.0).toFixed(2)
-    lines.push({name: 'Data Size', values: [`${cluster.cluster.data_size.size} / ${cluster.cluster.limits.limit_bytes} (${percentage})`]})
+    lines.push({name: 'Data Size', values: [`${humanize.fileSize(cluster.cluster.data_size.size)} / ${humanize.fileSize(cluster.cluster.limits.limit_bytes)} (${percentage})`]})
   }
 
   lines.push({name: 'Add-on', values: [cli.color.addon(cluster.addon.name)]})

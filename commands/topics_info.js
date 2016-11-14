@@ -2,6 +2,7 @@
 
 let cli = require('heroku-cli-util')
 let co = require('co')
+let humanize = require('humanize-plus')
 let deprecated = require('../lib/shared').deprecated
 let withCluster = require('../lib/clusters').withCluster
 let request = require('../lib/clusters').request
@@ -25,12 +26,10 @@ function retention (retentionTimeMs) {
 
 function topicInfo (topic) {
   let lines = [
-    // TODO: format as human
-    {name: 'Producers', values: [`${topic.messages_in_per_second} messages/second (${topic.bytes_in_per_second} bytes/second) total`]},
-    // TODO: format as human
-    {name: 'Consumers', values: [`${topic.bytes_out_per_second} bytes/second total`]},
+    {name: 'Producers', values: [`${humanize.intComma(topic.messages_in_per_second)} ${humanize.pluralize(topic.messages_in_per_second, 'message')}/second (${humanize.fileSize(topic.bytes_in_per_second)}/second) total`]},
+    {name: 'Consumers', values: [`${humanize.fileSize(topic.bytes_out_per_second)}/second total`]},
     // TODO: pluralize
-    {name: 'Partitions', values: [`${topic.partitions} partitions`]},
+    {name: 'Partitions', values: [`${topic.partitions} ${humanize.pluralize(topic.partitions, 'partition')}`]},
     {name: 'Replication Factor', values: [`${topic.replication_factor} (recommend > 1)`]}
   ]
 

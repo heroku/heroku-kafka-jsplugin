@@ -108,7 +108,7 @@ Plan:     heroku-kafka:beta-3
 Status:   available
 Version:  0.10.0.0
 Created:  2016-11-14T14:26:20.245+00:00
-Topics:   1 topics, see heroku kafka:topics
+Topics:   1 topic, see heroku kafka:topics
 Messages: 0 messages/s
 Traffic:  0 bytes/s in / 0 bytes/s out
 Add-on:   kafka-1
@@ -119,7 +119,7 @@ Plan:     heroku-kafka:beta-3
 Status:   available
 Version:  0.10.0.0
 Created:  2016-11-14T14:26:20.245+00:00
-Topics:   1 topics, see heroku kafka:topics
+Topics:   1 topic, see heroku kafka:topics
 Messages: 0 messages/s
 Traffic:  0 bytes/s in / 0 bytes/s out
 Add-on:   kafka-2
@@ -143,7 +143,7 @@ Plan:     heroku-kafka:beta-3
 Status:   available
 Version:  0.10.0.0
 Created:  2016-11-14T14:26:20.245+00:00
-Topics:   1 topics, see heroku kafka:topics
+Topics:   1 topic, see heroku kafka:topics
 Messages: 0 messages/s
 Traffic:  0 bytes/s in / 0 bytes/s out
 Add-on:   kafka-2
@@ -166,7 +166,7 @@ Plan:     heroku-kafka:beta-3
 Status:   available
 Version:  0.10.0.0
 Created:  2016-11-14T14:26:20.245+00:00
-Topics:   1 topics, see heroku kafka:topics
+Topics:   1 topic, see heroku kafka:topics
 Messages: 0 messages/s
 Traffic:  0 bytes/s in / 0 bytes/s out
 Add-on:   kafka-2

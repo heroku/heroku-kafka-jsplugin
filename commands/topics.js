@@ -2,6 +2,7 @@
 
 let cli = require('heroku-cli-util')
 let co = require('co')
+let humanize = require('humanize-plus')
 let deprecated = require('../lib/shared').deprecated
 let withCluster = require('../lib/clusters').withCluster
 let request = require('../lib/clusters').request
@@ -18,10 +19,8 @@ function * listTopics (context, heroku) {
     let topicData = filtered.map((t) => {
       return {
         name: t.name,
-        // TODO: format as human readable
-        messages: `${t.messages_in_per_second}/sec`,
-        // TODO: format as human readable
-        bytes: `${t.bytes_in_per_second} bytes/sec`
+        messages: `${humanize.intComma(t.messages_in_per_second)}/sec`,
+        bytes: `${humanize.fileSize(t.bytes_in_per_second)}/sec`
       }
     })
     cli.log()
