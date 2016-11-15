@@ -37,7 +37,7 @@ describe('kafka:topics:create', () => {
   let kafka
 
   let createUrl = (cluster) => {
-    return `/client/kafka/v0/clusters/${cluster}/topics`
+    return `/data/kafka/v0/clusters/${cluster}/topics`
   }
 
   beforeEach(() => {

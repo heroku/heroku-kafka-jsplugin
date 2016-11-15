@@ -2,6 +2,7 @@
 
 let cli = require('heroku-cli-util')
 let co = require('co')
+let humanize = require('humanize-plus')
 let deprecated = require('../lib/shared').deprecated
 let withCluster = require('../lib/clusters').withCluster
 let request = require('../lib/clusters').request
@@ -11,11 +12,17 @@ const VERSION = 'v0'
 function * listTopics (context, heroku) {
   yield withCluster(heroku, context.app, context.args.CLUSTER, function * (addon) {
     let topics = yield request(heroku, {
-      path: `/client/kafka/${VERSION}/clusters/${addon.name}/topics`
+      path: `/data/kafka/${VERSION}/clusters/${addon.name}/topics`
     })
-
     cli.styledHeader('Kafka Topics on ' + (topics.attachment_name || 'HEROKU_KAFKA'))
-    let topicData = topics.topics.filter((t) => t.name !== '__consumer_offsets')
+    let filtered = topics.topics.filter((t) => t.name !== '__consumer_offsets')
+    let topicData = filtered.map((t) => {
+      return {
+        name: t.name,
+        messages: `${humanize.intComma(t.messages_in_per_second)}/sec`,
+        bytes: `${humanize.fileSize(t.bytes_in_per_second)}/sec`
+      }
+    })
     cli.log()
     if (topicData.length === 0) {
       cli.log('No topics found on this Kafka cluster.')

@@ -32,7 +32,7 @@ describe('kafka:info', () => {
   let api, kafka
 
   let infoUrl = (cluster) => {
-    return `/client/kafka/v0/clusters/${cluster}`
+    return `/data/kafka/v0/clusters/${cluster}`
   }
 
   beforeEach(() => {
@@ -70,17 +70,26 @@ describe('kafka:info', () => {
       {id: 2, name: 'kafka-2', addon_service: addonService, plan}
     ]
     let clusterA = {
-      info: [
-        {name: 'Plan', values: ['Beta-3']},
-        {name: 'Empty', values: []}
-      ],
-      addon: { name: 'kafka-1' }
+      addon: { name: 'kafka-1' },
+      state: { message: 'available' },
+      robot: { is_robot: false },
+      topics: ['messages'],
+      messages_in_per_sec: 0,
+      bytes_in_per_sec: 0,
+      bytes_out_per_sec: 0,
+      version: ['0.10.0.0'],
+      created_at: '2016-11-14T14:26:20.245+00:00'
     }
     let clusterB = {
-      info: [
-        {name: 'Plan', values: ['Beta-3']}
-      ],
-      addon: { name: 'kafka-2' }
+      addon: { name: 'kafka-2' },
+      state: { message: 'available' },
+      robot: { is_robot: false },
+      topics: ['messages'],
+      messages_in_per_sec: 0,
+      bytes_in_per_sec: 0,
+      bytes_out_per_sec: 0,
+      version: ['0.10.0.0'],
+      created_at: '2016-11-14T14:26:20.245+00:00'
     }
 
     it('shows kafka info', () => {
@@ -94,12 +103,26 @@ describe('kafka:info', () => {
       return cmd.run({app: 'myapp', args: {}})
         .then(() => expect(cli.stderr).to.be.empty)
         .then(() => expect(cli.stdout).to.equal(`=== KAFKA_URL, HEROKU_KAFKA_COBALT_URL
-Plan:   Beta-3
-Add-on: kafka-1
+Name:     kafka-1
+Plan:     heroku-kafka:beta-3
+Status:   available
+Version:  0.10.0.0
+Created:  2016-11-14T14:26:20.245+00:00
+Topics:   1 topic, see heroku kafka:topics
+Messages: 0 messages/s
+Traffic:  0 bytes/s in / 0 bytes/s out
+Add-on:   kafka-1
 
 === HEROKU_KAFKA_PURPLE_URL
-Plan:   Beta-3
-Add-on: kafka-2
+Name:     kafka-2
+Plan:     heroku-kafka:beta-3
+Status:   available
+Version:  0.10.0.0
+Created:  2016-11-14T14:26:20.245+00:00
+Topics:   1 topic, see heroku kafka:topics
+Messages: 0 messages/s
+Traffic:  0 bytes/s in / 0 bytes/s out
+Add-on:   kafka-2
 
 `))
     })
@@ -115,8 +138,15 @@ Add-on: kafka-2
       return cmd.run({app: 'myapp', args: {CLUSTER: 'kafka-2'}})
         .then(() => expect(cli.stderr).to.be.empty)
         .then(() => expect(cli.stdout).to.equal(`=== HEROKU_KAFKA_PURPLE_URL
-Plan:   Beta-3
-Add-on: kafka-2
+Name:     kafka-2
+Plan:     heroku-kafka:beta-3
+Status:   available
+Version:  0.10.0.0
+Created:  2016-11-14T14:26:20.245+00:00
+Topics:   1 topic, see heroku kafka:topics
+Messages: 0 messages/s
+Traffic:  0 bytes/s in / 0 bytes/s out
+Add-on:   kafka-2
 
 `))
     })
@@ -131,8 +161,15 @@ Add-on: kafka-2
 
       return cmd.run({app: 'myapp', args: {}})
         .then(() => expect(cli.stdout).to.equal(`=== HEROKU_KAFKA_PURPLE_URL
-Plan:   Beta-3
-Add-on: kafka-2
+Name:     kafka-2
+Plan:     heroku-kafka:beta-3
+Status:   available
+Version:  0.10.0.0
+Created:  2016-11-14T14:26:20.245+00:00
+Topics:   1 topic, see heroku kafka:topics
+Messages: 0 messages/s
+Traffic:  0 bytes/s in / 0 bytes/s out
+Add-on:   kafka-2
 
 `))
         .then(() => expect(cli.stderr).to.equal(` ▸    kafka-1 is not yet provisioned.

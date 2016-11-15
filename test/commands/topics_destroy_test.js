@@ -31,12 +31,12 @@ const cmd = proxyquire('../../commands/topics_destroy', {
   }
 }).cmd
 
-describe('kafka:topics:create', () => {
+describe('kafka:topics:destroy', () => {
   let confirm
   let kafka
 
   let deleteUrl = (cluster, topic) => {
-    return `/client/kafka/v0/clusters/${cluster}/topics/${topic}`
+    return `/data/kafka/v0/clusters/${cluster}/topics/${topic}`
   }
 
   beforeEach(() => {
@@ -74,7 +74,7 @@ describe('kafka:topics:create', () => {
   })
 
   it('deletes the topic', () => {
-    kafka.delete(deleteUrl('kafka-1', 'topic-1'), { topic: { name: 'topic-1' } })
+    kafka.delete(deleteUrl('kafka-1', 'topic-1'), { topic_name: 'topic-1' })
          .reply(200)
 
     return cmd.run({app: 'myapp',

@@ -2,6 +2,7 @@
 
 const co = require('co')
 const cli = require('heroku-cli-util')
+const humanize = require('humanize-plus')
 
 function configVarsFromName (attachments, name) {
   return attachments
@@ -10,16 +11,82 @@ function configVarsFromName (attachments, name) {
     .sort((name) => name !== 'KAFKA_URL')
 }
 
+function formatInfo (cluster) {
+  let lines = [
+    {
+      name: 'Name',
+      values: [cluster.addon.name]
+    },
+    {
+      name: 'Plan',
+      values: [cluster.addon.plan.name]
+    },
+    {
+      name: 'Status',
+      values: [cluster.cluster.state.message]
+    },
+    {
+      name: 'Version',
+      values: [cluster.cluster.version]
+    },
+    {
+      name: 'Created',
+      values: [cluster.cluster.created_at]
+    }
+  ]
+
+  if (cluster.cluster.robot.is_robot) {
+    lines.push({
+      name: 'Robot',
+      values: ['True']
+    })
+    lines.push({
+      name: 'Robot TTL', values: [cluster.cluster.robot.robot_ttl]
+    })
+  }
+
+  lines.push({
+    name: 'Topics',
+    values: [`${cluster.cluster.topics.length} ${humanize.pluralize(cluster.cluster.topics.length, 'topic')}, see heroku kafka:topics`]
+  })
+
+  lines.push({
+    name: 'Messages',
+    values: [`${humanize.intComma(cluster.cluster.messages_in_per_sec)} ${humanize.pluralize(cluster.cluster.messages_in_per_sec, 'message')}/s`]
+  })
+
+  lines.push({
+    name: 'Traffic',
+    values: [`${humanize.fileSize(cluster.cluster.bytes_in_per_sec)}/s in / ${humanize.fileSize(cluster.cluster.bytes_out_per_sec)}/s out`]
+  })
+
+  if (cluster.cluster.data_size && cluster.cluster.limits.limit_bytes) {
+    let size = cluster.cluster.data_size
+    let limit = cluster.cluster.limits.limit_bytes
+    let percentage = ((size / limit) * 100.0).toFixed(2)
+    lines.push({
+      name: 'Data Size',
+      values: [`${humanize.fileSize(cluster.cluster.data_size.size)} / ${humanize.fileSize(cluster.cluster.limits.limit_bytes)} (${percentage})`]
+    })
+  }
+
+  lines.push({name: 'Add-on', values: [cli.color.addon(cluster.addon.name)]})
+
+  return lines
+}
+
 function displayCluster (cluster) {
   cli.styledHeader(cluster.configVars.map(c => cli.color.configVar(c)).join(', '))
-  cluster.cluster.info.push({name: 'Add-on', values: [cli.color.addon(cluster.addon.name)]})
-  let info = cluster.cluster.info.reduce((info, i) => {
+
+  let clusterInfo = formatInfo(cluster)
+  let info = clusterInfo.reduce((info, i) => {
     if (i.values.length > 0) {
       info[i.name] = i.values.join(', ')
     }
     return info
   }, {})
-  let keys = cluster.cluster.info.map(i => i.name)
+  let keys = clusterInfo.map(i => i.name)
+
   cli.styledObject(info, keys)
   cli.log()
 }
@@ -51,7 +118,7 @@ function * run (context, heroku) {
       cluster: heroku.request({
         host: host(addon),
         method: 'get',
-        path: `/client/kafka/v0/clusters/${addon.name}`
+        path: `/data/kafka/v0/clusters/${addon.name}`
       }).catch(err => {
         if (err.statusCode !== 404) throw err
         cli.warn(`${cli.color.addon(addon.name)} is not yet provisioned.\nRun ${cli.color.cmd('heroku kafka:wait')} to wait until the cluster is provisioned.`)
