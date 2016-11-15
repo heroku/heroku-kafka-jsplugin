@@ -24,17 +24,38 @@ function retention (retentionTimeMs) {
 
 function topicInfo (topic) {
   let lines = [
-    {name: 'Producers', values: [`${humanize.intComma(topic.messages_in_per_second)} ${humanize.pluralize(topic.messages_in_per_second, 'message')}/second (${humanize.fileSize(topic.bytes_in_per_second)}/second) total`]},
-    {name: 'Consumers', values: [`${humanize.fileSize(topic.bytes_out_per_second)}/second total`]},
-    {name: 'Partitions', values: [`${topic.partitions} ${humanize.pluralize(topic.partitions, 'partition')}`]},
-    {name: 'Replication Factor', values: [`${topic.replication_factor} (recommend > 1)`]}
+    {
+      name: 'Producers',
+      values: [`${humanize.intComma(topic.messages_in_per_second)} ${humanize.pluralize(topic.messages_in_per_second, 'message')}/second (${humanize.fileSize(topic.bytes_in_per_second)}/second) total`]
+    },
+    {
+      name: 'Consumers',
+      values: [`${humanize.fileSize(topic.bytes_out_per_second)}/second total`]
+    },
+    {
+      name: 'Partitions',
+      values: [`${topic.partitions} ${humanize.pluralize(topic.partitions, 'partition')}`]
+    },
+    {
+      name: 'Replication Factor',
+      values: [`${topic.replication_factor} (recommend > 1)`]
+    }
   ]
 
   if (topic.compaction_enabled) {
-    lines.push({name: 'Compaction', values: [`Compaction is enabled for ${topic.name}`]})
+    lines.push({
+      name: 'Compaction',
+      values: [`Compaction is enabled for ${topic.name}`]
+    })
   } else {
-    lines.push({name: 'Compaction', values: [`Compaction is disabled for ${topic.name}`]})
-    lines.push({name: 'Retention', values: [retention(topic.retention_time_ms)]})
+    lines.push({
+      name: 'Compaction',
+      values: [`Compaction is disabled for ${topic.name}`]
+    })
+    lines.push({
+      name: 'Retention',
+      values: [retention(topic.retention_time_ms)]
+    })
   }
 
   return lines

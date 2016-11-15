@@ -13,29 +13,61 @@ function configVarsFromName (attachments, name) {
 
 function formatInfo (cluster) {
   let lines = [
-    {name: 'Name', values: [cluster.addon.name]},
-    {name: 'Plan', values: [cluster.addon.plan.name]},
-    {name: 'Status', values: [cluster.cluster.state.message]},
-    {name: 'Version', values: [cluster.cluster.version]},
-    {name: 'Created', values: [cluster.cluster.created_at]}
+    {
+      name: 'Name',
+      values: [cluster.addon.name]
+    },
+    {
+      name: 'Plan',
+      values: [cluster.addon.plan.name]
+    },
+    {
+      name: 'Status',
+      values: [cluster.cluster.state.message]
+    },
+    {
+      name: 'Version',
+      values: [cluster.cluster.version]
+    },
+    {
+      name: 'Created',
+      values: [cluster.cluster.created_at]
+    }
   ]
 
   if (cluster.cluster.robot.is_robot) {
-    lines.push({name: 'Robot', values: ['True']})
-    lines.push({name: 'Robot TTL', values: [cluster.cluster.robot.robot_ttl]})
+    lines.push({
+      name: 'Robot',
+      values: ['True']
+    })
+    lines.push({
+      name: 'Robot TTL', values: [cluster.cluster.robot.robot_ttl]
+    })
   }
 
-  lines.push({name: 'Topics', values: [`${cluster.cluster.topics.length} ${humanize.pluralize(cluster.cluster.topics.length, 'topic')}, see heroku kafka:topics`]})
+  lines.push({
+    name: 'Topics',
+    values: [`${cluster.cluster.topics.length} ${humanize.pluralize(cluster.cluster.topics.length, 'topic')}, see heroku kafka:topics`]
+  })
 
-  lines.push({name: 'Messages', values: [`${humanize.intComma(cluster.cluster.messages_in_per_sec)} ${humanize.pluralize(cluster.cluster.messages_in_per_sec, 'message')}/s`]})
+  lines.push({
+    name: 'Messages',
+    values: [`${humanize.intComma(cluster.cluster.messages_in_per_sec)} ${humanize.pluralize(cluster.cluster.messages_in_per_sec, 'message')}/s`]
+  })
 
-  lines.push({name: 'Traffic', values: [`${humanize.fileSize(cluster.cluster.bytes_in_per_sec)}/s in / ${humanize.fileSize(cluster.cluster.bytes_out_per_sec)}/s out`]})
+  lines.push({
+    name: 'Traffic',
+    values: [`${humanize.fileSize(cluster.cluster.bytes_in_per_sec)}/s in / ${humanize.fileSize(cluster.cluster.bytes_out_per_sec)}/s out`]
+  })
 
   if (cluster.cluster.data_size && cluster.cluster.limits.limit_bytes) {
     let size = cluster.cluster.data_size
     let limit = cluster.cluster.limits.limit_bytes
     let percentage = ((size / limit) * 100.0).toFixed(2)
-    lines.push({name: 'Data Size', values: [`${humanize.fileSize(cluster.cluster.data_size.size)} / ${humanize.fileSize(cluster.cluster.limits.limit_bytes)} (${percentage})`]})
+    lines.push({
+      name: 'Data Size',
+      values: [`${humanize.fileSize(cluster.cluster.data_size.size)} / ${humanize.fileSize(cluster.cluster.limits.limit_bytes)} (${percentage})`]
+    })
   }
 
   lines.push({name: 'Add-on', values: [cli.color.addon(cluster.addon.name)]})
