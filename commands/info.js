@@ -60,13 +60,13 @@ function formatInfo (cluster) {
     values: [`${humanize.fileSize(cluster.cluster.bytes_in_per_sec)}/s in / ${humanize.fileSize(cluster.cluster.bytes_out_per_sec)}/s out`]
   })
 
-  if (cluster.cluster.data_size && cluster.cluster.limits.limit_bytes) {
+  if (cluster.cluster.data_size !== undefined && cluster.cluster.limits.data_size.limit_bytes !== undefined) {
     let size = cluster.cluster.data_size
-    let limit = cluster.cluster.limits.limit_bytes
+    let limit = cluster.cluster.limits.data_size.limit_bytes
     let percentage = ((size / limit) * 100.0).toFixed(2)
     lines.push({
       name: 'Data Size',
-      values: [`${humanize.fileSize(cluster.cluster.data_size.size)} / ${humanize.fileSize(cluster.cluster.limits.limit_bytes)} (${percentage})`]
+      values: [`${humanize.fileSize(size)} / ${humanize.fileSize(limit)} (${percentage}%)`]
     })
   }
 
