@@ -45,8 +45,8 @@ function formatInfo (cluster) {
     })
   }
 
-  // we hide __consumer_offsets; don't count it
-  const topicCount = Math.max(cluster.cluster.topics.length - 1, 0)
+  // we hide __consumer_offsets in topic listing; don't count it
+  const topicCount = cluster.cluster.topics.filter((topic) => topic !== '__consumer_offsets').length
   lines.push({
     name: 'Topics',
     values: [`${topicCount} ${humanize.pluralize(topicCount, 'topic')}, see heroku kafka:topics`]
