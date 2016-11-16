@@ -45,9 +45,11 @@ function formatInfo (cluster) {
     })
   }
 
+  // we hide __consumer_offsets; don't count it
+  const topicCount = Math.max(cluster.cluster.topics.length - 1, 0)
   lines.push({
     name: 'Topics',
-    values: [`${cluster.cluster.topics.length} ${humanize.pluralize(cluster.cluster.topics.length, 'topic')}, see heroku kafka:topics`]
+    values: [`${topicCount} ${humanize.pluralize(topicCount, 'topic')}, see heroku kafka:topics`]
   })
 
   lines.push({
