@@ -16,7 +16,6 @@ function formatInfo (info) {
   const addon = info.addon
 
   let lines = [
-    { name: 'Name', values: [addon.name] },
     { name: 'Plan', values: [addon.plan.name] },
     { name: 'Status', values: [cluster.state.message] },
     { name: 'Version', values: [cluster.version] },

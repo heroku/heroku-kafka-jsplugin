@@ -103,7 +103,6 @@ describe('kafka:info', () => {
       return cmd.run({app: 'myapp', args: {}})
         .then(() => expect(cli.stderr).to.be.empty)
         .then(() => expect(cli.stdout).to.equal(`=== KAFKA_URL, HEROKU_KAFKA_COBALT_URL
-Name:     kafka-1
 Plan:     heroku-kafka:beta-3
 Status:   available
 Version:  0.10.0.0
@@ -114,7 +113,6 @@ Traffic:  0 bytes/s in / 0 bytes/s out
 Add-on:   kafka-1
 
 === HEROKU_KAFKA_PURPLE_URL
-Name:     kafka-2
 Plan:     heroku-kafka:beta-3
 Status:   available
 Version:  0.10.0.0
@@ -138,7 +136,6 @@ Add-on:   kafka-2
       return cmd.run({app: 'myapp', args: {CLUSTER: 'kafka-2'}})
         .then(() => expect(cli.stderr).to.be.empty)
         .then(() => expect(cli.stdout).to.equal(`=== HEROKU_KAFKA_PURPLE_URL
-Name:     kafka-2
 Plan:     heroku-kafka:beta-3
 Status:   available
 Version:  0.10.0.0
@@ -161,7 +158,6 @@ Add-on:   kafka-2
 
       return cmd.run({app: 'myapp', args: {}})
         .then(() => expect(cli.stdout).to.equal(`=== HEROKU_KAFKA_PURPLE_URL
-Name:     kafka-2
 Plan:     heroku-kafka:beta-3
 Status:   available
 Version:  0.10.0.0
