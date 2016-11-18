@@ -11,42 +11,25 @@ function configVarsFromName (attachments, name) {
     .sort((name) => name !== 'KAFKA_URL')
 }
 
-function formatInfo (cluster) {
+function formatInfo (info) {
+  const cluster = info.cluster
+  const addon = info.addon
+
   let lines = [
-    {
-      name: 'Name',
-      values: [cluster.addon.name]
-    },
-    {
-      name: 'Plan',
-      values: [cluster.addon.plan.name]
-    },
-    {
-      name: 'Status',
-      values: [cluster.cluster.state.message]
-    },
-    {
-      name: 'Version',
-      values: [cluster.cluster.version]
-    },
-    {
-      name: 'Created',
-      values: [cluster.cluster.created_at]
-    }
+    { name: 'Name', values: [addon.name] },
+    { name: 'Plan', values: [addon.plan.name] },
+    { name: 'Status', values: [cluster.state.message] },
+    { name: 'Version', values: [cluster.version] },
+    { name: 'Created', values: [cluster.created_at] }
   ]
 
-  if (cluster.cluster.robot.is_robot) {
-    lines.push({
-      name: 'Robot',
-      values: ['True']
-    })
-    lines.push({
-      name: 'Robot TTL', values: [cluster.cluster.robot.robot_ttl]
-    })
+  if (cluster.robot.is_robot) {
+    lines.push({ name: 'Robot', values: ['True'] })
+    lines.push({ name: 'Robot TTL', values: [cluster.robot.robot_ttl] })
   }
 
   // we hide __consumer_offsets in topic listing; don't count it
-  const topicCount = cluster.cluster.topics.filter((topic) => topic !== '__consumer_offsets').length
+  const topicCount = cluster.topics.filter((topic) => topic !== '__consumer_offsets').length
   lines.push({
     name: 'Topics',
     values: [`${topicCount} ${humanize.pluralize(topicCount, 'topic')}, see heroku kafka:topics`]
@@ -54,17 +37,17 @@ function formatInfo (cluster) {
 
   lines.push({
     name: 'Messages',
-    values: [`${humanize.intComma(cluster.cluster.messages_in_per_sec)} ${humanize.pluralize(cluster.cluster.messages_in_per_sec, 'message')}/s`]
+    values: [`${humanize.intComma(cluster.messages_in_per_sec)} ${humanize.pluralize(cluster.messages_in_per_sec, 'message')}/s`]
   })
 
   lines.push({
     name: 'Traffic',
-    values: [`${humanize.fileSize(cluster.cluster.bytes_in_per_sec)}/s in / ${humanize.fileSize(cluster.cluster.bytes_out_per_sec)}/s out`]
+    values: [`${humanize.fileSize(cluster.bytes_in_per_sec)}/s in / ${humanize.fileSize(cluster.bytes_out_per_sec)}/s out`]
   })
 
-  if (cluster.cluster.data_size !== undefined && cluster.cluster.limits.data_size.limit_bytes !== undefined) {
-    let size = cluster.cluster.data_size
-    let limit = cluster.cluster.limits.data_size.limit_bytes
+  if (cluster.data_size !== undefined && cluster.limits.data_size.limit_bytes !== undefined) {
+    let size = cluster.data_size
+    let limit = cluster.limits.data_size.limit_bytes
     let percentage = ((size / limit) * 100.0).toFixed(2)
     lines.push({
       name: 'Data Size',
@@ -72,7 +55,7 @@ function formatInfo (cluster) {
     })
   }
 
-  lines.push({name: 'Add-on', values: [cli.color.addon(cluster.addon.name)]})
+  lines.push({name: 'Add-on', values: [cli.color.addon(addon.name)]})
 
   return lines
 }
