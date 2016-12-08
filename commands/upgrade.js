@@ -57,5 +57,5 @@ module.exports = {
     { name: 'version', description: 'requested kafka version for upgrade', hasValue: true, required: true },
     { name: 'confirm', description: 'pass the app name to skip the manual confirmation prompt', hasValue: true }
   ],
-  run: cli.command(co.wrap(upgradeCluster))
+  run: cli.command({preauth: true}, co.wrap(upgradeCluster))
 }

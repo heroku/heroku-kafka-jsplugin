@@ -100,7 +100,7 @@ let cmd = {
 `,
   needsApp: true,
   needsAuth: true,
-  run: cli.command(co.wrap(kafkaTopic))
+  run: cli.command({preauth: true}, co.wrap(kafkaTopic))
 }
 
 module.exports = {

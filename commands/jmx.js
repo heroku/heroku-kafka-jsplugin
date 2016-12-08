@@ -56,5 +56,5 @@ module.exports = {
 `,
   needsApp: true,
   needsAuth: true,
-  run: cli.command(co.wrap(jmx))
+  run: cli.command({preauth: true}, co.wrap(jmx))
 }

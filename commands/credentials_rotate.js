@@ -41,5 +41,5 @@ module.exports = {
       hasValue: false,
       required: true }
   ],
-  run: cli.command(co.wrap(credentialsRotate))
+  run: cli.command({preauth: true}, co.wrap(credentialsRotate))
 }

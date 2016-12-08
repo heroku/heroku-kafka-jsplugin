@@ -59,7 +59,7 @@ let cmd = {
   ],
   needsApp: true,
   needsAuth: true,
-  run: cli.command(co.wrap(listTopics))
+  run: cli.command({preauth: true}, co.wrap(listTopics))
 }
 
 module.exports = {

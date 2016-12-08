@@ -55,5 +55,5 @@ module.exports = {
     { name: 'VALUE' },
     { name: 'CLUSTER', optional: true }
   ],
-  run: cli.command(co.wrap(compaction))
+  run: cli.command({preauth: true}, co.wrap(compaction))
 }

@@ -60,5 +60,5 @@ module.exports = {
 `,
   needsApp: true,
   needsAuth: true,
-  run: cli.command(co.wrap(zookeeper))
+  run: cli.command({preauth: true}, co.wrap(zookeeper))
 }

@@ -84,7 +84,7 @@ let cmd = {
       description: 'pass the app name to skip the manual confirmation prompt',
       hasValue: true }
   ],
-  run: cli.command(co.wrap(createTopic))
+  run: cli.command({preauth: true}, co.wrap(createTopic))
 }
 
 module.exports = {

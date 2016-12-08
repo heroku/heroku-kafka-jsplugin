@@ -56,5 +56,5 @@ module.exports = {
       hasValue: true,
       required: false }
   ],
-  run: cli.command(co.wrap(fail))
+  run: cli.command({preauth: true}, co.wrap(fail))
 }
