@@ -45,6 +45,7 @@ function * createTopic (context, heroku) {
             retention_time_ms: flags['retention-time'],
             replication_factor: flags['replication-factor'],
             partition_count: flags['partitions'],
+            cleanup_policy: flags['cleanup-policy'],
             compaction: flags['compaction'] || false
           }
         },
@@ -79,6 +80,7 @@ let cmd = {
     { name: 'partitions', description: 'number of partitions to give the topic', hasValue: true },
     { name: 'replication-factor', description: 'number of replicas the topic should be created across', hasValue: true },
     { name: 'retention-time', description: 'length of time messages in the topic should be retained (at least 24h)', hasValue: true },
+    { name: 'cleanup-policy', description: 'cleanup-policy for this topic', hasValue: true, optional: true},
     { name: 'compaction', description: 'whether to use compaction for this topic', hasValue: false },
     { name: 'confirm',
       description: 'pass the app name to skip the manual confirmation prompt',
