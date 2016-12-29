@@ -12,8 +12,8 @@ const cli = require('heroku-cli-util')
 const nock = require('nock')
 
 const all = [
-  {name: 'kafka-1', plan: {name: 'heroku-kafka:beta-3'}},
-  {name: 'kafka-2', plan: {name: 'heroku-kafka:beta-3'}}
+  {name: 'kafka-1', id: '00000000-0000-0000-0000-000000000000', plan: {name: 'heroku-kafka:beta-3'}},
+  {name: 'kafka-2', id: '00000000-0000-0000-0000-000000000001', plan: {name: 'heroku-kafka:beta-3'}}
 ]
 
 const fetcher = () => {
@@ -46,8 +46,8 @@ describe('kafka:wait', () => {
 
   it('waits for a cluster to be available', () => {
     kafka
-      .get(waitUrl('kafka-1')).reply(200, {'waiting?': true, message: 'pending'})
-      .get(waitUrl('kafka-1')).reply(200, {'waiting?': false, message: 'available'})
+      .get(waitUrl('00000000-0000-0000-0000-000000000000')).reply(200, {'waiting?': true, message: 'pending'})
+      .get(waitUrl('00000000-0000-0000-0000-000000000000')).reply(200, {'waiting?': false, message: 'available'})
 
     return cmd.run({app: 'myapp', args: {cluster: 'KAFKA_URL'}, flags: {'wait-interval': '1'}})
       .then(() => expect(cli.stdout).to.be.empty)
@@ -58,8 +58,8 @@ Waiting for cluster kafka-1... available
 
   it('waits for all clusters to be available', () => {
     kafka
-      .get(waitUrl('kafka-1')).reply(200, {'waiting?': false})
-      .get(waitUrl('kafka-2')).reply(200, {'waiting?': false})
+      .get(waitUrl('00000000-0000-0000-0000-000000000000')).reply(200, {'waiting?': false})
+      .get(waitUrl('00000000-0000-0000-0000-000000000001')).reply(200, {'waiting?': false})
 
     return cmd.run({app: 'myapp', args: {}, flags: {}})
       .then(() => expect(cli.stdout, 'to equal', ''))
@@ -68,7 +68,7 @@ Waiting for cluster kafka-1... available
 
   it('displays errors', () => {
     kafka
-      .get(waitUrl('kafka-1')).reply(200, {'error?': true, message: 'this is an error message'})
+      .get(waitUrl('00000000-0000-0000-0000-000000000000')).reply(200, {'error?': true, message: 'this is an error message'})
 
     return cmd.run({app: 'myapp', args: {}, flags: {}})
       .catch(err => {

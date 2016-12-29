@@ -12,7 +12,7 @@ const cli = require('heroku-cli-util')
 const nock = require('nock')
 
 const withCluster = function * (heroku, app, cluster, callback) {
-  yield callback({ name: 'kafka-1' })
+  yield callback({ name: 'kafka-1', id: '00000000-0000-0000-0000-000000000000' })
 }
 
 let lastApp
@@ -57,7 +57,7 @@ describe('kafka:topics:destroy', () => {
   it('requires app confirmation', () => {
     const message = 'This command will affect the cluster: kafka-1, which is on myapp'
 
-    kafka.delete(deleteUrl('kafka-1', 'topic-1')).reply(200)
+    kafka.delete(deleteUrl('00000000-0000-0000-0000-000000000000', 'topic-1')).reply(200)
 
     lastApp = null
     lastConfirm = null
@@ -74,7 +74,7 @@ describe('kafka:topics:destroy', () => {
   })
 
   it('deletes the topic', () => {
-    kafka.delete(deleteUrl('kafka-1', 'topic-1'), { topic_name: 'topic-1' })
+    kafka.delete(deleteUrl('00000000-0000-0000-0000-000000000000', 'topic-1'), { topic_name: 'topic-1' })
          .reply(200)
 
     return cmd.run({app: 'myapp',

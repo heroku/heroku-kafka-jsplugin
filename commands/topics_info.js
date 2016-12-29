@@ -66,7 +66,7 @@ function * kafkaTopic (context, heroku) {
     const topic = context.args.TOPIC
 
     let info = yield request(heroku, {
-      path: `/data/kafka/${VERSION}/clusters/${addon.name}/topics`
+      path: `/data/kafka/${VERSION}/clusters/${addon.id}/topics`
     })
 
     let forTopic = info.topics.filter((t) => t.name === topic)

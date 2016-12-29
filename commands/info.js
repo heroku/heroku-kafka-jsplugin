@@ -102,7 +102,7 @@ function * run (context, heroku) {
       cluster: heroku.request({
         host: host(addon),
         method: 'get',
-        path: `/data/kafka/v0/clusters/${addon.name}`
+        path: `/data/kafka/v0/clusters/${addon.id}`
       }).catch(err => {
         if (err.statusCode !== 404) throw err
         cli.warn(`${cli.color.addon(addon.name)} is not yet provisioned.\nRun ${cli.color.cmd('heroku kafka:wait')} to wait until the cluster is provisioned.`)

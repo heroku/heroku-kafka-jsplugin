@@ -25,7 +25,7 @@ function * upgradeCluster (context, heroku) {
       body: {
         version: context.flags.version
       },
-      path: `/client/kafka/${VERSION}/clusters/${addon.name}/upgrade`
+      path: `/client/kafka/${VERSION}/clusters/${addon.id}/upgrade`
     })
 
     cli.action.done('started.\n\n')
