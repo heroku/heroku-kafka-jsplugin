@@ -31,7 +31,7 @@ function * zookeeper (context, heroku) {
         body: {
           enabled: enabled
         },
-        path: `/client/kafka/${VERSION}/clusters/${addon.id}/zookeeper`
+        path: `/data/kafka/${VERSION}/clusters/${addon.id}/zookeeper`
       })
     }))
   })

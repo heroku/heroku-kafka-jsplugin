@@ -36,7 +36,7 @@ describe('kafka:upgrade', () => {
   let kafka
 
   let upgradeUrl = (cluster) => {
-    return `/client/kafka/v0/clusters/${cluster}/upgrade`
+    return `/data/kafka/v0/clusters/${cluster}/upgrade`
   }
 
   beforeEach(() => {

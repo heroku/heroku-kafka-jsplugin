@@ -26,7 +26,7 @@ describe('kafka:jmx', () => {
   let kafka
 
   let configUrl = (cluster) => {
-    return `/client/kafka/v0/clusters/${cluster}/jmx`
+    return `/data/kafka/v0/clusters/${cluster}/jmx`
   }
 
   beforeEach(() => {

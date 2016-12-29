@@ -36,7 +36,7 @@ describe('kafka:fail', () => {
   let kafka
 
   let failUrl = (cluster) => {
-    return `/client/kafka/v0/clusters/${cluster}/induce-failure`
+    return `/data/kafka/v0/clusters/${cluster}/induce-failure`
   }
 
   beforeEach(() => {

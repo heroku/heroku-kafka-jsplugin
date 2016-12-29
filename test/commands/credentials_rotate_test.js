@@ -26,7 +26,7 @@ describe('kafka:credentials', () => {
   let kafka
 
   let credentialsUrl = (cluster) => {
-    return `/client/kafka/v0/clusters/${cluster}/rotate-credentials`
+    return `/data/kafka/v0/clusters/${cluster}/rotate-credentials`
   }
 
   beforeEach(() => {
