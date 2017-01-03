@@ -13,7 +13,7 @@ const cli = require('heroku-cli-util')
 const nock = require('nock')
 
 const withCluster = function * (heroku, app, cluster, callback) {
-  yield callback({ name: 'kafka-1', id: '00000000-0000-0000-0000-000000000000' })
+  yield callback({ name: 'kafka-1' })
 }
 
 let lastApp
@@ -66,7 +66,7 @@ describe('kafka:topics:create', () => {
   it('requires app confirmation and warns if replication factor of 1 specified', () => {
     const message = `This command will create a topic with no replication on the cluster: kafka-1, which is on myapp.\nData written to this topic will be lost if any single broker suffers catastrophic failure.`
 
-    kafka.post(createUrl('00000000-0000-0000-0000-000000000000')).reply(200, { message: 'success' })
+    kafka.post(createUrl('kafka-1')).reply(200, { message: 'success' })
 
     lastApp = null
     lastConfirm = null
@@ -86,7 +86,7 @@ describe('kafka:topics:create', () => {
   })
 
   it('does not require app confirmation with higher replication factor', () => {
-    kafka.post(createUrl('00000000-0000-0000-0000-000000000000')).reply(200)
+    kafka.post(createUrl('kafka-1')).reply(200)
 
     lastApp = null
     lastConfirm = null
@@ -103,7 +103,7 @@ describe('kafka:topics:create', () => {
   })
 
   it('passes the topic name and specified flags', () => {
-    kafka.post(createUrl('00000000-0000-0000-0000-000000000000'),
+    kafka.post(createUrl('kafka-1'),
       {
         topic: {
           name: 'topic-1',
@@ -126,7 +126,7 @@ describe('kafka:topics:create', () => {
   })
 
   it('defaults to 32 partitions', () => {
-    kafka.post(createUrl('00000000-0000-0000-0000-000000000000'),
+    kafka.post(createUrl('kafka-1'),
       {
         topic: {
           name: 'topic-1',

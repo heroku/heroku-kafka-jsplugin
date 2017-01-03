@@ -29,7 +29,7 @@ function * retentionTime (context, heroku) {
             retention_time_ms: parsed
           }
         },
-        path: `/data/kafka/${VERSION}/clusters/${addon.id}/topics/${topicName}`
+        path: `/data/kafka/${VERSION}/clusters/${addon.name}/topics/${topicName}`
       })
     }))
 

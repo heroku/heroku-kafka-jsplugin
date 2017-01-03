@@ -48,7 +48,7 @@ function * createTopic (context, heroku) {
             compaction: flags['compaction'] || false
           }
         },
-        path: `/data/kafka/${VERSION}/clusters/${addon.id}/topics`
+        path: `/data/kafka/${VERSION}/clusters/${addon.name}/topics`
       })
     }))
 

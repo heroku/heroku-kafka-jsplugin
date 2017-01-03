@@ -12,7 +12,7 @@ const VERSION = 'v0'
 function * listTopics (context, heroku) {
   yield withCluster(heroku, context.app, context.args.CLUSTER, function * (addon) {
     let topics = yield request(heroku, {
-      path: `/data/kafka/${VERSION}/clusters/${addon.id}/topics`
+      path: `/data/kafka/${VERSION}/clusters/${addon.name}/topics`
     })
     cli.styledHeader('Kafka Topics on ' + (topics.attachment_name || 'HEROKU_KAFKA'))
     let filtered = topics.topics.filter((t) => t.name !== '__consumer_offsets')

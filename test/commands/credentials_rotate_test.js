@@ -13,7 +13,7 @@ const nock = require('nock')
 
 let planName
 const withCluster = function * (heroku, app, cluster, callback) {
-  yield callback({ name: 'kafka-1', id: '00000000-0000-0000-0000-000000000000', plan: { name: planName } })
+  yield callback({ name: 'kafka-1', plan: { name: planName } })
 }
 
 const cmd = proxyquire('../../commands/credentials_rotate', {
@@ -42,7 +42,7 @@ describe('kafka:credentials', () => {
   })
 
   it(`rotates credentials`, () => {
-    kafka.post(credentialsUrl('00000000-0000-0000-0000-000000000000')).reply(200, {message: 'Rotated'})
+    kafka.post(credentialsUrl('kafka-1')).reply(200, {message: 'Rotated'})
 
     return cmd.run({app: 'myapp', args: {CLUSTER: undefined}, flags: { reset: true }})
       .then(() => expect(cli.stderr).to.be.empty)
