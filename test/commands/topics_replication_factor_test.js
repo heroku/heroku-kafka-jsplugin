@@ -12,7 +12,7 @@ const cli = require('heroku-cli-util')
 const nock = require('nock')
 
 const withCluster = function * (heroku, app, cluster, callback) {
-  yield callback({ name: 'kafka-1', id: '00000000-0000-0000-0000-000000000000' })
+  yield callback({ name: 'kafka-1' })
 }
 
 const cmd = proxyquire('../../commands/topics_replication_factor', {
@@ -40,7 +40,7 @@ describe('kafka:topics:replication-factor', () => {
   })
 
   it('sets replication factor to the specified value', () => {
-    kafka.put(topicConfigUrl('00000000-0000-0000-0000-000000000000', 'topic-1'),
+    kafka.put(topicConfigUrl('kafka-1', 'topic-1'),
               { topic: { name: 'topic-1', replication_factor: '5' } }).reply(200)
 
     return cmd.run({app: 'myapp', args: { TOPIC: 'topic-1', VALUE: '5' }})

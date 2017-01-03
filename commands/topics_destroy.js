@@ -20,7 +20,7 @@ function * destroyTopic (context, heroku) {
         body: {
           topic_name: topicName
         },
-        path: `/data/kafka/${VERSION}/clusters/${addon.id}/topics/${topicName}`
+        path: `/data/kafka/${VERSION}/clusters/${addon.name}/topics/${topicName}`
       })
     }))
 

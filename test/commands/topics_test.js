@@ -12,7 +12,7 @@ const cli = require('heroku-cli-util')
 const nock = require('nock')
 
 const withCluster = function * (heroku, app, cluster, callback) {
-  yield callback({ name: 'kafka-1', id: '00000000-0000-0000-0000-000000000000' })
+  yield callback({ name: 'kafka-1' })
 }
 
 const cmd = proxyquire('../../commands/topics', {
@@ -41,7 +41,7 @@ describe('kafka:topics', () => {
 
   describe('with no topics in the cluster', () => {
     it('indicates there are no topics', () => {
-      kafka.get(topicsUrl('00000000-0000-0000-0000-000000000000')).reply(200, {
+      kafka.get(topicsUrl('kafka-1')).reply(200, {
         attachment_name: 'HEROKU_KAFKA_BLUE_URL',
         topics: []
       })
@@ -56,7 +56,7 @@ Use heroku kafka:topics:create to create a topic.
     })
 
     it('ignores the __consumer_offsets topic', () => {
-      kafka.get(topicsUrl('00000000-0000-0000-0000-000000000000')).reply(200, {
+      kafka.get(topicsUrl('kafka-1')).reply(200, {
         attachment_name: 'HEROKU_KAFKA_BLUE_URL',
         topics: [
           { name: '__consumer_offsets', messages_in_per_second: 9.0, bytes_in_per_second: 2 }
@@ -75,7 +75,7 @@ Use heroku kafka:topics:create to create a topic.
 
   describe('with some topics in the cluster', () => {
     it('displays information about these topics', () => {
-      kafka.get(topicsUrl('00000000-0000-0000-0000-000000000000')).reply(200, {
+      kafka.get(topicsUrl('kafka-1')).reply(200, {
         attachment_name: 'HEROKU_KAFKA_BLUE_URL',
         topics: [
           { name: 'topic-1', messages_in_per_second: 10.0, bytes_in_per_second: 0 },
@@ -95,7 +95,7 @@ topic-2  12/sec    3 bytes/sec
     })
 
     it('omits information about the special __consumer_offsets topic', () => {
-      kafka.get(topicsUrl('00000000-0000-0000-0000-000000000000')).reply(200, {
+      kafka.get(topicsUrl('kafka-1')).reply(200, {
         attachment_name: 'HEROKU_KAFKA_BLUE_URL',
         topics: [
           { name: '__consumer_offsets', messages_in_per_second: '9.0', bytes: '2' },

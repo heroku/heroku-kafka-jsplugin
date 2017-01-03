@@ -13,8 +13,8 @@ const nock = require('nock')
 
 let addon
 let all = [
-  {name: 'kafka-1', id: '00000000-0000-0000-0000-000000000000', plan: {name: 'heroku-kafka:beta-3'}},
-  {name: 'kafka-2', id: '00000000-0000-0000-0000-000000000001', plan: {name: 'heroku-kafka:beta-3'}}
+  {name: 'kafka-1', plan: {name: 'heroku-kafka:beta-3'}},
+  {name: 'kafka-2', plan: {name: 'heroku-kafka:beta-3'}}
 ]
 
 const fetcher = () => {
@@ -60,14 +60,14 @@ describe('kafka:info', () => {
   describe('with 2 dbs', () => {
     let plan = {name: 'heroku-kafka:beta-3'}
     let attachments = [
-      { addon: { name: 'kafka-1', id: '00000000-0000-0000-0000-000000000000' }, name: 'KAFKA' },
-      { addon: { name: 'kafka-1', id: '00000000-0000-0000-0000-000000000000' }, name: 'HEROKU_KAFKA_COBALT' },
-      { addon: { name: 'kafka-2', id: '00000000-0000-0000-0000-000000000001' }, name: 'HEROKU_KAFKA_PURPLE' }
+      { addon: { name: 'kafka-1' }, name: 'KAFKA' },
+      { addon: { name: 'kafka-1' }, name: 'HEROKU_KAFKA_COBALT' },
+      { addon: { name: 'kafka-2' }, name: 'HEROKU_KAFKA_PURPLE' }
     ]
     let addonService = {name: 'heroku-kafka'}
     let addons = [
-      {name: 'kafka-1', id: '00000000-0000-0000-0000-000000000000', addon_service: addonService, plan},
-      {name: 'kafka-2', id: '00000000-0000-0000-0000-000000000001', addon_service: addonService, plan}
+      {id: 1, name: 'kafka-1', addon_service: addonService, plan},
+      {id: 2, name: 'kafka-2', addon_service: addonService, plan}
     ]
     let clusterA = {
       addon: { name: 'kafka-1' },
@@ -97,8 +97,8 @@ describe('kafka:info', () => {
 
       api.get('/apps/myapp/addon-attachments').reply(200, attachments)
       kafka
-        .get(infoUrl('00000000-0000-0000-0000-000000000000')).reply(200, clusterA)
-        .get(infoUrl('00000000-0000-0000-0000-000000000001')).reply(200, clusterB)
+        .get(infoUrl('kafka-1')).reply(200, clusterA)
+        .get(infoUrl('kafka-2')).reply(200, clusterB)
 
       return cmd.run({app: 'myapp', args: {}})
         .then(() => expect(cli.stderr).to.be.empty)
@@ -130,7 +130,7 @@ Add-on:   kafka-2
       api.get('/apps/myapp/addon-attachments').reply(200, attachments)
 
       kafka
-        .get(infoUrl('00000000-0000-0000-0000-000000000001'))
+        .get(infoUrl('kafka-2'))
         .reply(200, clusterB)
 
       return cmd.run({app: 'myapp', args: {CLUSTER: 'kafka-2'}})
@@ -153,8 +153,8 @@ Add-on:   kafka-2
 
       api.get('/apps/myapp/addon-attachments').reply(200, attachments)
       kafka
-        .get(infoUrl('00000000-0000-0000-0000-000000000000')).reply(404)
-        .get(infoUrl('00000000-0000-0000-0000-000000000001')).reply(200, clusterB)
+        .get(infoUrl('kafka-1')).reply(404)
+        .get(infoUrl('kafka-2')).reply(200, clusterB)
 
       return cmd.run({app: 'myapp', args: {}})
         .then(() => expect(cli.stdout).to.equal(`=== HEROKU_KAFKA_PURPLE_URL

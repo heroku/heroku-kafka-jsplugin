@@ -23,7 +23,7 @@ function * replicationFactor (context, heroku) {
             replication_factor: context.args.VALUE
           }
         },
-        path: `/data/kafka/${VERSION}/clusters/${addon.id}/topics/${topicName}`
+        path: `/data/kafka/${VERSION}/clusters/${addon.name}/topics/${topicName}`
       })
     }))
     cli.log(`Use \`heroku kafka:topics:info ${context.args.TOPIC}\` to monitor your topic.`)
