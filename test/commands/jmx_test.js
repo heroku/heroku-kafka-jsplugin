@@ -13,7 +13,7 @@ const cli = require('heroku-cli-util')
 const nock = require('nock')
 
 const withCluster = function * (heroku, app, cluster, callback) {
-  yield callback({ name: 'kafka-1' })
+  yield callback({ name: 'kafka-1', id: '00000000-0000-0000-0000-000000000000' })
 }
 
 const cmd = proxyquire('../../commands/jmx', {
@@ -53,7 +53,7 @@ describe('kafka:jmx', () => {
   const validEnable = [ 'enable', 'on' ]
   validEnable.forEach((value) => {
     it(`turns JMX on with argument ${value}`, () => {
-      kafka.post(configUrl('kafka-1'), { enabled: true }).reply(200)
+      kafka.post(configUrl('00000000-0000-0000-0000-000000000000'), { enabled: true }).reply(200)
 
       return cmd.run({app: 'myapp', args: { VALUE: value }})
                 .then(() => expect(cli.stderr).to.equal('Enabling JMX access... done\n'))
@@ -64,7 +64,7 @@ describe('kafka:jmx', () => {
   const validDisable = [ 'disable', 'off' ]
   validDisable.forEach((value) => {
     it(`turns JMX off with argument ${value}`, () => {
-      kafka.post(configUrl('kafka-1'), { enabled: false }).reply(200)
+      kafka.post(configUrl('00000000-0000-0000-0000-000000000000'), { enabled: false }).reply(200)
 
       return cmd.run({app: 'myapp', args: { VALUE: value }})
                 .then(() => expect(cli.stderr).to.equal('Disabling JMX access... done\n'))

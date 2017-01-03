@@ -11,7 +11,7 @@ function * credentialsRotate (context, heroku) {
   yield withCluster(heroku, context.app, context.args.CLUSTER, function * (addon) {
     let response = yield request(heroku, {
       method: 'POST',
-      path: `/client/kafka/${VERSION}/clusters/${addon.name}/rotate-credentials`
+      path: `/client/kafka/${VERSION}/clusters/${addon.id}/rotate-credentials`
     })
 
     cli.log(response.message)

@@ -12,7 +12,7 @@ const nock = require('nock')
 const cli = require('heroku-cli-util')
 
 const withCluster = function * (heroku, app, cluster, callback) {
-  yield callback({ name: 'kafka-1' })
+  yield callback({ name: 'kafka-1', id: '00000000-0000-0000-0000-000000000000' })
 }
 
 let lastApp
@@ -56,7 +56,7 @@ describe('kafka:fail', () => {
     const cluster = 'kafka-1'
     const message = `This command will affect the cluster: ${cluster}, which is on ${app}\n\nThis command will forcibly terminate nodes in your cluster at random.\nYou should only run this command in controlled testing scenarios.`
 
-    kafka.post(failUrl('kafka-1')).reply(200, { message: 'Triggered failure on node 1.2.3.4' })
+    kafka.post(failUrl('00000000-0000-0000-0000-000000000000')).reply(200, { message: 'Triggered failure on node 1.2.3.4' })
 
     return cmd.run({app: 'myapp', args: {}, flags: {confirm: 'myapp'}})
               .then(() => {
@@ -67,7 +67,7 @@ describe('kafka:fail', () => {
   })
 
   it('triggers failure', () => {
-    kafka.post(failUrl('kafka-1', {confirm: 'myapp',
+    kafka.post(failUrl('00000000-0000-0000-0000-000000000000', {confirm: 'myapp',
                                    catastrophic: false,
                                    zookeeper: false}))
          .reply(200, { message: 'Triggered failure on node 1.2.3.4' })
@@ -82,7 +82,7 @@ describe('kafka:fail', () => {
   })
 
   it('passes the --catastrophic flag', () => {
-    kafka.post(failUrl('kafka-1', {confirm: 'myapp',
+    kafka.post(failUrl('00000000-0000-0000-0000-000000000000', {confirm: 'myapp',
                                    catastrophic: true,
                                    zookeeper: false}))
          .reply(200, { message: 'Triggered failure on node 1.2.3.4' })
@@ -97,7 +97,7 @@ describe('kafka:fail', () => {
   })
 
   it('passes the --zookeeper flag', () => {
-    kafka.post(failUrl('kafka-1', {confirm: 'myapp',
+    kafka.post(failUrl('00000000-0000-0000-0000-000000000000', {confirm: 'myapp',
                                    catastrophic: false,
                                    zookeeper: true}))
          .reply(200, { message: 'Triggered failure on node 1.2.3.4' })

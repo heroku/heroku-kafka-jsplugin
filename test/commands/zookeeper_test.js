@@ -14,7 +14,7 @@ const nock = require('nock')
 
 let planName
 const withCluster = function * (heroku, app, cluster, callback) {
-  yield callback({ name: 'kafka-1', plan: { name: planName } })
+  yield callback({ name: 'kafka-1', id: '00000000-0000-0000-0000-000000000000', plan: { name: planName } })
 }
 
 const cmd = proxyquire('../../commands/zookeeper', {
@@ -62,7 +62,7 @@ describe('kafka:zookeeper', () => {
   const validEnable = [ 'enable', 'on' ]
   validEnable.forEach((value) => {
     it(`turns zookeeper on with argument ${value}`, () => {
-      kafka.post(configUrl('kafka-1'), { enabled: true }).reply(200)
+      kafka.post(configUrl('00000000-0000-0000-0000-000000000000'), { enabled: true }).reply(200)
 
       return cmd.run({app: 'myapp', args: { VALUE: value }})
                 .then(() => expect(cli.stderr).to.equal('Enabling Zookeeper access... done\n'))
@@ -73,7 +73,7 @@ describe('kafka:zookeeper', () => {
   const validDisable = [ 'disable', 'off' ]
   validDisable.forEach((value) => {
     it(`turns zookeeper off with argument ${value}`, () => {
-      kafka.post(configUrl('kafka-1'), { enabled: false }).reply(200)
+      kafka.post(configUrl('00000000-0000-0000-0000-000000000000'), { enabled: false }).reply(200)
 
       return cmd.run({app: 'myapp', args: { VALUE: value }})
                 .then(() => expect(cli.stderr).to.equal('Disabling Zookeeper access... done\n'))

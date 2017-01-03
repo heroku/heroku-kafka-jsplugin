@@ -13,7 +13,7 @@ const cli = require('heroku-cli-util')
 const nock = require('nock')
 
 const withCluster = function * (heroku, app, cluster, callback) {
-  yield callback({ name: 'kafka-1' })
+  yield callback({ name: 'kafka-1', id: '00000000-0000-0000-0000-000000000000' })
 }
 
 const cmd = proxyquire('../../commands/topics_retention_time', {
@@ -51,7 +51,7 @@ describe('kafka:topics:retention-time', () => {
   })
 
   it('sets retention time to the specified value', () => {
-    kafka.put(topicConfigUrl('kafka-1', 'topic-1'),
+    kafka.put(topicConfigUrl('00000000-0000-0000-0000-000000000000', 'topic-1'),
               { topic: { name: 'topic-1', retention_time_ms: 60000 } }).reply(200)
 
     return cmd.run({app: 'myapp',
