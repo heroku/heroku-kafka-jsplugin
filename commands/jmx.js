@@ -26,7 +26,7 @@ function * jmx (context, heroku) {
         body: {
           enabled: enabled
         },
-        path: `/client/kafka/${VERSION}/clusters/${addon.id}/jmx`
+        path: `/data/kafka/${VERSION}/clusters/${addon.id}/jmx`
       })
     }))
   })

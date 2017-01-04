@@ -27,7 +27,7 @@ describe('kafka:zookeeper', () => {
   let kafka
 
   let configUrl = (cluster) => {
-    return `/client/kafka/v0/clusters/${cluster}/zookeeper`
+    return `/data/kafka/v0/clusters/${cluster}/zookeeper`
   }
 
   beforeEach(() => {

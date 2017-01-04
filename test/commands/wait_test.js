@@ -30,7 +30,7 @@ const cmd = proxyquire('../../commands/wait', {
 describe('kafka:wait', () => {
   let kafka
   let waitUrl = (cluster) => {
-    return `/client/kafka/v0/clusters/${cluster}/wait_status`
+    return `/data/kafka/v0/clusters/${cluster}/wait_status`
   }
 
   beforeEach(() => {

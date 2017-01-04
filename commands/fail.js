@@ -19,7 +19,7 @@ function * fail (context, heroku) {
           catastrophic: context.flags.catastrophic,
           zookeeper: context.flags.zookeeper
         },
-        path: `/client/kafka/${VERSION}/clusters/${addon.id}/induce-failure`
+        path: `/data/kafka/${VERSION}/clusters/${addon.id}/induce-failure`
       })
     }))
 
