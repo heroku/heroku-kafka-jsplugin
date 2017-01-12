@@ -8,7 +8,6 @@ let withCluster = require('../lib/clusters').withCluster
 let request = require('../lib/clusters').request
 
 const VERSION = 'v0'
-const DEFAULT_PARTITIONS = '32'
 
 function * createTopic (context, heroku) {
   var flags = Object.assign({}, context.flags)
@@ -19,9 +18,6 @@ function * createTopic (context, heroku) {
       cli.exit(1, `Could not parse retention time '${value}'; expected value like '10d' or '36h'`)
     }
     flags['retention-time'] = parsed
-  }
-  if (!('partitions' in flags)) {
-    flags['partitions'] = DEFAULT_PARTITIONS
   }
 
   yield withCluster(heroku, context.app, context.args.CLUSTER, function * (addon) {
