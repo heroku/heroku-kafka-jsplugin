@@ -28,13 +28,14 @@ function * write (context, heroku) {
       clientId: CLIENT_ID,
       connectionString: config.url,
       ssl: {
-        clientCert: config.clientCert,
-        clientCertKey: config.clientCertKey
+        cert: config.clientCert,
+        key: config.clientCertKey
       },
       logger: {
         logLevel: 0
       }
     })
+
     try {
       yield producer.init()
     } catch (e) {
@@ -42,7 +43,10 @@ function * write (context, heroku) {
       cli.exit(1, 'Could not connect to kafka')
     }
 
-    const topicName = context.args.TOPIC
+    var topicName = context.args.TOPIC
+    if (config.prefix) {
+      topicName = `${config.prefix}${context.args.TOPIC}`
+    }
     const partition = parseInt(context.flags.partition) || 0
     const key = context.flags.key
 

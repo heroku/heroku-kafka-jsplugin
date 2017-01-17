@@ -28,8 +28,8 @@ function * tail (context, heroku) {
       clientId: CLIENT_ID,
       connectionString: config.url,
       ssl: {
-        clientCert: config.clientCert,
-        clientCertKey: config.clientCertKey
+        cert: config.clientCert,
+        key: config.clientCertKey
       },
       logger: {
         logLevel: 0
@@ -42,12 +42,17 @@ function * tail (context, heroku) {
       cli.exit(1, 'Could not connect to kafka')
     }
 
+    var topicName = context.args.TOPIC
+    if (config.prefix) {
+      topicName = `${config.prefix}${context.args.TOPIC}`
+    }
+
     try {
-      consumer.subscribe(context.args.TOPIC, (messageSet, topic, partition) => {
+      consumer.subscribe(topicName, (messageSet, topic, partition) => {
         messageSet.forEach((m) => {
           let buffer = m.message.value
           if (buffer == null) {
-            cli.log(context.args.TOPIC, partition, m.offset, 0, 'NULL')
+            cli.log(topicName, partition, m.offset, 0, 'NULL')
             return
           }
           let length = Math.min(buffer.length, MAX_LENGTH)
