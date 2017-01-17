@@ -11,6 +11,7 @@ exports.commands = [
   require('./commands/topics_info.js'),
   require('./commands/topics_replication_factor.js'),
   require('./commands/topics_retention_time.js'),
+  require('./commands/consumer_groups_create.js'),
   require('./commands/fail.js'),
   require('./commands/upgrade.js'),
   require('./commands/info.js').info,
