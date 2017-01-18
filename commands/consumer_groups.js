@@ -12,12 +12,8 @@ function * listConsumerGroups (context, heroku) {
     let consumerGroups = yield request(heroku, {
       path: `/data/kafka/${VERSION}/clusters/${addon.id}/consumer_groups`
     })
-    cli.styledHeader('Kafka Consumer Groups on ' + (consumerGroups.attachment_name || 'HEROKU_KAFKA'))
-    let consumerGroupData = consumerGroups.consumer_groups.map((t) => {
-      return {
-        name: t.name
-      }
-    })
+    cli.styledHeader('Kafka Consumer Groups on ' + (context.args.CLUSTER || 'HEROKU_KAFKA'))
+    let consumerGroupData = consumerGroups.consumer_groups.map((g) => { name: g.name })
     cli.log()
     if (consumerGroupData.length === 0) {
       cli.log('No consumer groups found on this Kafka cluster.')
@@ -44,7 +40,7 @@ module.exports = {
     Examples:
 
     $ heroku kafka:consumer-groups
-    $ heroku kafka:consumer-groups HEROKU_KAFKA_BROWN_URL
+    $ heroku kafka:consumer-groups kafka-aerodynamic-32763
 `,
 
   args: [

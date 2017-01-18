@@ -10,8 +10,6 @@ let request = require('../lib/clusters').request
 const VERSION = 'v0'
 
 function * createConsumerGroup (context, heroku) {
-  var flags = Object.assign({}, context.flags)
-
   yield withCluster(heroku, context.app, context.args.CLUSTER, function * (addon) {
     let msg = `Creating consumer group ${context.args.CONSUMER_GROUP}`
     if (context.args.CLUSTER) {
@@ -44,6 +42,7 @@ module.exports = {
     Examples:
 
   $ heroku kafka:consumer-groups:create word-counters
+  $ heroku kafka:consumer-groups:create word-counters kafka-aerodynamic-32763
   `,
   needsApp: true,
   needsAuth: true,
