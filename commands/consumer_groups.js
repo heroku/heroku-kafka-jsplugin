@@ -13,7 +13,11 @@ function * listConsumerGroups (context, heroku) {
       path: `/data/kafka/${VERSION}/clusters/${addon.id}/consumer_groups`
     })
     cli.styledHeader('Kafka Consumer Groups on ' + (context.args.CLUSTER || 'HEROKU_KAFKA'))
-    let consumerGroupData = consumerGroups.consumer_groups.map((g) => { name: g.name })
+    let consumerGroupData = consumerGroups.consumer_groups.map((g) => {
+      return {
+        name: g.name
+      }
+    })
     cli.log()
     if (consumerGroupData.length === 0) {
       cli.log('No consumer groups found on this Kafka cluster.')
@@ -22,7 +26,7 @@ function * listConsumerGroups (context, heroku) {
       cli.table(consumerGroupData,
         {
           columns: [
-            {key: 'name', label: 'Name'},
+            {key: 'name', label: 'Name'}
           ]
         }
       )

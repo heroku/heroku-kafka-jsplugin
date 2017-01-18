@@ -2,8 +2,6 @@
 
 let cli = require('heroku-cli-util')
 let co = require('co')
-let parseDuration = require('../lib/shared').parseDuration
-let deprecated = require('../lib/shared').deprecated
 let withCluster = require('../lib/clusters').withCluster
 let request = require('../lib/clusters').request
 
