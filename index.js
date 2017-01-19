@@ -13,6 +13,7 @@ exports.commands = [
   require('./commands/topics_retention_time.js'),
   require('./commands/consumer_groups.js'),
   require('./commands/consumer_groups_create.js'),
+  require('./commands/consumer_groups_destroy.js'),
   require('./commands/fail.js'),
   require('./commands/upgrade.js'),
   require('./commands/info.js').info,

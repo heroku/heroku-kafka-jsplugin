@@ -9,12 +9,10 @@ const VERSION = 'v0'
 
 function * destroyConsumerGroup (context, heroku) {
   yield withCluster(heroku, context.app, context.args.CLUSTER, function * (addon) {
-    let msg = `Creating consumer group ${context.args.CONSUMER_GROUP}`
-    if (context.args.CLUSTER) {
-      msg += ` on ${context.args.CLUSTER}`
-    }
+    yield cli.confirmApp(context.app, context.flags.confirm,
+                         `This command will affect the cluster: ${addon.name}, which is on ${context.app}`)
 
-    yield cli.action(msg, co(function * () {
+    yield cli.action(`Deleting consumer group ${context.args.CONSUMER_GROUP}`, co(function * () {
       return yield request(heroku, {
         method: 'delete',
         body: {
@@ -45,6 +43,11 @@ module.exports = {
   `,
   needsApp: true,
   needsAuth: true,
+  flags: [
+    { name: 'confirm',
+      description: 'pass the app name to skip the manual confirmation prompt',
+      hasValue: true }
+  ],
   args: [
     { name: 'CONSUMER_GROUP' },
     { name: 'CLUSTER', optional: true }
