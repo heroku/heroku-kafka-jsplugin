@@ -124,6 +124,30 @@ describe('kafka:topics:write', () => {
               })
   })
 
+  it('uses a prefix if one exists', () => {
+    var withPrefixConfig = {}
+    Object.assign(withPrefixConfig, config)
+    withPrefixConfig.KAFKA_PREFIX = 'nile-1234.'
+    api.get('/apps/myapp/config-vars').reply(200, withPrefixConfig)
+    api.get('/apps/myapp/addon-attachments/kafka-1')
+      .reply(200, { name: 'KAFKA' })
+
+    producer.send = (payload) => {
+      expect(payload.topic).to.equal('nile-1234.topic-1')
+      expect(payload.partition).to.equal(0)
+      expect(payload.message).to.deep.equal({ value: 'hello world' })
+      return Promise.resolve()
+    }
+
+    return cmd.run({app: 'myapp',
+                    args: { TOPIC: 'topic-1', MESSAGE: 'hello world' },
+                    flags: {}})
+              .then(() => {
+                expect(cli.stdout).to.be.empty
+                expect(cli.stderr).to.be.empty
+              })
+  })
+
   it('uses given partition if specified', () => {
     api.get('/apps/myapp/config-vars').reply(200, config)
     api.get('/apps/myapp/addon-attachments/kafka-1')

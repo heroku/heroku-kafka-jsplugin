@@ -116,4 +116,27 @@ describe('kafka:topics:tail', () => {
                 expect(cli.stderr).to.be.empty
               })
   })
+
+  it('tails a topic with a prefix and prints the results', () => {
+    var withPrefixConfig = {}
+    Object.assign(withPrefixConfig, config)
+    withPrefixConfig.KAFKA_PREFIX = 'nile-1234.'
+    api.get('/apps/myapp/config-vars').reply(200, withPrefixConfig)
+    api.get('/apps/myapp/addon-attachments/kafka-1')
+      .reply(200, { name: 'KAFKA' })
+
+    consumer.subscribe = (topic, callback) => {
+      expect(topic).to.equal('nile-1234.topic-1')
+      callback([
+        { offset: 1, message: { value: Buffer.from('hello') } },
+        { offset: 2, message: { value: Buffer.from('world') } }
+      ], undefined, 42)
+    }
+
+    return cmd.run({app: 'myapp', args: { TOPIC: 'topic-1' }})
+              .then(() => {
+                expect(cli.stdout).to.equal('topic-1 42 1 5 hello\ntopic-1 42 2 5 world\n')
+                expect(cli.stderr).to.be.empty
+              })
+  })
 })
