@@ -41,25 +41,23 @@ describe('kafka:consumer-groups', () => {
     kafka.done()
   })
 
-  describe('list consumer groups in the cluster', () => {
-    it('shows us a list of consumer groups', () => {
-      kafka.get(consumerGroupsUrl('00000000-0000-0000-0000-000000000000')).reply(200, {
-        attachment_name: 'HEROKU_KAFKA',
-        consumer_groups: [
-          { name: 'consumer-group-1' },
-          { name: 'consumer-group-2' }
-        ]
-      })
+  it('displays a list of consumer groups', () => {
+    kafka.get(consumerGroupsUrl('00000000-0000-0000-0000-000000000000')).reply(200, {
+      attachment_name: 'HEROKU_KAFKA',
+      consumer_groups: [
+        { name: 'consumer-group-1' },
+        { name: 'consumer-group-2' }
+      ]
+    })
 
-      return cmd.run({app: 'myapp', args: {}})
-        .then(() => expect(cli.stdout).to.equal(`=== Kafka Consumer Groups on HEROKU_KAFKA
+    return cmd.run({app: 'myapp', args: {}})
+      .then(() => expect(cli.stdout).to.equal(`=== Kafka Consumer Groups on HEROKU_KAFKA
 
 Name
 ────────────────
 consumer-group-1
 consumer-group-2
 `))
-        .then(() => expect(cli.stderr).to.be.empty)
-    })
+      .then(() => expect(cli.stderr).to.be.empty)
   })
 })

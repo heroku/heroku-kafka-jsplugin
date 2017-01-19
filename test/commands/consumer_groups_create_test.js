@@ -41,21 +41,19 @@ describe('kafka:consumer-groups:create', () => {
     kafka.done()
   })
 
-  describe('create consumer group on the cluster', () => {
-    it('shows us a list of consumer groups', () => {
-      kafka.post(consumerGroupsUrl('00000000-0000-0000-0000-000000000000'),
-        {
-          consumer_group: {
-            name: 'consumer-group-1'
-          }
+  it('creates a consumer group on the cluster', () => {
+    kafka.post(consumerGroupsUrl('00000000-0000-0000-0000-000000000000'),
+      {
+        consumer_group: {
+          name: 'consumer-group-1'
         }
-      ).reply(200)
+      }
+    ).reply(200)
 
-      return cmd.run({app: 'myapp',
-                    args: { CONSUMER_GROUP: 'consumer-group-1' }})
-        .then(() => {
-          expect(cli.stdout).to.equal(`Use \`heroku kafka:consumer-groups:info consumer-group-1\` to monitor your consumer group.\n`)
-        })
-    })
+    return cmd.run({app: 'myapp',
+                  args: { CONSUMER_GROUP: 'consumer-group-1' }})
+      .then(() => {
+        expect(cli.stdout).to.equal(`Use \`heroku kafka:consumer-groups:info consumer-group-1\` to monitor your consumer group.\n`)
+      })
   })
 })
