@@ -28,8 +28,8 @@ function * tail (context, heroku) {
       clientId: CLIENT_ID,
       connectionString: config.url,
       ssl: {
-        cert: config.clientCert,
-        key: config.clientCertKey
+        clientCert: config.clientCert,
+        clientCertKey: config.clientCertKey
       },
       logger: {
         logLevel: 0
