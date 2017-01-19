@@ -5,7 +5,7 @@ const mocha = require('mocha')
 const describe = mocha.describe
 const it = mocha.it
 const beforeEach = mocha.beforeEach
-const afterEach = mocha.beforeEach
+const afterEach = mocha.afterEach
 const proxyquire = require('proxyquire')
 
 const cli = require('heroku-cli-util')
