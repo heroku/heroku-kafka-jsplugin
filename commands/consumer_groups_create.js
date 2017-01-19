@@ -31,6 +31,7 @@ function * createConsumerGroup (context, heroku) {
 }
 
 module.exports = {
+  hidden: true,
   topic: 'kafka',
   command: 'consumer-groups:create',
   description: 'creates a consumer group in Kafka',
