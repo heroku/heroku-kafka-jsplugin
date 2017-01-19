@@ -31,6 +31,7 @@ $ heroku plugins:install heroku-kafka
 
 For normal development, the initial setup is:
 ``` sh-session
+# ensure node 6.x is installed
 $ npm install
 $ heroku plugins:link .
 ```
