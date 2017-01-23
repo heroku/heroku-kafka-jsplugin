@@ -16,16 +16,6 @@ const withCluster = function * (heroku, app, cluster, callback) {
   yield callback({ name: 'kafka-1', id: '00000000-0000-0000-0000-000000000000' })
 }
 
-let lastApp
-let lastConfirm
-let lastMsg
-
-const confirmApp = function * (app, confirm, msg) {
-  lastApp = app
-  lastConfirm = confirm
-  lastMsg = msg
-}
-
 const cmd = proxyquire('../../commands/topics_create', {
   '../lib/clusters': {
     withCluster
@@ -33,7 +23,6 @@ const cmd = proxyquire('../../commands/topics_create', {
 }).cmd
 
 describe('kafka:topics:create', () => {
-  let confirm
   let kafka
 
   let createUrl = (cluster) => {
@@ -41,16 +30,13 @@ describe('kafka:topics:create', () => {
   }
 
   beforeEach(() => {
-    confirm = cli.confirmApp
     kafka = nock('https://kafka-api.heroku.com:443')
 
     cli.exit.mock()
-    cli.confirmApp = confirmApp
     cli.mockConsole()
   })
 
   afterEach(() => {
-    cli.confirmApp = confirm
     nock.cleanAll()
     kafka.done()
   })
@@ -61,45 +47,6 @@ describe('kafka:topics:create', () => {
                                   flags: { 'retention-time': '2 eons' }}))
       .then(() => expect(cli.stdout).to.be.empty)
       .then(() => expect(cli.stderr).to.equal(` ▸    Could not parse retention time '2 eons'; expected value like '10d' or\n ▸    '36h'\n`))
-  })
-
-  it('requires app confirmation and warns if replication factor of 1 specified', () => {
-    const message = `This command will create a topic with no replication on the cluster: kafka-1, which is on myapp.\nData written to this topic will be lost if any single broker suffers catastrophic failure.`
-
-    kafka.post(createUrl('00000000-0000-0000-0000-000000000000')).reply(200, { message: 'success' })
-
-    lastApp = null
-    lastConfirm = null
-    lastMsg = null
-
-    return cmd.run({app: 'myapp',
-                    args: { TOPIC: 'topic-1' },
-                    flags: { 'replication-factor': '1', confirm: 'myapp' }})
-              .then(() => {
-                expect(lastApp).to.equal('myapp')
-                expect(lastConfirm).to.equal('myapp')
-                expect(lastMsg).to.equal(message)
-              })
-              .then(() => {
-                expect(cli.stderr).to.equal(' ▸    Proceeding to create a non-replicated topic...\nCreating topic topic-1... done\n')
-              })
-  })
-
-  it('does not require app confirmation with higher replication factor', () => {
-    kafka.post(createUrl('00000000-0000-0000-0000-000000000000')).reply(200)
-
-    lastApp = null
-    lastConfirm = null
-    lastMsg = null
-
-    return cmd.run({app: 'myapp',
-                    args: { TOPIC: 'topic-1' },
-                    flags: { 'replication-factor': '3', confirm: 'myapp' }})
-              .then(() => {
-                expect(lastApp).to.be.null
-                expect(lastConfirm).to.be.null
-                expect(lastMsg).to.be.null
-              })
   })
 
   it('passes the topic name and specified flags', () => {

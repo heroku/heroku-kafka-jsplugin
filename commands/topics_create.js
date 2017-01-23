@@ -21,12 +21,6 @@ function * createTopic (context, heroku) {
   }
 
   yield withCluster(heroku, context.app, context.args.CLUSTER, function * (addon) {
-    if (context.flags['replication-factor'] === '1') {
-      yield cli.confirmApp(context.app, context.flags.confirm, `This command will create a topic with no replication on the cluster: ${addon.name}, which is on ${context.app}.\nData written to this topic will be lost if any single broker suffers catastrophic failure.`)
-
-      cli.warn('Proceeding to create a non-replicated topic...')
-    }
-
     let msg = `Creating topic ${context.args.TOPIC}`
     if (context.args.CLUSTER) {
       msg += ` on ${context.args.CLUSTER}`
@@ -75,10 +69,7 @@ let cmd = {
     { name: 'partitions', description: 'number of partitions to give the topic', hasValue: true },
     { name: 'replication-factor', description: 'number of replicas the topic should be created across', hasValue: true },
     { name: 'retention-time', description: 'length of time messages in the topic should be retained (at least 24h)', hasValue: true },
-    { name: 'compaction', description: 'whether to use compaction for this topic', hasValue: false },
-    { name: 'confirm',
-      description: 'pass the app name to skip the manual confirmation prompt',
-      hasValue: true }
+    { name: 'compaction', description: 'whether to use compaction for this topic', hasValue: false }
   ],
   run: cli.command({preauth: true}, co.wrap(createTopic))
 }
