@@ -49,7 +49,8 @@ with Product first.
 
  * Check out branch X.Y.Z
  * Run `npm version X.Y.Z` (this will create a commit and tag it)
- * Push branch X.Y.Z to GitHub with `--tags` flag and submit a pull request
+ * Run `git push origin --tags X.Y.Z` to push to GitHub and then
+   submit a pull request
  * Once the pull request is approved, merge the branch into master
    locally, and push master directly to GitHub. This will implicitly
    merge the outstanding pull request.
