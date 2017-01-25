@@ -38,7 +38,7 @@ function topicInfo (topic) {
     },
     {
       name: 'Replication Factor',
-      values: [`${topic.replication_factor} (recommend > 1)`]
+      values: [`${topic.replication_factor}`]
     }
   ]
 
