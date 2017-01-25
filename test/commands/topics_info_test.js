@@ -62,7 +62,7 @@ describe('kafka:topics:info', () => {
 Producers:          0 messages/second (0 bytes/second) total
 Consumers:          0 bytes/second total
 Partitions:         3 partitions
-Replication Factor: 3 (recommend > 1)
+Replication Factor: 3
 Compaction:         Compaction is disabled for topic-1
 Retention:          24 hours
 `))
