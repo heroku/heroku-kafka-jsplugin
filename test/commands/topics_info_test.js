@@ -7,6 +7,7 @@ const it = mocha.it
 const beforeEach = mocha.beforeEach
 const afterEach = mocha.afterEach
 const proxyquire = require('proxyquire')
+const expectExit = require('../expect_exit')
 
 const cli = require('heroku-cli-util')
 const nock = require('nock')
@@ -67,5 +68,49 @@ Compaction:         Compaction is disabled for topic-1
 Retention:          24 hours
 `))
       .then(() => expect(cli.stderr).to.be.empty)
+  })
+
+  it('tells user the topic is not ready', () => {
+    kafka.get(topicsUrl('00000000-0000-0000-0000-000000000000')).reply(200, {
+      attachment_name: 'HEROKU_KAFKA_BLUE_URL',
+      topics: [
+        {
+          name: 'topic-1',
+          messages_in_per_second: 0,
+          bytes_in_per_second: 0,
+          bytes_out_per_second: 0,
+          replication_factor: 0,
+          partitions: 0,
+          compaction_enabled: false,
+          retention_time_ms: 86400000
+        }
+      ]
+    })
+
+    return expectExit(1, cmd.run({app: 'myapp', args: { TOPIC: 'topic-1' }}))
+      .then(() => expect(cli.stdout).to.be.empty)
+      .then(() => expect(cli.stderr).to.equal(` ▸    topic topic-1 is not available yet\n`))
+  })
+
+  it('tells user the topic does not exist', () => {
+    kafka.get(topicsUrl('00000000-0000-0000-0000-000000000000')).reply(200, {
+      attachment_name: 'HEROKU_KAFKA_BLUE_URL',
+      topics: [
+        {
+          name: 'topic-2',
+          messages_in_per_second: 0,
+          bytes_in_per_second: 0,
+          bytes_out_per_second: 0,
+          replication_factor: 0,
+          partitions: 0,
+          compaction_enabled: false,
+          retention_time_ms: 86400000
+        }
+      ]
+    })
+
+    return expectExit(1, cmd.run({app: 'myapp', args: { TOPIC: 'topic-1' }}))
+      .then(() => expect(cli.stdout).to.be.empty)
+      .then(() => expect(cli.stderr).to.equal(` ▸    topic not found topic-1\n`))
   })
 })

@@ -72,13 +72,16 @@ function * kafkaTopic (context, heroku) {
     let forTopic = info.topics.filter((t) => t.name === topic)
 
     if (forTopic.length === 0) {
-      cli.error(`topic not found ${topic}`)
-      cli.exit(1)
+      cli.exit(1, `topic not found ${topic}`)
     }
 
-    cli.styledHeader((info.attachment_name || 'HEROKU_KAFKA') + ' :: ' + topic)
-    cli.log()
-    cli.styledNameValues(topicInfo(forTopic[0]))
+    if (forTopic[0].partitions < 1) {
+      cli.exit(1, `topic ${topic} is not available yet`)
+    } else {
+      cli.styledHeader((info.attachment_name || 'HEROKU_KAFKA') + ' :: ' + topic)
+      cli.log()
+      cli.styledNameValues(topicInfo(forTopic[0]))
+    }
   })
 }
 
