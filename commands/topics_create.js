@@ -6,6 +6,7 @@ let parseDuration = require('../lib/shared').parseDuration
 let deprecated = require('../lib/shared').deprecated
 let withCluster = require('../lib/clusters').withCluster
 let request = require('../lib/clusters').request
+let clusterConfig = require('../lib/shared').clusterConfig
 
 const VERSION = 'v0'
 
@@ -21,7 +22,18 @@ function * createTopic (context, heroku) {
   }
 
   yield withCluster(heroku, context.app, context.args.CLUSTER, function * (addon) {
-    let msg = `Creating topic ${context.args.TOPIC}`
+    let appConfig = yield heroku.get(`/apps/${context.app}/config-vars`)
+    let attachment = yield heroku.get(`/apps/${context.app}/addon-attachments/${addon.name}`)
+    let config = clusterConfig(attachment, appConfig)
+
+    var topicName = context.args.TOPIC
+    var topicNameArray = topicName.split(/(\.)/g)
+    var topicPrefix = topicNameArray[0] + topicNameArray[1]
+    if (config.prefix && (config.prefix !== topicPrefix)) {
+      topicName = `${config.prefix}${context.args.TOPIC}`
+    }
+
+    let msg = `Creating topic ${topicName}`
     if (context.args.CLUSTER) {
       msg += ` on ${context.args.CLUSTER}`
     }
@@ -31,7 +43,7 @@ function * createTopic (context, heroku) {
         method: 'POST',
         body: {
           topic: {
-            name: context.args.TOPIC,
+            name: topicName,
             retention_time_ms: flags['retention-time'],
             replication_factor: flags['replication-factor'],
             partition_count: flags['partitions'],
@@ -42,7 +54,7 @@ function * createTopic (context, heroku) {
       })
     }))
 
-    cli.log(`Use \`heroku kafka:topics:info ${context.args.TOPIC}\` to monitor your topic.`)
+    cli.log(`Use \`heroku kafka:topics:info topicName\` to monitor your topic.`)
   })
 }
 

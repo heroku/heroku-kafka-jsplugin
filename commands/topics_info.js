@@ -6,6 +6,7 @@ let humanize = require('humanize-plus')
 let deprecated = require('../lib/shared').deprecated
 let withCluster = require('../lib/clusters').withCluster
 let request = require('../lib/clusters').request
+let clusterConfig = require('../lib/shared').clusterConfig
 
 const VERSION = 'v0'
 const ONE_HOUR_IN_MS = 60 * 60 * 1000
@@ -63,22 +64,31 @@ function topicInfo (topic) {
 
 function * kafkaTopic (context, heroku) {
   yield withCluster(heroku, context.app, context.args.CLUSTER, function * (addon) {
-    const topic = context.args.TOPIC
+    let appConfig = yield heroku.get(`/apps/${context.app}/config-vars`)
+    let attachment = yield heroku.get(`/apps/${context.app}/addon-attachments/${addon.name}`)
+    let config = clusterConfig(attachment, appConfig)
+
+    var topicName = context.args.TOPIC
+    var topicNameArray = topicName.split(/(\.)/g)
+    var topicPrefix = topicNameArray[0] + topicNameArray[1]
+    if (config.prefix && (config.prefix !== topicPrefix)) {
+      topicName = `${config.prefix}${context.args.TOPIC}`
+    }
 
     let info = yield request(heroku, {
       path: `/data/kafka/${VERSION}/clusters/${addon.id}/topics`
     })
 
-    let forTopic = info.topics.find((t) => t.name === topic)
+    let forTopic = info.topics.find((t) => t.name === topicName)
 
     if (!forTopic) {
-      cli.exit(1, `topic ${topic} not found`)
+      cli.exit(1, `topic ${topicName} not found`)
     }
 
     if (forTopic.partitions < 1) {
-      cli.exit(1, `topic ${topic} is not available yet`)
+      cli.exit(1, `topic ${topicName} is not available yet`)
     } else {
-      cli.styledHeader((info.attachment_name || 'HEROKU_KAFKA') + ' :: ' + topic)
+      cli.styledHeader((info.attachment_name || 'HEROKU_KAFKA') + ' :: ' + topicName)
       cli.log()
       cli.styledNameValues(topicInfo(forTopic))
     }

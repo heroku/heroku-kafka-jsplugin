@@ -5,6 +5,7 @@ let co = require('co')
 let parseBool = require('../lib/shared').parseBool
 let withCluster = require('../lib/clusters').withCluster
 let request = require('../lib/clusters').request
+let clusterConfig = require('../lib/shared').clusterConfig
 
 const VERSION = 'v0'
 
@@ -14,13 +15,24 @@ function * compaction (context, heroku) {
     cli.exit(1, `Unknown value '${context.args.VALUE}': must be 'on' or 'enable' to enable, or 'off' or 'disable' to disable`)
   }
 
-  let msg = `${enabled ? 'Enabling' : 'Disabling'} compaction for topic ${context.args.TOPIC}`
-  if (context.args.CLUSTER) {
-    msg += ` on ${context.args.CLUSTER}`
-  }
   yield withCluster(heroku, context.app, context.args.CLUSTER, function * (addon) {
+    let appConfig = yield heroku.get(`/apps/${context.app}/config-vars`)
+    let attachment = yield heroku.get(`/apps/${context.app}/addon-attachments/${addon.name}`)
+    let config = clusterConfig(attachment, appConfig)
+
+    var topicName = context.args.TOPIC
+    var topicNameArray = topicName.split(/(\.)/g)
+    var topicPrefix = topicNameArray[0] + topicNameArray[1]
+    if (config.prefix && (config.prefix !== topicPrefix)) {
+      topicName = `${config.prefix}${context.args.TOPIC}`
+    }
+
+    let msg = `${enabled ? 'Enabling' : 'Disabling'} compaction for topic ${topicName}`
+    if (context.args.CLUSTER) {
+      msg += ` on ${context.args.CLUSTER}`
+    }
+
     yield cli.action(msg, co(function * () {
-      const topicName = context.args.TOPIC
       return yield request(heroku, {
         method: 'PUT',
         body: {
@@ -32,7 +44,7 @@ function * compaction (context, heroku) {
         path: `/data/kafka/${VERSION}/clusters/${addon.id}/topics/${topicName}`
       })
     }))
-    cli.log(`Use \`heroku kafka:topics:info ${context.args.TOPIC}\` to monitor your topic.`)
+    cli.log(`Use \`heroku kafka:topics:info ${topicName}\` to monitor your topic.`)
   })
 }
 
