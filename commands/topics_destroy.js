@@ -5,6 +5,7 @@ let co = require('co')
 let deprecated = require('../lib/shared').deprecated
 let withCluster = require('../lib/clusters').withCluster
 let request = require('../lib/clusters').request
+let clusterConfig = require('../lib/shared').clusterConfig
 
 const VERSION = 'v0'
 
@@ -13,8 +14,23 @@ function * destroyTopic (context, heroku) {
     yield cli.confirmApp(context.app, context.flags.confirm,
                          `This command will affect the cluster: ${addon.name}, which is on ${context.app}`)
 
-    yield cli.action(`Deleting topic ${context.args.TOPIC}`, co(function * () {
-      const topicName = context.args.TOPIC
+    let appConfig = yield heroku.get(`/apps/${context.app}/config-vars`)
+    let attachment = yield heroku.get(`/apps/${context.app}/addon-attachments/${addon.name}`)
+    let config = clusterConfig(attachment, appConfig)
+
+    var topicName = context.args.TOPIC
+    var topicNameArray = topicName.split(/(\.)/g)
+    var topicPrefix = topicNameArray[0] + topicNameArray[1]
+    if (config.prefix && (config.prefix !== topicPrefix)) {
+      topicName = `${config.prefix}${context.args.TOPIC}`
+    }
+
+    let msg = `Deleting topic ${topicName}`
+    if (context.args.CLUSTER) {
+      msg += ` on ${context.args.CLUSTER}`
+    }
+
+    yield cli.action(msg, co(function * () {
       return yield request(heroku, {
         method: 'DELETE',
         body: {
