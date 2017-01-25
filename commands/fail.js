@@ -12,7 +12,7 @@ function * fail (context, heroku) {
     yield cli.confirmApp(context.app, context.flags.confirm,
                          `This command will affect the cluster: ${addon.name}, which is on ${context.app}\n\nThis command will forcibly terminate nodes in your cluster at random.\nYou should only run this command in controlled testing scenarios.`)
 
-    let response = yield cli.action('Eenie meenie miney moe', co(function * () {
+    let response = yield cli.action('Triggering failure', co(function * () {
       return yield request(heroku, {
         method: 'POST',
         body: {

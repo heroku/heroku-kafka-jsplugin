@@ -77,7 +77,7 @@ describe('kafka:fail', () => {
                     flags: {confirm: 'myapp',
                             catastrophic: false,
                             zookeeper: false}})
-              .then(() => expect(cli.stderr).to.equal('Eenie meenie miney moe... done\n'))
+              .then(() => expect(cli.stderr).to.equal('Triggering failure... done\n'))
               .then(() => expect(cli.stdout).to.equal('Triggered failure on node 1.2.3.4\n'))
   })
 
@@ -92,7 +92,7 @@ describe('kafka:fail', () => {
                     flags: {confirm: 'myapp',
                             catastrophic: true,
                             zookeeper: false}})
-              .then(() => expect(cli.stderr).to.equal('Eenie meenie miney moe... done\n'))
+              .then(() => expect(cli.stderr).to.equal('Triggering failure... done\n'))
               .then(() => expect(cli.stdout).to.equal('Triggered failure on node 1.2.3.4\n'))
   })
 
@@ -107,7 +107,7 @@ describe('kafka:fail', () => {
                     flags: {confirm: 'myapp',
                             catastrophic: false,
                             zookeeper: true}})
-              .then(() => expect(cli.stderr).to.equal('Eenie meenie miney moe... done\n'))
+              .then(() => expect(cli.stderr).to.equal('Triggering failure... done\n'))
               .then(() => expect(cli.stdout).to.equal('Triggered failure on node 1.2.3.4\n'))
   })
 })
