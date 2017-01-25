@@ -111,6 +111,6 @@ Retention:          24 hours
 
     return expectExit(1, cmd.run({app: 'myapp', args: { TOPIC: 'topic-1' }}))
       .then(() => expect(cli.stdout).to.be.empty)
-      .then(() => expect(cli.stderr).to.equal(` ▸    topic not found topic-1\n`))
+      .then(() => expect(cli.stderr).to.equal(` ▸    topic topic-1 not found\n`))
   })
 })

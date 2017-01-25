@@ -69,18 +69,18 @@ function * kafkaTopic (context, heroku) {
       path: `/data/kafka/${VERSION}/clusters/${addon.id}/topics`
     })
 
-    let forTopic = info.topics.filter((t) => t.name === topic)
+    let forTopic = info.topics.find((t) => t.name === topic)
 
-    if (forTopic.length === 0) {
-      cli.exit(1, `topic not found ${topic}`)
+    if (!forTopic) {
+      cli.exit(1, `topic ${topic} not found`)
     }
 
-    if (forTopic[0].partitions < 1) {
+    if (forTopic.partitions < 1) {
       cli.exit(1, `topic ${topic} is not available yet`)
     } else {
       cli.styledHeader((info.attachment_name || 'HEROKU_KAFKA') + ' :: ' + topic)
       cli.log()
-      cli.styledNameValues(topicInfo(forTopic[0]))
+      cli.styledNameValues(topicInfo(forTopic))
     }
   })
 }
