@@ -43,8 +43,8 @@ function * tail (context, heroku) {
     }
 
     var topicName = context.args.TOPIC
-    if (config.prefix) {
-      topicName = `${config.prefix}${context.args.TOPIC}`
+    if (config.prefix && !topicName.startsWith(config.prefix)) {
+      topicName = config.prefix + topicName
     }
 
     try {

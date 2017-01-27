@@ -44,9 +44,10 @@ function * write (context, heroku) {
     }
 
     var topicName = context.args.TOPIC
-    if (config.prefix) {
-      topicName = `${config.prefix}${context.args.TOPIC}`
+    if (config.prefix && !topicName.startsWith(config.prefix)) {
+      topicName = config.prefix + topicName
     }
+
     const partition = parseInt(context.flags.partition) || 0
     const key = context.flags.key
 
