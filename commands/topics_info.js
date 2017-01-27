@@ -52,6 +52,8 @@ function topicInfo (topic) {
       name: 'Compaction',
       values: [`Compaction is disabled for ${topic.name}`]
     })
+  }
+  if (topic.retention_enabled) {
     lines.push({
       name: 'Retention',
       values: [retention(topic.retention_time_ms)]

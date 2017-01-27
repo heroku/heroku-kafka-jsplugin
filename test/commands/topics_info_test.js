@@ -51,6 +51,7 @@ describe('kafka:topics:info', () => {
           replication_factor: 3,
           partitions: 3,
           compaction_enabled: false,
+          retention_enabled: true,
           retention_time_ms: 86400000
         }
       ]
