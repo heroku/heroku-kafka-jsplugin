@@ -14,6 +14,7 @@ exports.commands = [
   require('./commands/consumer_groups_create.js'),
   require('./commands/consumer_groups_destroy.js'),
   require('./commands/fail.js'),
+  require('./commands/prefix.js'),
   require('./commands/upgrade.js'),
   require('./commands/info.js').info,
   require('./commands/info.js').root,
