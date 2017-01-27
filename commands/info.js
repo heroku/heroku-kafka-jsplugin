@@ -34,6 +34,10 @@ function formatInfo (info) {
     values: [`${topicCount} ${humanize.pluralize(topicCount, 'topic')}, see heroku kafka:topics`]
   })
 
+  if (cluster.topic_prefix) {
+    lines.push({ name: 'Prefix', values: [cluster.topic_prefix] })
+  }
+
   lines.push({
     name: 'Messages',
     values: [`${humanize.intComma(cluster.messages_in_per_sec)} ${humanize.pluralize(cluster.messages_in_per_sec, 'message')}/s`]
