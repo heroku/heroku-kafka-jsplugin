@@ -29,10 +29,17 @@ function formatInfo (info) {
 
   // we hide __consumer_offsets in topic listing; don't count it
   const topicCount = cluster.topics.filter((topic) => topic !== '__consumer_offsets').length
-  lines.push({
-    name: 'Topics',
-    values: [`${topicCount} ${humanize.pluralize(topicCount, 'topic')}, see heroku kafka:topics`]
-  })
+  if (cluster.limits && cluster.limits.max_topics) {
+    lines.push({
+      name: 'Topics',
+      values: [`${topicCount} / ${cluster.limits.max_topics} topics, see heroku kafka:topics`]
+    })
+  } else {
+    lines.push({
+      name: 'Topics',
+      values: [`${topicCount} ${humanize.pluralize(topicCount, 'topic')}, see heroku kafka:topics`]
+    })
+  }
 
   if (cluster.topic_prefix) {
     lines.push({ name: 'Prefix', values: [cluster.topic_prefix] })
