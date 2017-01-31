@@ -29,7 +29,6 @@ function * destroyConsumerGroup (context, heroku) {
 }
 
 module.exports = {
-  hidden: true,
   topic: 'kafka',
   command: 'consumer-groups:destroy',
   description: 'destroys a consumer group in Kafka',

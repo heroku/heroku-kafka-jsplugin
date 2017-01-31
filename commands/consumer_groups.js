@@ -35,7 +35,6 @@ function * listConsumerGroups (context, heroku) {
 }
 
 module.exports = {
-  hidden: true,
   topic: 'kafka',
   command: 'consumer-groups',
   description: 'lists available Kafka consumer groups',
