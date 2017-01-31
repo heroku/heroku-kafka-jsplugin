@@ -85,6 +85,7 @@ describe('kafka:info', () => {
       state: { message: 'available' },
       robot: { is_robot: false },
       topics: ['__consumer_offsets', 'messages'],
+      limits: {max_topics: 10},
       messages_in_per_sec: 0,
       bytes_in_per_sec: 0,
       bytes_out_per_sec: 0,
@@ -117,7 +118,7 @@ Plan:     heroku-kafka:beta-3
 Status:   available
 Version:  0.10.0.0
 Created:  2016-11-14T14:26:20.245+00:00
-Topics:   1 topic, see heroku kafka:topics
+Topics:   1 / 10 topics, see heroku kafka:topics
 Messages: 0 messages/s
 Traffic:  0 bytes/s in / 0 bytes/s out
 Add-on:   kafka-2
@@ -140,7 +141,7 @@ Plan:     heroku-kafka:beta-3
 Status:   available
 Version:  0.10.0.0
 Created:  2016-11-14T14:26:20.245+00:00
-Topics:   1 topic, see heroku kafka:topics
+Topics:   1 / 10 topics, see heroku kafka:topics
 Messages: 0 messages/s
 Traffic:  0 bytes/s in / 0 bytes/s out
 Add-on:   kafka-2
@@ -162,7 +163,7 @@ Plan:     heroku-kafka:beta-3
 Status:   available
 Version:  0.10.0.0
 Created:  2016-11-14T14:26:20.245+00:00
-Topics:   1 topic, see heroku kafka:topics
+Topics:   1 / 10 topics, see heroku kafka:topics
 Messages: 0 messages/s
 Traffic:  0 bytes/s in / 0 bytes/s out
 Add-on:   kafka-2
