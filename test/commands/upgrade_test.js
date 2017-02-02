@@ -52,7 +52,9 @@ describe('kafka:upgrade', () => {
   })
 
   it('requires app confirmation', () => {
-    const message = 'This command will upgrade the brokers of the cluster to version 0.10.'
+    const message = `This command will upgrade the brokers of the cluster to version 0.10.
+                          Upgrading the cluster involves rolling restarts of brokers, and takes some time, depending on the
+                          size of the cluster.`
 
     kafka.put(upgradeUrl('00000000-0000-0000-0000-000000000000')).reply(200)
 
@@ -75,6 +77,6 @@ describe('kafka:upgrade', () => {
                     args: {},
                     flags: {confirm: 'myapp', version: '0.10'}})
               .then(() => expect(cli.stderr).to.equal('Upgrading to version 0.10... started.\n\n\n'))
-              .then(() => expect(cli.stdout).to.equal('Upgrading versions on a cluster involves rolling restarts\nand takes some time, depending on the size of the cluster\n\nUse `heroku kafka:wait` to monitor the upgrade.\n'))
+              .then(() => expect(cli.stdout).to.equal('Use `heroku kafka:wait` to monitor the upgrade.\n'))
   })
 })

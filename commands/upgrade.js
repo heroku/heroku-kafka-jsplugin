@@ -10,7 +10,9 @@ const VERSION = 'v0'
 function * upgradeCluster (context, heroku) {
   yield withCluster(heroku, context.app, context.args.CLUSTER, function * (addon) {
     yield cli.confirmApp(context.app, context.flags.confirm,
-                         `This command will upgrade the brokers of the cluster to version ${context.flags.version}.`)
+                         `This command will upgrade the brokers of the cluster to version ${context.flags.version}.
+                          Upgrading the cluster involves rolling restarts of brokers, and takes some time, depending on the
+                          size of the cluster.`)
 
     let msg = 'Upgrading '
     if (context.args.CLUSTER) {
@@ -30,9 +32,6 @@ function * upgradeCluster (context, heroku) {
 
     cli.action.done('started.\n\n')
 
-    cli.log('Upgrading versions on a cluster involves rolling restarts')
-    cli.log('and takes some time, depending on the size of the cluster')
-    cli.log()
     cli.log('Use `heroku kafka:wait` to monitor the upgrade.')
   })
 }
