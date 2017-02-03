@@ -15,6 +15,11 @@ function * listTopics (context, heroku) {
       path: `/data/kafka/${VERSION}/clusters/${addon.id}/topics`
     })
     cli.styledHeader('Kafka Topics on ' + (topics.attachment_name || 'HEROKU_KAFKA'))
+
+    if (topics.topics.length !== 0 && topics.limits && topics.limits.max_topics) {
+      cli.log(`${topics.topics.length} / ${topics.limits.max_topics} topics`)
+    }
+
     let filtered = topics.topics.filter((t) => t.name !== '__consumer_offsets')
     let topicData = filtered.map((t) => {
       return {
@@ -26,7 +31,12 @@ function * listTopics (context, heroku) {
     cli.log()
     if (topicData.length === 0) {
       cli.log('No topics found on this Kafka cluster.')
-      cli.log('Use heroku kafka:topics:create to create a topic.')
+
+      if (topics.limits && topics.limits.max_topics) {
+        cli.log(`Use heroku kafka:topics:create to create a topic (limit ${topics.limits.max_topics}).`)
+      } else {
+        cli.log('Use heroku kafka:topics:create to create a topic.')
+      }
     } else {
       cli.table(topicData,
         {

@@ -43,6 +43,9 @@ describe('kafka:topics', () => {
     it('indicates there are no topics', () => {
       kafka.get(topicsUrl('00000000-0000-0000-0000-000000000000')).reply(200, {
         attachment_name: 'HEROKU_KAFKA_BLUE_URL',
+        limits: {
+          max_topics: 10
+        },
         topics: []
       })
 
@@ -50,7 +53,7 @@ describe('kafka:topics', () => {
         .then(() => expect(cli.stdout).to.equal(`=== Kafka Topics on HEROKU_KAFKA_BLUE_URL
 
 No topics found on this Kafka cluster.
-Use heroku kafka:topics:create to create a topic.
+Use heroku kafka:topics:create to create a topic (limit 10).
 `))
         .then(() => expect(cli.stderr).to.be.empty)
     })
@@ -80,11 +83,15 @@ Use heroku kafka:topics:create to create a topic.
         topics: [
           { name: 'topic-1', messages_in_per_second: 10.0, bytes_in_per_second: 0 },
           { name: 'topic-2', messages_in_per_second: 12.0, bytes_in_per_second: 3 }
-        ]
+        ],
+        limits: {
+          max_topics: 10
+        }
       })
 
       return cmd.run({app: 'myapp', args: {}})
         .then(() => expect(cli.stdout).to.equal(`=== Kafka Topics on HEROKU_KAFKA_BLUE_URL
+2 / 10 topics
 
 Name     Messages  Traffic
 ───────  ────────  ───────────
