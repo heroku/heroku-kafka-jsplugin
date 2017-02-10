@@ -6,6 +6,7 @@ let humanize = require('humanize-plus')
 let deprecated = require('../lib/shared').deprecated
 let withCluster = require('../lib/clusters').withCluster
 let request = require('../lib/clusters').request
+let topicConfig = require('../lib/clusters').topicConfig
 
 const VERSION = 'v0'
 const ONE_HOUR_IN_MS = 60 * 60 * 1000
@@ -65,24 +66,13 @@ function topicInfo (topic) {
 
 function * kafkaTopic (context, heroku) {
   yield withCluster(heroku, context.app, context.args.CLUSTER, function * (addon) {
-    const topic = context.args.TOPIC
-
-    let info = yield request(heroku, {
-      path: `/data/kafka/${VERSION}/clusters/${addon.id}/topics`
-    })
-
-    let forTopic = info.topics.find((t) => t.name === topic)
-
-    if (!forTopic) {
-      cli.exit(1, `topic ${topic} not found`)
-    }
-
-    if (forTopic.partitions < 1) {
+    let topic = yield topicConfig(heroku, addon.id, context.args.TOPIC)
+    if (topic.partitions < 1) {
       cli.exit(1, `topic ${topic} is not available yet`)
     } else {
-      cli.styledHeader((info.attachment_name || 'HEROKU_KAFKA') + ' :: ' + topic)
+      cli.styledHeader(addon.name + ' :: ' + context.args.TOPIC)
       cli.log()
-      cli.styledNameValues(topicInfo(forTopic))
+      cli.styledNameValues(topicInfo(topic))
     }
   })
 }
