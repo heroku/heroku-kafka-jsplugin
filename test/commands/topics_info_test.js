@@ -59,7 +59,7 @@ describe('kafka:topics:info', () => {
     })
 
     return cmd.run({app: 'myapp', args: { TOPIC: 'topic-1' }})
-      .then(() => expect(cli.stdout).to.equal(`=== HEROKU_KAFKA_BLUE_URL :: topic-1
+      .then(() => expect(cli.stdout).to.equal(`=== kafka-1 :: topic-1
 
 Producers:          0 messages/second (0 bytes/second) total
 Consumers:          0 bytes/second total
