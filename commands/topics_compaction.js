@@ -5,6 +5,8 @@ let co = require('co')
 let parseBool = require('../lib/shared').parseBool
 let withCluster = require('../lib/clusters').withCluster
 let request = require('../lib/clusters').request
+let topicConfig = require('../lib/clusters').topicConfig
+let fetchProvisionedInfo = require('../lib/clusters').fetchProvisionedInfo
 
 const VERSION = 'v0'
 
@@ -19,15 +21,27 @@ function * compaction (context, heroku) {
     msg += ` on ${context.args.CLUSTER}`
   }
   yield withCluster(heroku, context.app, context.args.CLUSTER, function * (addon) {
+    const topicName = context.args.TOPIC
+    let [ topicInfo, addonInfo ] = yield [
+      topicConfig(heroku, addon.id, topicName),
+      fetchProvisionedInfo(heroku, addon)
+    ]
+    let retentionTime
+    if (enabled) {
+      retentionTime = addonInfo.capabilities.supports_mixed_cleanup_policy ? topicInfo.retention_time_ms : null
+    } else {
+      retentionTime = addonInfo.limits.minimum_retention_ms
+    }
+    let cleanupPolicy = {
+      compaction: enabled,
+      retention_time_ms: retentionTime
+    }
+
     yield cli.action(msg, co(function * () {
-      const topicName = context.args.TOPIC
       return yield request(heroku, {
         method: 'PUT',
         body: {
-          topic: {
-            name: topicName,
-            compaction: enabled
-          }
+          topic: Object.assign({ name: topicName }, cleanupPolicy)
         },
         path: `/data/kafka/${VERSION}/clusters/${addon.id}/topics/${topicName}`
       })

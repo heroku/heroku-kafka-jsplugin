@@ -5,13 +5,20 @@ let co = require('co')
 let parseDuration = require('../lib/shared').parseDuration
 let withCluster = require('../lib/clusters').withCluster
 let request = require('../lib/clusters').request
+let topicConfig = require('../lib/clusters').topicConfig
+let fetchProvisionedInfo = require('../lib/clusters').fetchProvisionedInfo
 
 const VERSION = 'v0'
 
 function * retentionTime (context, heroku) {
-  let parsed = parseDuration(context.args.VALUE)
-  if (parsed == null) {
-    cli.exit(1, `Unknown retention time '${context.args.VALUE}'; expected value like '36h' or '10d'`)
+  let parsed
+  if (context.args.VALUE === 'disable') {
+    parsed = null
+  } else {
+    parsed = parseDuration(context.args.VALUE)
+    if (parsed == null) {
+      cli.exit(1, `Unknown retention time '${context.args.VALUE}'; expected 'disable' or value like '36h' or '10d'`)
+    }
   }
 
   let msg = `Setting retention time for topic ${context.args.TOPIC} to ${context.args.VALUE}`
@@ -19,15 +26,21 @@ function * retentionTime (context, heroku) {
     msg += ` on ${context.args.CLUSTER}`
   }
   yield withCluster(heroku, context.app, context.args.CLUSTER, function * (addon) {
+    const topicName = context.args.TOPIC
+    let [ topicInfo, addonInfo ] = yield [
+      topicConfig(heroku, addon.id, topicName),
+      fetchProvisionedInfo(heroku, addon)
+    ]
+    let cleanupPolicy = {
+      retention_time_ms: parsed,
+      compaction: (!parsed || (addonInfo.capabilities.supports_mixed_cleanup_policy && topicInfo.compaction_enabled))
+    }
+
     yield cli.action(msg, co(function * () {
-      const topicName = context.args.TOPIC
       return yield request(heroku, {
         method: 'PUT',
         body: {
-          topic: {
-            name: topicName,
-            retention_time_ms: parsed
-          }
+          topic: Object.assign({ name: topicName }, cleanupPolicy)
         },
         path: `/data/kafka/${VERSION}/clusters/${addon.id}/topics/${topicName}`
       })
