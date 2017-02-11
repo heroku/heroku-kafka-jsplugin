@@ -127,3 +127,29 @@ describe('deprecated', function () {
     expect(cli.stderr).to.match(/ ▸\s*WARNING: bar:foo is deprecated; please use bar:new-command/m)
   })
 })
+
+describe('formatIntervalFromMilliseconds', function () {
+  let cases = [
+    [ 10, '10 milliseconds' ],
+    [ 999, '999 milliseconds' ],
+    [ 1000, '1 second' ],
+    [ (10 * 1000 + 10), '10 seconds 10 milliseconds' ],
+    [ (10 * 60 * 1000 + 10), '10 minutes 10 milliseconds' ],
+    [ (10 * 60 * 1000 + 10 * 1000 + 10), '10 minutes 10 seconds 10 milliseconds' ],
+    [ (10 * 60 * 1000 + 10 * 1000), '10 minutes 10 seconds' ],
+    [ (20 * 60 * 60 * 1000 + 10 * 60 * 1000 + 10 * 1000), '20 hours 10 minutes 10 seconds' ],
+    [ (3 * 24 * 60 * 60 * 1000 + 10 * 60 * 1000 + 10 * 1000), '3 days 10 minutes 10 seconds' ],
+    [ (3 * 24 * 60 * 60 * 1000 + 10), '3 days 10 milliseconds' ],
+    [ (1 * 24 * 60 * 60 * 1000 + 1), '1 day 1 millisecond' ]
+  ]
+
+  cases.forEach(function (testcase) {
+    let duration = testcase[0]
+    let expected = testcase[1]
+
+    it(`formats ${duration} milliseconds as '${expected}'`, function () {
+      let actual = shared.formatIntervalFromMilliseconds(duration)
+      expect(actual).to.equal(expected)
+    })
+  })
+})
