@@ -4,6 +4,7 @@ let cli = require('heroku-cli-util')
 let co = require('co')
 let withCluster = require('../lib/clusters').withCluster
 let request = require('../lib/clusters').request
+let topicConfig = require('../lib/clusters').topicConfig
 
 const VERSION = 'v0'
 
@@ -13,14 +14,19 @@ function * replicationFactor (context, heroku) {
     msg += ` on ${context.args.CLUSTER}`
   }
   yield withCluster(heroku, context.app, context.args.CLUSTER, function * (addon) {
+    const topicName = context.args.TOPIC
+
+    let topicInfo = yield topicConfig(heroku, addon.id, topicName)
+
     yield cli.action(msg, co(function * () {
-      const topicName = context.args.TOPIC
       return yield request(heroku, {
         method: 'PUT',
         body: {
           topic: {
             name: topicName,
-            replication_factor: context.args.VALUE
+            replication_factor: context.args.VALUE,
+            retention_time_ms: topicInfo.retention_time_ms,
+            compaction: topicInfo.compaction
           }
         },
         path: `/data/kafka/${VERSION}/clusters/${addon.id}/topics/${topicName}`
