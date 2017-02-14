@@ -51,8 +51,7 @@ describe('kafka:topics:info', () => {
           bytes_out_per_second: 0,
           replication_factor: 3,
           partitions: 3,
-          compaction_enabled: false,
-          retention_enabled: true,
+          compaction: false,
           retention_time_ms: 86400000
         }
       ]
@@ -82,7 +81,7 @@ Retention:          24 hours
           bytes_out_per_second: 0,
           replication_factor: 0,
           partitions: 0,
-          compaction_enabled: false,
+          compaction: false,
           retention_time_ms: 86400000
         }
       ]
@@ -104,7 +103,7 @@ Retention:          24 hours
           bytes_out_per_second: 0,
           replication_factor: 0,
           partitions: 0,
-          compaction_enabled: false,
+          compaction: false,
           retention_time_ms: 86400000
         }
       ]

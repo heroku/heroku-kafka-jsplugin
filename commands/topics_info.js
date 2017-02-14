@@ -41,7 +41,7 @@ function topicInfo (topic) {
     }
   ]
 
-  if (topic.compaction_enabled) {
+  if (topic.compaction) {
     lines.push({
       name: 'Compaction',
       values: [`Compaction is enabled for ${topic.name}`]
@@ -52,7 +52,7 @@ function topicInfo (topic) {
       values: [`Compaction is disabled for ${topic.name}`]
     })
   }
-  if (topic.retention_enabled) {
+  if (topic.retention_time_ms) {
     lines.push({
       name: 'Retention',
       values: [retention(topic.retention_time_ms)]
