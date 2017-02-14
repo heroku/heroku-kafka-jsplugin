@@ -3,6 +3,7 @@
 let cli = require('heroku-cli-util')
 let co = require('co')
 let parseDuration = require('../lib/shared').parseDuration
+let formatIntervalFromMilliseconds = require('../lib/shared').formatIntervalFromMilliseconds
 let deprecated = require('../lib/shared').deprecated
 let withCluster = require('../lib/clusters').withCluster
 let request = require('../lib/clusters').request
@@ -22,16 +23,17 @@ function * createTopic (context, heroku) {
   let compaction = flags['compaction'] || false
 
   yield withCluster(heroku, context.app, context.args.CLUSTER, function * (addon) {
-    let msg = `Creating topic ${context.args.TOPIC}`
-    if (context.args.CLUSTER) {
-      msg += ` on ${context.args.CLUSTER}`
-    }
-
     let addonInfo = yield fetchProvisionedInfo(heroku, addon)
 
     if ((!compaction || addonInfo.shared_cluster) && retentionTimeMillis === undefined) {
       retentionTimeMillis = addonInfo.limits.minimum_retention_ms
     }
+
+    let msg = `Creating topic ${context.args.TOPIC} with compaction ${compaction ? 'enabled' : 'disabled'}`
+    if (retentionTimeMillis !== undefined) {
+      msg += ` and retention time ${formatIntervalFromMilliseconds(retentionTimeMillis)}`
+    }
+    msg += ` on ${addon.name}`
 
     yield cli.action(msg, co(function * () {
       return yield request(heroku, {
@@ -64,8 +66,8 @@ let cmd = {
     Examples:
 
   $ heroku kafka:topics:create page-visits --partitions 100
-  $ heroku kafka:topics:create page-visits HEROKU_KAFKA_BROWN_URL --partitions 100 --replication-factor 3 --retention-time 10d
-  $ heroku kafka:topics:create page-visits HEROKU_KAFKA_BROWN_URL --partitions 100 --compaction
+  $ heroku kafka:topics:create page-visits kafka-shiny-2345 --partitions 100 --replication-factor 3 --retention-time 10d
+  $ heroku kafka:topics:create page-visits kafka-shiny-2345 --partitions 100 --compaction
   `,
   needsApp: true,
   needsAuth: true,

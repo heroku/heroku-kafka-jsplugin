@@ -3,6 +3,7 @@
 let cli = require('heroku-cli-util')
 let co = require('co')
 let parseBool = require('../lib/shared').parseBool
+let formatIntervalFromMilliseconds = require('../lib/shared').formatIntervalFromMilliseconds
 let withCluster = require('../lib/clusters').withCluster
 let request = require('../lib/clusters').request
 let topicConfig = require('../lib/clusters').topicConfig
@@ -16,10 +17,6 @@ function * compaction (context, heroku) {
     cli.exit(1, `Unknown value '${context.args.VALUE}': must be 'on' or 'enable' to enable, or 'off' or 'disable' to disable`)
   }
 
-  let msg = `${enabled ? 'Enabling' : 'Disabling'} compaction for topic ${context.args.TOPIC}`
-  if (context.args.CLUSTER) {
-    msg += ` on ${context.args.CLUSTER}`
-  }
   yield withCluster(heroku, context.app, context.args.CLUSTER, function * (addon) {
     const topicName = context.args.TOPIC
     let [ topicInfo, addonInfo ] = yield [
@@ -30,12 +27,20 @@ function * compaction (context, heroku) {
     if (enabled) {
       retentionTime = addonInfo.capabilities.supports_mixed_cleanup_policy ? topicInfo.retention_time_ms : null
     } else {
-      retentionTime = addonInfo.limits.minimum_retention_ms
+      retentionTime = topicInfo.retention_time_ms || addonInfo.limits.minimum_retention_ms
     }
     let cleanupPolicy = {
       compaction: enabled,
       retention_time_ms: retentionTime
     }
+
+    let msg = `${enabled ? 'Enabling' : 'Disabling'} compaction`
+    if (enabled && !addonInfo.capabilities.supports_mixed_cleanup_policy) {
+      msg += ' and disabling time-based retention'
+    } else if (cleanupPolicy.retention_time_ms !== topicInfo.retention_time_ms) {
+      msg += ` and setting retention time to ${formatIntervalFromMilliseconds(retentionTime)}`
+    }
+    msg += ` for topic ${context.args.TOPIC} on ${addon.name}`
 
     yield cli.action(msg, co(function * () {
       return yield request(heroku, {
@@ -63,7 +68,7 @@ module.exports = {
     Examples:
 
   $ heroku kafka:topics:compaction page-visits enable
-  $ heroku kafka:topics:compaction page-visits disable HEROKU_KAFKA_BROWN_URL
+  $ heroku kafka:topics:compaction page-visits disable kafka-shiny-2345
   `,
   needsApp: true,
   needsAuth: true,

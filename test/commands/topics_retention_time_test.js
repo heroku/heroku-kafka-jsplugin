@@ -78,7 +78,7 @@ describe('kafka:topics:retention-time', () => {
       return cmd.run({app: 'myapp',
                       args: { TOPIC: 'topic-1', VALUE: '60s' },
                       flags: {}})
-                .then(() => expect(cli.stderr).to.equal('Setting retention time for topic topic-1 to 60s... done\n'))
+                .then(() => expect(cli.stderr).to.equal('Setting retention time to 60s for topic topic-1 on kafka-1... done\n'))
                 .then(() => expect(cli.stdout).to.equal('Use `heroku kafka:topics:info topic-1` to monitor your topic.\n'))
     })
 
@@ -89,7 +89,7 @@ describe('kafka:topics:retention-time', () => {
       return cmd.run({app: 'myapp',
                       args: { TOPIC: 'topic-1', VALUE: 'disable' },
                       flags: {}})
-                .then(() => expect(cli.stderr).to.equal('Setting retention time for topic topic-1 to disable... done\n'))
+                .then(() => expect(cli.stderr).to.equal('Disabling time-based retention and enabling compaction for topic topic-1 on kafka-1... done\n'))
                 .then(() => expect(cli.stdout).to.equal('Use `heroku kafka:topics:info topic-1` to monitor your topic.\n'))
     })
   })
@@ -112,7 +112,7 @@ describe('kafka:topics:retention-time', () => {
       return cmd.run({app: 'myapp',
                       args: { TOPIC: 'topic-1', VALUE: '60s' },
                       flags: {}})
-                .then(() => expect(cli.stderr).to.equal('Setting retention time for topic topic-1 to 60s... done\n'))
+                .then(() => expect(cli.stderr).to.equal('Setting retention time to 60s and disabling compaction for topic topic-1 on kafka-1... done\n'))
                 .then(() => expect(cli.stdout).to.equal('Use `heroku kafka:topics:info topic-1` to monitor your topic.\n'))
     })
 
@@ -123,7 +123,7 @@ describe('kafka:topics:retention-time', () => {
       return cmd.run({app: 'myapp',
                       args: { TOPIC: 'topic-1', VALUE: 'disable' },
                       flags: {}})
-                .then(() => expect(cli.stderr).to.equal('Setting retention time for topic topic-1 to disable... done\n'))
+                .then(() => expect(cli.stderr).to.equal('Disabling time-based retention for topic topic-1 on kafka-1... done\n'))
                 .then(() => expect(cli.stdout).to.equal('Use `heroku kafka:topics:info topic-1` to monitor your topic.\n'))
     })
   })

@@ -21,10 +21,6 @@ function * retentionTime (context, heroku) {
     }
   }
 
-  let msg = `Setting retention time for topic ${context.args.TOPIC} to ${context.args.VALUE}`
-  if (context.args.CLUSTER) {
-    msg += ` on ${context.args.CLUSTER}`
-  }
   yield withCluster(heroku, context.app, context.args.CLUSTER, function * (addon) {
     const topicName = context.args.TOPIC
     let [ topicInfo, addonInfo ] = yield [
@@ -35,6 +31,20 @@ function * retentionTime (context, heroku) {
       retention_time_ms: parsed,
       compaction: (!parsed || (addonInfo.capabilities.supports_mixed_cleanup_policy && topicInfo.compaction))
     }
+
+    let msg
+    if (parsed == null) {
+      msg = 'Disabling time-based retention'
+      if (cleanupPolicy.compaction !== topicInfo.compaction) {
+        msg += ` and ${cleanupPolicy.compaction ? 'enabling' : 'disabling'} compaction`
+      }
+    } else {
+      msg = `Setting retention time to ${context.args.VALUE}`
+      if (!addonInfo.capabilities.supports_mixed_cleanup_policy) {
+        msg += ' and disabling compaction'
+      }
+    }
+    msg += ` for topic ${context.args.TOPIC} on ${addon.name}`
 
     yield cli.action(msg, co(function * () {
       return yield request(heroku, {
@@ -64,7 +74,7 @@ module.exports = {
 
   $ heroku kafka:topics:retention-time page-visits 10d
   $ heroku kafka:topics:retention-time page-visits disable
-  $ heroku kafka:topics:retention-time page-visits 36h HEROKU_KAFKA_BROWN_URL
+  $ heroku kafka:topics:retention-time page-visits 36h kafka-shiny-2345
   `,
   needsApp: true,
   needsAuth: true,

@@ -73,7 +73,7 @@ describe('kafka:topics:create', () => {
                              'retention-time': '10ms',
                              'partitions': '7' }})
               .then(() => {
-                expect(cli.stderr).to.equal('Creating topic topic-1... done\n')
+                expect(cli.stderr).to.equal('Creating topic topic-1 with compaction disabled and retention time 10 milliseconds on kafka-1... done\n')
                 expect(cli.stdout).to.equal('Use `heroku kafka:topics:info topic-1` to monitor your topic.\n')
               })
   })
@@ -97,7 +97,7 @@ describe('kafka:topics:create', () => {
                     flags: { 'replication-factor': '3',
                              'partitions': '7' }})
               .then(() => {
-                expect(cli.stderr).to.equal('Creating topic topic-1... done\n')
+                expect(cli.stderr).to.equal('Creating topic topic-1 with compaction disabled and retention time 66 milliseconds on kafka-1... done\n')
                 expect(cli.stdout).to.equal('Use `heroku kafka:topics:info topic-1` to monitor your topic.\n')
               })
   })
@@ -123,7 +123,7 @@ describe('kafka:topics:create', () => {
                                'partitions': '7',
                                'compaction': true }})
                 .then(() => {
-                  expect(cli.stderr).to.equal('Creating topic topic-1... done\n')
+                  expect(cli.stderr).to.equal('Creating topic topic-1 with compaction enabled and retention time 66 milliseconds on kafka-1... done\n')
                   expect(cli.stdout).to.equal('Use `heroku kafka:topics:info topic-1` to monitor your topic.\n')
                 })
     })
