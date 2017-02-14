@@ -29,6 +29,10 @@ describe('kafka:topics:create', () => {
     return `/data/kafka/v0/clusters/${cluster}/topics`
   }
 
+  let infoUrl = (cluster) => {
+    return `/data/kafka/v0/clusters/${cluster}`
+  }
+
   beforeEach(() => {
     kafka = nock('https://kafka-api.heroku.com:443')
 
@@ -50,6 +54,8 @@ describe('kafka:topics:create', () => {
   })
 
   it('passes the topic name and specified flags', () => {
+    kafka.get(infoUrl('00000000-0000-0000-0000-000000000000'))
+         .reply(200, { shared_cluster: false })
     kafka.post(createUrl('00000000-0000-0000-0000-000000000000'),
       {
         topic: {
@@ -70,5 +76,31 @@ describe('kafka:topics:create', () => {
                 expect(cli.stderr).to.equal('Creating topic topic-1... done\n')
                 expect(cli.stdout).to.equal('Use `heroku kafka:topics:info topic-1` to monitor your topic.\n')
               })
+  })
+
+  describe('for multi-tenant plans', () => {
+    it('defaults retention to the plan minimum if not specified', () => {
+      kafka.get(infoUrl('00000000-0000-0000-0000-000000000000'))
+           .reply(200, { shared_cluster: true, limits: { minimum_retention_ms: 66 } })
+      kafka.post(createUrl('00000000-0000-0000-0000-000000000000'),
+        {
+          topic: {
+            name: 'topic-1',
+            retention_time_ms: 66,
+            replication_factor: '3',
+            partition_count: '7',
+            compaction: false
+          }
+        }).reply(200)
+
+      return cmd.run({app: 'myapp',
+                      args: { TOPIC: 'topic-1' },
+                      flags: { 'replication-factor': '3',
+                               'partitions': '7' }})
+                .then(() => {
+                  expect(cli.stderr).to.equal('Creating topic topic-1... done\n')
+                  expect(cli.stdout).to.equal('Use `heroku kafka:topics:info topic-1` to monitor your topic.\n')
+                })
+    })
   })
 })

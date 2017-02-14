@@ -6,15 +6,16 @@ let parseDuration = require('../lib/shared').parseDuration
 let deprecated = require('../lib/shared').deprecated
 let withCluster = require('../lib/clusters').withCluster
 let request = require('../lib/clusters').request
+let fetchProvisionedInfo = require('../lib/clusters').fetchProvisionedInfo
 
 const VERSION = 'v0'
 
 function * createTopic (context, heroku) {
   let flags = Object.assign({}, context.flags)
-  let retentiomTimeMillis
+  let retentionTimeMillis
   if ('retention-time' in flags) {
-    let retentiomTimeMillis = parseDuration(flags['retention-time'])
-    if (parsed == null) {
+    retentionTimeMillis = parseDuration(flags['retention-time'])
+    if (retentionTimeMillis == null) {
       cli.exit(1, `Could not parse retention time '${flags['retention-time']}'; expected value like '10d' or '36h'`)
     }
   }
@@ -25,13 +26,19 @@ function * createTopic (context, heroku) {
       msg += ` on ${context.args.CLUSTER}`
     }
 
+    let addonInfo = yield fetchProvisionedInfo(heroku, addon)
+
+    if (addonInfo.shared_cluster && retentionTimeMillis === undefined) {
+      retentionTimeMillis = addonInfo.limits.minimum_retention_ms
+    }
+
     yield cli.action(msg, co(function * () {
       return yield request(heroku, {
         method: 'POST',
         body: {
           topic: {
             name: context.args.TOPIC,
-            retention_time_ms: retentiomTimeMillis,
+            retention_time_ms: retentionTimeMillis,
             replication_factor: flags['replication-factor'],
             partition_count: flags['partitions'],
             compaction: flags['compaction'] || false
