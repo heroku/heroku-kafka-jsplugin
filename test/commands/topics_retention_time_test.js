@@ -63,7 +63,7 @@ describe('kafka:topics:retention-time', () => {
   describe('if the cluster supports a mixed cleanup policy', () => {
     beforeEach(() => {
       kafka.get(topicListUrl('00000000-0000-0000-0000-000000000000'))
-           .reply(200, { topics: [ { name: 'topic-1', retention_time_ms: 123, compaction_enabled: false } ] })
+           .reply(200, { topics: [ { name: 'topic-1', retention_time_ms: 123, compaction: false } ] })
       kafka.get(infoUrl('00000000-0000-0000-0000-000000000000'))
            .reply(200, {
              capabilities: { supports_mixed_cleanup_policy: true },
@@ -97,7 +97,7 @@ describe('kafka:topics:retention-time', () => {
   describe('if the cluster does not support a mixed cleanup policy', () => {
     beforeEach(() => {
       kafka.get(topicListUrl('00000000-0000-0000-0000-000000000000'))
-           .reply(200, { topics: [ { name: 'topic-1', retention_time_ms: 123, compaction_enabled: true } ] })
+           .reply(200, { topics: [ { name: 'topic-1', retention_time_ms: 123, compaction: true } ] })
       kafka.get(infoUrl('00000000-0000-0000-0000-000000000000'))
            .reply(200, {
              capabilities: { supports_mixed_cleanup_policy: false },

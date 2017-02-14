@@ -33,7 +33,7 @@ function * retentionTime (context, heroku) {
     ]
     let cleanupPolicy = {
       retention_time_ms: parsed,
-      compaction: (!parsed || (addonInfo.capabilities.supports_mixed_cleanup_policy && topicInfo.compaction_enabled))
+      compaction: (!parsed || (addonInfo.capabilities.supports_mixed_cleanup_policy && topicInfo.compaction))
     }
 
     yield cli.action(msg, co(function * () {
