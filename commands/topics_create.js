@@ -19,6 +19,7 @@ function * createTopic (context, heroku) {
       cli.exit(1, `Could not parse retention time '${flags['retention-time']}'; expected value like '10d' or '36h'`)
     }
   }
+  let compaction = flags['compaction'] || false
 
   yield withCluster(heroku, context.app, context.args.CLUSTER, function * (addon) {
     let msg = `Creating topic ${context.args.TOPIC}`
@@ -28,7 +29,7 @@ function * createTopic (context, heroku) {
 
     let addonInfo = yield fetchProvisionedInfo(heroku, addon)
 
-    if (addonInfo.shared_cluster && retentionTimeMillis === undefined) {
+    if ((!compaction || addonInfo.shared_cluster) && retentionTimeMillis === undefined) {
       retentionTimeMillis = addonInfo.limits.minimum_retention_ms
     }
 
@@ -41,7 +42,7 @@ function * createTopic (context, heroku) {
             retention_time_ms: retentionTimeMillis,
             replication_factor: flags['replication-factor'],
             partition_count: flags['partitions'],
-            compaction: flags['compaction'] || false
+            compaction: compaction
           }
         },
         path: `/data/kafka/${VERSION}/clusters/${addon.id}/topics`
