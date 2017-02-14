@@ -10,14 +10,13 @@ let request = require('../lib/clusters').request
 const VERSION = 'v0'
 
 function * createTopic (context, heroku) {
-  var flags = Object.assign({}, context.flags)
+  let flags = Object.assign({}, context.flags)
+  let retentiomTimeMillis
   if ('retention-time' in flags) {
-    let value = flags['retention-time']
-    let parsed = parseDuration(value)
+    let retentiomTimeMillis = parseDuration(flags['retention-time'])
     if (parsed == null) {
-      cli.exit(1, `Could not parse retention time '${value}'; expected value like '10d' or '36h'`)
+      cli.exit(1, `Could not parse retention time '${flags['retention-time']}'; expected value like '10d' or '36h'`)
     }
-    flags['retention-time'] = parsed
   }
 
   yield withCluster(heroku, context.app, context.args.CLUSTER, function * (addon) {
@@ -32,7 +31,7 @@ function * createTopic (context, heroku) {
         body: {
           topic: {
             name: context.args.TOPIC,
-            retention_time_ms: flags['retention-time'],
+            retention_time_ms: retentiomTimeMillis,
             replication_factor: flags['replication-factor'],
             partition_count: flags['partitions'],
             compaction: flags['compaction'] || false
