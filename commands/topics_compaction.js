@@ -55,7 +55,10 @@ module.exports = {
   command: 'topics:compaction',
   description: 'configures topic compaction in Kafka',
   help: `
-    Enables or disables topic compaction in Kafka.
+    Enables or disables topic compaction in Kafka. If compaction is enabled on an add-on that
+    does not support compaction and time-based retention together, time-based retention is
+    automatically turned off. If compaction is disabled, time-based retention is required:
+    it is automatically set to the plan minimum.
 
     Examples:
 

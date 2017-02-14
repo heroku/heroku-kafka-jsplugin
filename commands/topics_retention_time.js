@@ -53,13 +53,17 @@ function * retentionTime (context, heroku) {
 module.exports = {
   topic: 'kafka',
   command: 'topics:retention-time',
-  description: 'configures topic retention time (e.g. 10d, 36h)',
+  description: 'configures or disables topic retention time (e.g. 10d, 36h)',
   help: `
-    Configures topic retention time in Kafka.
+    Configures or disables topic retention time in Kafka. If disabling, compaction is
+    required and is automatically turned on. If time-based retention is enabled on an
+    add-on that does not support compaction and time-based retention together, compaction
+    is automatically turned off. Time-based retention cannot be disabled on multi-tenant plans.
 
     Examples:
 
   $ heroku kafka:topics:retention-time page-visits 10d
+  $ heroku kafka:topics:retention-time page-visits disable
   $ heroku kafka:topics:retention-time page-visits 36h HEROKU_KAFKA_BROWN_URL
   `,
   needsApp: true,

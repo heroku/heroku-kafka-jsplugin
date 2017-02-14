@@ -58,7 +58,8 @@ let cmd = {
   command: 'topics:create',
   description: 'creates a topic in Kafka',
   help: `
-    Creates a topic in Kafka.
+    Creates a topic in Kafka. Defaults to time-based retention according to plan
+    minimum if not explicitly specified.
 
     Examples:
 
