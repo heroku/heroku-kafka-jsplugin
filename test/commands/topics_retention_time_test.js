@@ -82,7 +82,7 @@ describe('kafka:topics:retention-time', () => {
                 .then(() => expect(cli.stdout).to.equal('Use `heroku kafka:topics:info topic-1` to monitor your topic.\n'))
     })
 
-    it('clears retention and turns on compaction if `disabled` is specified', () => {
+    it('clears retention and turns on compaction if `disable` is specified', () => {
       kafka.put(topicConfigUrl('00000000-0000-0000-0000-000000000000', 'topic-1'),
                 { topic: { name: 'topic-1', retention_time_ms: null, compaction: true } }).reply(200)
 

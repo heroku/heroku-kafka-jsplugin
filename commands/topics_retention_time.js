@@ -11,12 +11,10 @@ let fetchProvisionedInfo = require('../lib/clusters').fetchProvisionedInfo
 const VERSION = 'v0'
 
 function * retentionTime (context, heroku) {
-  let parsed
-  if (context.args.VALUE === 'disable') {
-    parsed = null
-  } else {
+  let parsed = null
+  if (context.args.VALUE !== 'disable') {
     parsed = parseDuration(context.args.VALUE)
-    if (parsed == null) {
+    if (!parsed) {
       cli.exit(1, `Unknown retention time '${context.args.VALUE}'; expected 'disable' or value like '36h' or '10d'`)
     }
   }
@@ -33,7 +31,7 @@ function * retentionTime (context, heroku) {
     }
 
     let msg
-    if (parsed == null) {
+    if (!parsed) {
       msg = 'Disabling time-based retention'
       if (cleanupPolicy.compaction !== topicInfo.compaction) {
         msg += ` and ${cleanupPolicy.compaction ? 'enabling' : 'disabling'} compaction`
