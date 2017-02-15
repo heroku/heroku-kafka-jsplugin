@@ -51,15 +51,14 @@ describe('kafka:topics:info', () => {
           bytes_out_per_second: 0,
           replication_factor: 3,
           partitions: 3,
-          compaction_enabled: false,
-          retention_enabled: true,
+          compaction: false,
           retention_time_ms: 86400000
         }
       ]
     })
 
     return cmd.run({app: 'myapp', args: { TOPIC: 'topic-1' }})
-      .then(() => expect(cli.stdout).to.equal(`=== HEROKU_KAFKA_BLUE_URL :: topic-1
+      .then(() => expect(cli.stdout).to.equal(`=== kafka-1 :: topic-1
 
 Producers:          0 messages/second (0 bytes/second) total
 Consumers:          0 bytes/second total
@@ -82,7 +81,7 @@ Retention:          24 hours
           bytes_out_per_second: 0,
           replication_factor: 0,
           partitions: 0,
-          compaction_enabled: false,
+          compaction: false,
           retention_time_ms: 86400000
         }
       ]
@@ -104,7 +103,7 @@ Retention:          24 hours
           bytes_out_per_second: 0,
           replication_factor: 0,
           partitions: 0,
-          compaction_enabled: false,
+          compaction: false,
           retention_time_ms: 86400000
         }
       ]

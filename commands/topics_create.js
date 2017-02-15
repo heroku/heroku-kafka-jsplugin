@@ -3,28 +3,37 @@
 let cli = require('heroku-cli-util')
 let co = require('co')
 let parseDuration = require('../lib/shared').parseDuration
+let formatIntervalFromMilliseconds = require('../lib/shared').formatIntervalFromMilliseconds
 let deprecated = require('../lib/shared').deprecated
 let withCluster = require('../lib/clusters').withCluster
 let request = require('../lib/clusters').request
+let fetchProvisionedInfo = require('../lib/clusters').fetchProvisionedInfo
 
 const VERSION = 'v0'
 
 function * createTopic (context, heroku) {
-  var flags = Object.assign({}, context.flags)
+  let flags = Object.assign({}, context.flags)
+  let retentionTimeMillis
   if ('retention-time' in flags) {
-    let value = flags['retention-time']
-    let parsed = parseDuration(value)
-    if (parsed == null) {
-      cli.exit(1, `Could not parse retention time '${value}'; expected value like '10d' or '36h'`)
+    retentionTimeMillis = parseDuration(flags['retention-time'])
+    if (!retentionTimeMillis) {
+      cli.exit(1, `Could not parse retention time '${flags['retention-time']}'; expected value like '10d' or '36h'`)
     }
-    flags['retention-time'] = parsed
   }
+  let compaction = flags['compaction'] || false
 
   yield withCluster(heroku, context.app, context.args.CLUSTER, function * (addon) {
-    let msg = `Creating topic ${context.args.TOPIC}`
-    if (context.args.CLUSTER) {
-      msg += ` on ${context.args.CLUSTER}`
+    let addonInfo = yield fetchProvisionedInfo(heroku, addon)
+
+    if ((!compaction || addonInfo.shared_cluster) && !retentionTimeMillis) {
+      retentionTimeMillis = addonInfo.limits.minimum_retention_ms
     }
+
+    let msg = `Creating topic ${context.args.TOPIC} with compaction ${compaction ? 'enabled' : 'disabled'}`
+    if (retentionTimeMillis) {
+      msg += ` and retention time ${formatIntervalFromMilliseconds(retentionTimeMillis)}`
+    }
+    msg += ` on ${addon.name}`
 
     yield cli.action(msg, co(function * () {
       return yield request(heroku, {
@@ -32,10 +41,10 @@ function * createTopic (context, heroku) {
         body: {
           topic: {
             name: context.args.TOPIC,
-            retention_time_ms: flags['retention-time'],
+            retention_time_ms: retentionTimeMillis,
             replication_factor: flags['replication-factor'],
             partition_count: flags['partitions'],
-            compaction: flags['compaction'] || false
+            compaction: compaction
           }
         },
         path: `/data/kafka/${VERSION}/clusters/${addon.id}/topics`
@@ -51,13 +60,14 @@ let cmd = {
   command: 'topics:create',
   description: 'creates a topic in Kafka',
   help: `
-    Creates a topic in Kafka.
+    Creates a topic in Kafka. Defaults to time-based retention according to plan
+    minimum if not explicitly specified.
 
     Examples:
 
   $ heroku kafka:topics:create page-visits --partitions 100
-  $ heroku kafka:topics:create page-visits HEROKU_KAFKA_BROWN_URL --partitions 100 --replication-factor 3 --retention-time 10d
-  $ heroku kafka:topics:create page-visits HEROKU_KAFKA_BROWN_URL --partitions 100 --compaction
+  $ heroku kafka:topics:create page-visits kafka-shiny-2345 --partitions 100 --replication-factor 3 --retention-time 10d
+  $ heroku kafka:topics:create page-visits kafka-shiny-2345 --partitions 100 --compaction
   `,
   needsApp: true,
   needsAuth: true,

@@ -24,6 +24,10 @@ const cmd = proxyquire('../../commands/topics_replication_factor', {
 describe('kafka:topics:replication-factor', () => {
   let kafka
 
+  let topicListUrl = (cluster) => {
+    return `/data/kafka/v0/clusters/${cluster}/topics`
+  }
+
   let topicConfigUrl = (cluster, topic) => {
     return `/data/kafka/v0/clusters/${cluster}/topics/${topic}`
   }
@@ -40,8 +44,11 @@ describe('kafka:topics:replication-factor', () => {
   })
 
   it('sets replication factor to the specified value', () => {
+    kafka.get(topicListUrl('00000000-0000-0000-0000-000000000000'))
+         .reply(200, { topics: [ { name: 'topic-1', retention_time_ms: 123, compaction: true } ] })
     kafka.put(topicConfigUrl('00000000-0000-0000-0000-000000000000', 'topic-1'),
-              { topic: { name: 'topic-1', replication_factor: '5' } }).reply(200)
+              { topic: { name: 'topic-1', replication_factor: '5', retention_time_ms: 123, compaction: true } })
+         .reply(200)
 
     return cmd.run({app: 'myapp', args: { TOPIC: 'topic-1', VALUE: '5' }})
               .then(() => expect(cli.stderr).to.equal('Setting replication factor for topic topic-1 to 5... done\n'))
