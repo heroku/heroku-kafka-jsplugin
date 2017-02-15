@@ -16,7 +16,7 @@ function * createTopic (context, heroku) {
   let retentionTimeMillis
   if ('retention-time' in flags) {
     retentionTimeMillis = parseDuration(flags['retention-time'])
-    if (retentionTimeMillis == null) {
+    if (!retentionTimeMillis) {
       cli.exit(1, `Could not parse retention time '${flags['retention-time']}'; expected value like '10d' or '36h'`)
     }
   }
@@ -25,12 +25,12 @@ function * createTopic (context, heroku) {
   yield withCluster(heroku, context.app, context.args.CLUSTER, function * (addon) {
     let addonInfo = yield fetchProvisionedInfo(heroku, addon)
 
-    if ((!compaction || addonInfo.shared_cluster) && retentionTimeMillis === undefined) {
+    if ((!compaction || addonInfo.shared_cluster) && !retentionTimeMillis) {
       retentionTimeMillis = addonInfo.limits.minimum_retention_ms
     }
 
     let msg = `Creating topic ${context.args.TOPIC} with compaction ${compaction ? 'enabled' : 'disabled'}`
-    if (retentionTimeMillis !== undefined) {
+    if (retentionTimeMillis) {
       msg += ` and retention time ${formatIntervalFromMilliseconds(retentionTimeMillis)}`
     }
     msg += ` on ${addon.name}`
