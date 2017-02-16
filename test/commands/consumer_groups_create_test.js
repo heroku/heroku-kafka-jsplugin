@@ -53,7 +53,7 @@ describe('kafka:consumer-groups:create', () => {
     return cmd.run({app: 'myapp',
                   args: { CONSUMER_GROUP: 'consumer-group-1' }})
       .then(() => {
-        expect(cli.stdout).to.equal(`Use \`heroku kafka:consumer-groups:info consumer-group-1\` to monitor your consumer group.\n`)
+        expect(cli.stdout).to.equal('Use `heroku kafka:consumer-groups` to list your consumer groups.\n')
       })
   })
 })
