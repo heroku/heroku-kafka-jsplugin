@@ -26,7 +26,7 @@ function * createConsumerGroup (context, heroku) {
       })
     }))
 
-    cli.log(`Use \`heroku kafka:consumer-groups:info ${context.args.CONSUMER_GROUP}\` to monitor your consumer group.`)
+    cli.log('Use `heroku kafka:consumer-groups` to list your consumer groups.')
   })
 }
 
