@@ -24,15 +24,15 @@ function * createConsumerGroup (context, heroku) {
           }
         },
         path: `/data/kafka/${VERSION}/clusters/${addon.id}/consumer_groups`
-      }).catch(err => {
-        if (err.statusCode === 400 && err.body.message === 'this command is not required or enabled on dedicated clusters') {
-          created = false
-          cli.warn(`${cli.color.addon(addon.name)} does not need consumer groups managed explicitly, so this command does nothing`)
-        } else {
-          throw err
-        }
       })
-    }))
+    })).catch(err => {
+      if (err.statusCode === 400 && err.body.message === 'this command is not required or enabled on dedicated clusters') {
+        created = false
+        cli.warn(`${cli.color.addon(addon.name)} does not need consumer groups managed explicitly, so this command does nothing`)
+      } else {
+        throw err
+      }
+    })
 
     if (created === true) {
       cli.log('Use `heroku kafka:consumer-groups` to list your consumer groups.')
