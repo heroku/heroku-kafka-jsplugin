@@ -56,4 +56,20 @@ describe('kafka:consumer-groups:create', () => {
         expect(cli.stdout).to.equal('Use `heroku kafka:consumer-groups` to list your consumer groups.\n')
       })
   })
+
+  it("doesn't raise when the api 400s", () => {
+    kafka.post(consumerGroupsUrl('00000000-0000-0000-0000-000000000000'),
+      {
+        consumer_group: {
+          name: 'consumer-group-1'
+        }
+      }
+    ).reply(400, {message: 'this command is not required or enabled on dedicated clusters'})
+
+    return cmd.run({app: 'myapp',
+                  args: { CONSUMER_GROUP: 'consumer-group-1' }})
+      .then(() => {
+        expect(cli.stderr).to.equal(`Creating consumer group consumer-group-1... !\n ▸    kafka-1 does not need consumer groups managed explicitly, so this command\n ▸    does nothing\n`)
+      })
+  })
 })

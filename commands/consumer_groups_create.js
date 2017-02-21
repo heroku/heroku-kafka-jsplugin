@@ -13,6 +13,7 @@ function * createConsumerGroup (context, heroku) {
     if (context.args.CLUSTER) {
       msg += ` on ${context.args.CLUSTER}`
     }
+    var created = true
 
     yield cli.action(msg, co(function * () {
       return yield request(heroku, {
@@ -24,9 +25,18 @@ function * createConsumerGroup (context, heroku) {
         },
         path: `/data/kafka/${VERSION}/clusters/${addon.id}/consumer_groups`
       })
-    }))
+    })).catch(err => {
+      if (err.statusCode === 400 && err.body.message === 'this command is not required or enabled on dedicated clusters') {
+        created = false
+        cli.warn(`${cli.color.addon(addon.name)} does not need consumer groups managed explicitly, so this command does nothing`)
+      } else {
+        throw err
+      }
+    })
 
-    cli.log('Use `heroku kafka:consumer-groups` to list your consumer groups.')
+    if (created === true) {
+      cli.log('Use `heroku kafka:consumer-groups` to list your consumer groups.')
+    }
   })
 }
 
