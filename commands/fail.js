@@ -32,12 +32,13 @@ module.exports = {
   command: 'fail',
   description: 'triggers failure on one node in the cluster',
   help: `
-    Triggers failure on one node in the cluster.
+    Triggers failure on one Kafka broker in the cluster by stopping the underlying
+    instance and allowing Heroku automation to recover it.
 
     Examples:
 
     $ heroku kafka:fail
-    $ heroku kafka:fail HEROKU_KAFKA_BROWN_URL
+    $ heroku kafka:fail kafka-aerodynamic-32763
 `,
   needsApp: true,
   needsAuth: true,
@@ -46,10 +47,10 @@ module.exports = {
   ],
   flags: [
     { name: 'catastrophic',
-      description: 'induce unrecoverable server failure on the single node',
+      description: 'terminate the underlying instance instead and allow automation to replace it',
       hasValue: false },
     { name: 'zookeeper',
-      description: 'induce failure on zookeeper node rather than on Kafka itself',
+      description: 'induce failure on one of the cluster\'s Zookeeper nodes instead',
     hasValue: false },
     { name: 'confirm',
       description: 'pass the app name to skip the manual confirmation prompt',
