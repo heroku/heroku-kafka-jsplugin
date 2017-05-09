@@ -1,9 +1,0 @@
-[ignore]
-<PROJECT_ROOT>/.*
-
-[include]
-<PROJECT_ROOT>/src/commands
-
-[libs]
-
-[options]
