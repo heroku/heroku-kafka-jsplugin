@@ -23,6 +23,7 @@ exports.commands = [
   // new versions of commands with deprecated variants
   require('./commands/topics.js').cmd,
   require('./commands/topics_create.js').cmd,
+  require('./commands/topics_create_v6.js').default,
   require('./commands/topics_destroy.js').cmd,
   require('./commands/topics_info.js').cmd,
   require('./commands/topics_tail.js').cmd,

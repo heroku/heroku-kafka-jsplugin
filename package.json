@@ -13,6 +13,7 @@
   ],
   "license": "ISC",
   "dependencies": {
+    "cli-engine-command": "^3.1.4",
     "co": "4.6.0",
     "co-wait": "0.0.0",
     "debug": "2.2.0",
@@ -21,24 +22,38 @@
     "humanize-plus": "^1.8.2",
     "lodash.uniqby": "4.6.1",
     "no-kafka": "github:hunterloftis/kafka",
-    "node-spinner": "0.0.4"
+    "node-spinner": "0.0.4",
+    "snappy": "^6.0.0"
   },
   "scripts": {
     "test": "standard && nyc mocha",
     "qtest": "mocha",
     "standardize": "standard --fix",
-    "coverage": "nyc report --reporter=text-lcov | coveralls"
+    "coverage": "nyc report --reporter=text-lcov | coveralls",
+    "build": "babel src -d . --ignore '*.test.js'",
+    "clean": "rimraf commands/topics_create_v6.js",
+    "pre": "npm run clean && npm run build"
   },
   "devDependencies": {
+    "babel-cli": "6.24.1",
+    "babel-eslint": "7.2.1",
+    "babel-jest": "19.0.0",
+    "babel-plugin-transform-class-properties": "6.24.1",
+    "babel-plugin-transform-es2015-modules-commonjs": "6.24.1",
+    "babel-plugin-transform-flow-strip-types": "6.22.0",
     "chai": "^3.5.0",
     "chai-as-promised": "^5.3.0",
     "coveralls": "^2.11.12",
     "eslint": "^2.1.0",
     "eslint-config-standard": "^6.0.0",
+    "flow-bin": "0.43.1",
+    "flow-copy-source": "1.1.0",
+    "flow-typed": "2.0.0",
     "mocha": "^3.0.2",
     "nock": "^8.0.0",
     "nyc": "^8.1.0",
     "proxyquire": "^1.7.10",
+    "rimraf": "2.6.1",
     "standard": "8.0.0"
   }
 }
