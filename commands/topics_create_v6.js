@@ -35,6 +35,6 @@ TopicCreate.flags = {
   app: AppFlag({ required: true}),
   partitions: StringFlag({ description: 'number of partitions to give the topic' }),
   'replication-factor': StringFlag({ description: 'number of replicas the topic should be created across' }),
-  'retention-time': DurationFlag({ description: 'length of time messages in the topic should be retained (at least 24h)' }),
+  'retention-time': DurationFlag(),
   compaction: BooleanFlag({ description: 'whether to use compaction for this topic' })
 }
