@@ -1,11 +1,7 @@
 'use strict';
 
 const Command = require('cli-engine-command').default
-const AppFlag = require('cli-engine-command/lib/flags/app').AppFlag
-const BooleanFlag = require('cli-engine-command/lib/flags/boolean').default
-const StringFlag = require('cli-engine-command/lib/flags/string').default
-
-const DurationFlag = require('../lib/flags/duration')
+const flags = require('../lib/flags')
 
 class TopicCreate extends Command {
   async run(args) {
@@ -32,9 +28,9 @@ TopicCreate.args = [
   {name: 'CLUSTER', optional: true}
 ]
 TopicCreate.flags = {
-  app: AppFlag({ required: true}),
-  partitions: StringFlag({ description: 'number of partitions to give the topic' }),
-  'replication-factor': StringFlag({ description: 'number of replicas the topic should be created across' }),
-  'retention-time': DurationFlag(),
-  compaction: BooleanFlag({ description: 'whether to use compaction for this topic' })
+  app: flags.app({required: true}),
+  partitions: flags.string({description: 'number of partitions to give the topic'}),
+  'replication-factor': flags.string({description: 'number of replicas the topic should be created across'}),
+  'retention-time': flags.duration(),
+  compaction: flags.boolean({description: 'whether to use compaction for this topic'})
 }
