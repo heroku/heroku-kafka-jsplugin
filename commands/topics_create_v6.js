@@ -4,7 +4,7 @@ const Command = require('cli-engine-command').default
 const flags = require('../lib/flags')
 
 class TopicCreate extends Command {
-  async run(args) {
+  async run() {
     this.out.log(`running create with retention-time: ${this.flags['retention-time']} ms`)
   }
 }
