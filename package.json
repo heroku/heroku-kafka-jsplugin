@@ -13,7 +13,7 @@
   ],
   "license": "ISC",
   "dependencies": {
-    "cli-engine-command": "^3.1.4",
+    "cli-engine-command": "4.0.0",
     "co": "4.6.0",
     "co-wait": "0.0.0",
     "debug": "2.2.0",
@@ -22,8 +22,7 @@
     "humanize-plus": "^1.8.2",
     "lodash.uniqby": "4.6.1",
     "no-kafka": "github:hunterloftis/kafka",
-    "node-spinner": "0.0.4",
-    "snappy": "6.0.0"
+    "node-spinner": "0.0.4"
   },
   "scripts": {
     "test": "standard && nyc mocha",
