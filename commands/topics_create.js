@@ -79,8 +79,8 @@ exports.cmd = Object.assign(TopicsCreate, {
   ],
   flags: {
     app: flags.app({required: true}),
-    partitions: flags.string({description: 'number of partitions to give the topic'}),
-    'replication-factor': flags.string({description: 'number of replicas the topic should be created across'}),
+    partitions: flags.number({description: 'number of partitions to give the topic'}),
+    'replication-factor': flags.number({description: 'number of replicas the topic should be created across'}),
     'retention-time': flags.duration({description: 'length of time messages in the topic should be retained (at least 24h)'}),
     compaction: flags.boolean({description: 'whether to use compaction for this topic'})
   }
