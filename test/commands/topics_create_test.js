@@ -44,14 +44,14 @@ describe('kafka:topics:create', () => {
   })
 
   it('shows an error and exits with an invalid retention time', async () => {
+    let err
     try {
       await Command.mock('topic-1', '--app', 'myapp', '--retention-time', '2 eons')
-    } catch (err) {
+    } catch (e) {
+      err = e
+    } finally {
       expect(err.message).to.equal(`Could not parse duration '2 eons'; expected value like '10d' or '36h'`)
     }
-    // return expectExit(1, cmd.run({argv: ['topic-1', '--app', 'myapp', '--retention-time', '2 eons']}))
-      // .then(() => expect(cli.stdout).to.be.empty)
-      // .then(() => expect(cli.stderr).to.equal(` ▸    Could not parse duration '2 eons'; expected value like '10d' or\n ▸    '36h'\n`))
   })
 
   it('passes the topic name and specified flags', async () => {
