@@ -2,7 +2,7 @@
 
 const cli = require('heroku-cli-util')
 const co = require('co')
-const Command = require('../lib/command').default
+const {Command} = require('cli-engine-heroku')
 const flags = require('../lib/flags')
 
 let formatIntervalFromMilliseconds = require('../lib/shared').formatIntervalFromMilliseconds
@@ -14,12 +14,8 @@ const VERSION = 'v0'
 
 class TopicsCreate extends Command {
   async run () {
-    const context = {
-      app: this.flags.app,
-      args: {TOPIC: this.argv[0], CLUSTER: this.argv[1]},
-      flags: this.flags
-    }
-    const heroku = this.heroku
+    const context = this
+    const heroku = this.legacyHerokuClient
 
     let flags = context.flags
     let retentionTimeMillis = flags['retention-time']
