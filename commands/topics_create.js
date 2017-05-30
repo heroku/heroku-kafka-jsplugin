@@ -14,7 +14,7 @@ const VERSION = 'v0'
 function * createTopic (context, heroku) {
   let flags = Object.assign({}, context.flags)
   let retentionTimeMillis
-  if ('retention-time' in flags) {
+  if (flags['retention-time'] !== undefined) {
     retentionTimeMillis = parseDuration(flags['retention-time'])
     if (!retentionTimeMillis) {
       cli.exit(1, `Could not parse retention time '${flags['retention-time']}'; expected value like '10d' or '36h'`)
