@@ -13,7 +13,7 @@ function * configureTopic (context, heroku) {
   }
 
   var flags = Object.assign({}, context.flags)
-  if ('retention-time' in flags) {
+  if (flags['retention-time'] !== undefined) {
     let value = flags['retention-time']
     let parsed = parseDuration(value)
     if (parsed == null) {
@@ -21,7 +21,7 @@ function * configureTopic (context, heroku) {
     }
     flags['retention-time'] = parsed
   }
-  if ('no-compaction' in flags) {
+  if (flags['no-compaction'] !== undefined) {
     flags['compaction'] = false
     delete flags['no-compaction']
   }
