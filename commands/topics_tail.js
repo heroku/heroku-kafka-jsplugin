@@ -50,10 +50,7 @@ function * tail (context, heroku) {
     return new Promise((resolve, reject) => {
       // N.B.: we never call resolve unless we see a SIGINT because
       // tail is meant to keep going indefinitely
-      module.exports.process.once('SIGINT', () => {
-        // we're done, and no need to exit with an error
-        resolve()
-      })
+      module.exports.process.once('SIGINT', resolve)
       try {
         consumer.subscribe(topicName, (messageSet, topic, partition) => {
           messageSet.forEach((m) => {
