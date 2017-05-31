@@ -17,7 +17,7 @@ const MAX_LENGTH = 80
 function * tail (context, heroku) {
   yield withCluster(heroku, context.app, context.args.CLUSTER, function * (addon) {
     if (isPrivate(addon)) {
-      cli.exit(1, '`kafka:topics:tail` is not available in Heroku Private Spaces')
+      throw new Error('`kafka:topics:tail` is not available in Heroku Private Spaces')
     }
 
     let appConfig = yield heroku.get(`/apps/${context.app}/config-vars`)
@@ -39,7 +39,7 @@ function * tail (context, heroku) {
       yield consumer.init()
     } catch (e) {
       debug(e)
-      cli.exit(1, 'Could not connect to kafka')
+      throw new Error('Could not connect to kafka')
     }
 
     var topicName = context.args.TOPIC
@@ -47,23 +47,28 @@ function * tail (context, heroku) {
       topicName = config.prefix + topicName
     }
 
-    try {
-      consumer.subscribe(topicName, (messageSet, topic, partition) => {
-        messageSet.forEach((m) => {
-          let buffer = m.message.value
-          if (buffer == null) {
-            cli.log(topicName, partition, m.offset, 0, 'NULL')
-            return
-          }
-          let length = Math.min(buffer.length, MAX_LENGTH)
-          let body = buffer.toString('utf8', 0, length)
-          cli.log(context.args.TOPIC, partition, m.offset, buffer.length, body)
+    return new Promise((resolve, reject) => {
+      // N.B.: we never call resolve unless we see a SIGINT because
+      // tail is meant to keep going indefinitely
+      module.exports.process.once('SIGINT', resolve)
+      try {
+        consumer.subscribe(topicName, (messageSet, topic, partition) => {
+          messageSet.forEach((m) => {
+            let buffer = m.message.value
+            if (buffer == null) {
+              cli.log(context.args.TOPIC, partition, m.offset, 0, 'NULL')
+              return
+            }
+            let length = Math.min(buffer.length, MAX_LENGTH)
+            let body = buffer.toString('utf8', 0, length)
+            cli.log(context.args.TOPIC, partition, m.offset, buffer.length, body)
+          })
         })
-      })
-    } catch (e) {
-      debug(e)
-      cli.exit(1, 'Could not subscribe to topic')
-    }
+      } catch (e) {
+        debug(e)
+        reject(new Error('Could not subscribe to topic'))
+      }
+    })
   })
 }
 
@@ -92,5 +97,8 @@ module.exports = {
   cmd,
   deprecated: Object.assign({}, cmd, { command: 'tail',
                                        hidden: true,
-                                       run: cli.command(co.wrap(deprecated(tail, cmd.command))) })
+                                       run: cli.command(co.wrap(deprecated(tail, cmd.command))) }),
+  // N.B.: exporting this here and relying on the exported version lets
+  // us mock it out in tests
+  process
 }

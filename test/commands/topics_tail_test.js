@@ -7,10 +7,10 @@ const it = mocha.it
 const beforeEach = mocha.beforeEach
 const afterEach = mocha.afterEach
 const proxyquire = require('proxyquire')
-const expectExit = require('../expect_exit')
 
 const cli = require('heroku-cli-util')
 const nock = require('nock')
+const EventEmitter = require('events')
 
 let planName
 const withCluster = function * (heroku, app, cluster, callback) {
@@ -33,14 +33,16 @@ class FakeConsumer {
   }
 }
 
-const cmd = proxyquire('../../commands/topics_tail', {
+const tail = proxyquire('../../commands/topics_tail', {
   '../lib/clusters': {
     withCluster
   },
   'no-kafka': {
     SimpleConsumer: FakeConsumer
   }
-}).cmd
+})
+
+const cmd = tail.cmd
 
 describe('kafka:topics:tail', () => {
   let api
@@ -60,20 +62,25 @@ describe('kafka:topics:tail', () => {
 
     api = nock('https://api.heroku.com:443')
 
-    cli.exit.mock()
     cli.mockConsole()
+    tail.process = new EventEmitter()
   })
 
   afterEach(() => {
     nock.cleanAll()
     api.done()
+    tail.process = global.process
   })
 
   it('warns and exits with an error if used with a Private Spaces cluster', () => {
     planName = 'heroku-kafka:beta-private-standard-2'
-    return expectExit(1, cmd.run({app: 'myapp', args: { TOPIC: 'topic-1' }}))
-      .then(() => expect(cli.stdout).to.be.empty)
-      .then(() => expect(cli.stderr).to.equal(' ▸    `kafka:topics:tail` is not available in Heroku Private Spaces\n'))
+    return cmd.run({app: 'myapp', args: { TOPIC: 'topic-1' }})
+      .then(() => { throw new Error('expected error; got none') })
+      .catch((err) => {
+        expect(err.message).to.equal('`kafka:topics:tail` is not available in Heroku Private Spaces')
+        expect(cli.stdout).to.be.empty
+        expect(cli.stderr).to.be.empty
+      })
   })
 
   it('warns and exits with an error if it cannot connect', () => {
@@ -82,9 +89,13 @@ describe('kafka:topics:tail', () => {
       .reply(200, { name: 'KAFKA' })
     consumer.init = () => { throw new Error('oh snap') }
 
-    return expectExit(1, cmd.run({app: 'myapp', args: { TOPIC: 'topic-1' }}))
-      .then(() => expect(cli.stdout).to.be.empty)
-      .then(() => expect(cli.stderr).to.equal(` ▸    Could not connect to kafka\n`))
+    return cmd.run({app: 'myapp', args: { TOPIC: 'topic-1' }})
+      .then(() => { throw new Error('expected error; got none') })
+      .catch((err) => {
+        expect(err.message).to.equal(`Could not connect to kafka`)
+        expect(cli.stdout).to.be.empty
+        expect(cli.stderr).to.be.empty
+      })
   })
 
   it('warns and exits with an error if it cannot subscribe', () => {
@@ -93,9 +104,13 @@ describe('kafka:topics:tail', () => {
       .reply(200, { name: 'KAFKA' })
     consumer.subscribe = () => { throw new Error('oh snap') }
 
-    return expectExit(1, cmd.run({app: 'myapp', args: { TOPIC: 'topic-1' }}))
-      .then(() => expect(cli.stdout).to.be.empty)
-      .then(() => expect(cli.stderr).to.equal(` ▸    Could not subscribe to topic\n`))
+    return cmd.run({app: 'myapp', args: { TOPIC: 'topic-1' }})
+      .then(() => { throw new Error('expected error; got none') })
+      .catch((err) => {
+        expect(err.message).to.equal('Could not subscribe to topic')
+        expect(cli.stdout).to.be.empty
+        expect(cli.stderr).to.be.empty
+      })
   })
 
   it('tails a topic and prints the results', () => {
@@ -106,22 +121,24 @@ describe('kafka:topics:tail', () => {
     consumer.subscribe = (topic, callback) => {
       callback([
         { offset: 1, message: { value: Buffer.from('hello') } },
-        { offset: 2, message: { value: Buffer.from('world') } }
+        { offset: 2, message: { value: Buffer.from('world') } },
+        { offset: 3, message: { value: null } }
       ], undefined, 42)
+      tail.process.emit('SIGINT')
     }
 
     return cmd.run({app: 'myapp', args: { TOPIC: 'topic-1' }})
               .then(() => {
-                expect(cli.stdout).to.equal('topic-1 42 1 5 hello\ntopic-1 42 2 5 world\n')
+                expect(cli.stdout).to.equal('topic-1 42 1 5 hello\ntopic-1 42 2 5 world\ntopic-1 42 3 0 NULL\n')
                 expect(cli.stderr).to.be.empty
               })
   })
 
   it('tails a topic with a prefix and prints the results', () => {
-    var withPrefixConfig = {}
-    Object.assign(withPrefixConfig, config)
-    withPrefixConfig.KAFKA_PREFIX = 'nile-1234.'
-    api.get('/apps/myapp/config-vars').reply(200, withPrefixConfig)
+    let configWithPrefix = Object.assign({
+      KAFKA_PREFIX: 'nile-1234.'
+    }, config)
+    api.get('/apps/myapp/config-vars').reply(200, configWithPrefix)
     api.get('/apps/myapp/addon-attachments/kafka-1')
       .reply(200, { name: 'KAFKA' })
 
@@ -129,22 +146,24 @@ describe('kafka:topics:tail', () => {
       expect(topic).to.equal('nile-1234.topic-1')
       callback([
         { offset: 1, message: { value: Buffer.from('hello') } },
-        { offset: 2, message: { value: Buffer.from('world') } }
+        { offset: 2, message: { value: Buffer.from('world') } },
+        { offset: 3, message: { value: null } }
       ], undefined, 42)
+      tail.process.emit('SIGINT')
     }
 
     return cmd.run({app: 'myapp', args: { TOPIC: 'topic-1' }})
               .then(() => {
-                expect(cli.stdout).to.equal('topic-1 42 1 5 hello\ntopic-1 42 2 5 world\n')
+                expect(cli.stdout).to.equal('topic-1 42 1 5 hello\ntopic-1 42 2 5 world\ntopic-1 42 3 0 NULL\n')
                 expect(cli.stderr).to.be.empty
               })
   })
 
   it('tails a topic with a prefixed name and prints the results', () => {
-    var withPrefixConfig = {}
-    Object.assign(withPrefixConfig, config)
-    withPrefixConfig.KAFKA_PREFIX = 'nile-1234.'
-    api.get('/apps/myapp/config-vars').reply(200, withPrefixConfig)
+    let configWithPrefix = Object.assign({
+      KAFKA_PREFIX: 'nile-1234.'
+    }, config)
+    api.get('/apps/myapp/config-vars').reply(200, configWithPrefix)
     api.get('/apps/myapp/addon-attachments/kafka-1')
       .reply(200, { name: 'KAFKA' })
 
@@ -152,13 +171,15 @@ describe('kafka:topics:tail', () => {
       expect(topic).to.equal('nile-1234.topic-1')
       callback([
         { offset: 1, message: { value: Buffer.from('hello') } },
-        { offset: 2, message: { value: Buffer.from('world') } }
+        { offset: 2, message: { value: Buffer.from('world') } },
+        { offset: 3, message: { value: null } }
       ], undefined, 42)
+      tail.process.emit('SIGINT')
     }
 
     return cmd.run({app: 'myapp', args: { TOPIC: 'nile-1234.topic-1' }})
               .then(() => {
-                expect(cli.stdout).to.equal('nile-1234.topic-1 42 1 5 hello\nnile-1234.topic-1 42 2 5 world\n')
+                expect(cli.stdout).to.equal('nile-1234.topic-1 42 1 5 hello\nnile-1234.topic-1 42 2 5 world\nnile-1234.topic-1 42 3 0 NULL\n')
                 expect(cli.stderr).to.be.empty
               })
   })
