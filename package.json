@@ -9,11 +9,11 @@
   "dependencies": {
     "co": "4.6.0",
     "co-wait": "0.0.0",
-    "debug": "2.2.0",
-    "heroku-cli-addons": "1.0.5",
-    "heroku-cli-util": "6.0.15",
+    "debug": "2.6.8",
+    "heroku-cli-addons": "1.2.19",
+    "heroku-cli-util": "6.1.17",
     "humanize-plus": "^1.8.2",
-    "lodash.uniqby": "4.6.1",
+    "lodash.uniqby": "4.7.0",
     "no-kafka": "github:hunterloftis/kafka",
     "node-spinner": "0.0.4"
   },
