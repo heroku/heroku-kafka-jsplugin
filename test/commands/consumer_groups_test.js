@@ -11,8 +11,8 @@ const proxyquire = require('proxyquire')
 const cli = require('heroku-cli-util')
 const nock = require('nock')
 
-const withCluster = function * (heroku, app, cluster, callback) {
-  yield callback({ name: 'kafka-1', id: '00000000-0000-0000-0000-000000000000' })
+const withCluster = function * (heroku, app, cluster, c) {
+  yield c({ name: 'kafka-1', id: '00000000-0000-0000-0000-000000000000' })
 }
 
 const VERSION = 'v0'

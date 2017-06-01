@@ -12,8 +12,8 @@ const expectExit = require('../expect_exit')
 const cli = require('heroku-cli-util')
 const nock = require('nock')
 
-const withCluster = function * (heroku, app, cluster, callback) {
-  yield callback({ name: 'kafka-1', id: '00000000-0000-0000-0000-000000000000' })
+const withCluster = function * (heroku, app, cluster, c) {
+  yield c({ name: 'kafka-1', id: '00000000-0000-0000-0000-000000000000' })
 }
 
 const cmd = proxyquire('../../commands/topics_compaction', {
@@ -51,7 +51,7 @@ describe('kafka:topics:compaction', () => {
   describe('with unknown value specified', () => {
     it('shows an error and exits', () => {
       return expectExit(1, cmd.run({app: 'myapp',
-                                    args: { TOPIC: 'topic-1', VALUE: 'yep' }}))
+        args: { TOPIC: 'topic-1', VALUE: 'yep' }}))
         .then(() => expect(cli.stdout).to.be.empty)
         .then(() => expect(cli.stderr).to.equal(` ▸    Unknown value 'yep': must be 'on' or 'enable' to enable, or 'off' or
  ▸    'disable' to disable

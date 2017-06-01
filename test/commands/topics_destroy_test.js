@@ -11,8 +11,8 @@ const proxyquire = require('proxyquire')
 const cli = require('heroku-cli-util')
 const nock = require('nock')
 
-const withCluster = function * (heroku, app, cluster, callback) {
-  yield callback({ name: 'kafka-1', id: '00000000-0000-0000-0000-000000000000' })
+const withCluster = function * (heroku, app, cluster, c) {
+  yield c({ name: 'kafka-1', id: '00000000-0000-0000-0000-000000000000' })
 }
 
 let lastApp
@@ -64,8 +64,8 @@ describe('kafka:topics:destroy', () => {
     lastMsg = null
 
     return cmd.run({app: 'myapp',
-                    args: { TOPIC: 'topic-1' },
-                    flags: { confirm: 'myapp' }})
+      args: { TOPIC: 'topic-1' },
+      flags: { confirm: 'myapp' }})
               .then(() => {
                 expect(lastApp).to.equal('myapp')
                 expect(lastConfirm).to.equal('myapp')
@@ -78,8 +78,8 @@ describe('kafka:topics:destroy', () => {
          .reply(200)
 
     return cmd.run({app: 'myapp',
-                    args: { TOPIC: 'topic-1' },
-                    flags: { 'replication-factor': '3', confirm: 'myapp' }})
+      args: { TOPIC: 'topic-1' },
+      flags: { 'replication-factor': '3', confirm: 'myapp' }})
               .then(() => {
                 expect(cli.stdout).to.equal('Your topic has been marked for deletion, and will be removed from the cluster shortly\n')
                 expect(cli.stderr).to.equal('Deleting topic topic-1... done\n')

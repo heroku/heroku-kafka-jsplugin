@@ -12,8 +12,8 @@ const cli = require('heroku-cli-util')
 const nock = require('nock')
 
 let planName
-const withCluster = function * (heroku, app, cluster, callback) {
-  yield callback({ name: 'kafka-1', id: '00000000-0000-0000-0000-000000000000', plan: { name: planName } })
+const withCluster = function * (heroku, app, cluster, c) {
+  yield c({ name: 'kafka-1', id: '00000000-0000-0000-0000-000000000000', plan: { name: planName } })
 }
 
 const cmd = proxyquire('../../commands/credentials_rotate', {

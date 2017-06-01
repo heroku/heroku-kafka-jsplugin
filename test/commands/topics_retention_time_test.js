@@ -12,8 +12,8 @@ const expectExit = require('../expect_exit')
 const cli = require('heroku-cli-util')
 const nock = require('nock')
 
-const withCluster = function * (heroku, app, cluster, callback) {
-  yield callback({ name: 'kafka-1', id: '00000000-0000-0000-0000-000000000000' })
+const withCluster = function * (heroku, app, cluster, c) {
+  yield c({ name: 'kafka-1', id: '00000000-0000-0000-0000-000000000000' })
 }
 
 const cmd = proxyquire('../../commands/topics_retention_time', {
@@ -51,8 +51,8 @@ describe('kafka:topics:retention-time', () => {
   describe('with unknown value specified', () => {
     it('shows an error and exits', () => {
       return expectExit(1, cmd.run({app: 'myapp',
-                                    args: { TOPIC: 'topic-1', VALUE: '1 fortnight' },
-                                    flags: {}}))
+        args: { TOPIC: 'topic-1', VALUE: '1 fortnight' },
+        flags: {}}))
         .then(() => expect(cli.stdout).to.be.empty)
         .then(() => expect(cli.stderr).to.equal(` ▸    Unknown retention time '1 fortnight'; expected 'disable' or value like
  ▸    '36h' or '10d'
@@ -76,8 +76,8 @@ describe('kafka:topics:retention-time', () => {
                 { topic: { name: 'topic-1', retention_time_ms: 60000, compaction: false } }).reply(200)
 
       return cmd.run({app: 'myapp',
-                      args: { TOPIC: 'topic-1', VALUE: '60s' },
-                      flags: {}})
+        args: { TOPIC: 'topic-1', VALUE: '60s' },
+        flags: {}})
                 .then(() => expect(cli.stderr).to.equal('Setting retention time to 60s for topic topic-1 on kafka-1... done\n'))
                 .then(() => expect(cli.stdout).to.equal('Use `heroku kafka:topics:info topic-1` to monitor your topic.\n'))
     })
@@ -87,8 +87,8 @@ describe('kafka:topics:retention-time', () => {
                 { topic: { name: 'topic-1', retention_time_ms: null, compaction: true } }).reply(200)
 
       return cmd.run({app: 'myapp',
-                      args: { TOPIC: 'topic-1', VALUE: 'disable' },
-                      flags: {}})
+        args: { TOPIC: 'topic-1', VALUE: 'disable' },
+        flags: {}})
                 .then(() => expect(cli.stderr).to.equal('Disabling time-based retention and enabling compaction for topic topic-1 on kafka-1... done\n'))
                 .then(() => expect(cli.stdout).to.equal('Use `heroku kafka:topics:info topic-1` to monitor your topic.\n'))
     })
@@ -110,8 +110,8 @@ describe('kafka:topics:retention-time', () => {
                 { topic: { name: 'topic-1', retention_time_ms: 60000, compaction: false } }).reply(200)
 
       return cmd.run({app: 'myapp',
-                      args: { TOPIC: 'topic-1', VALUE: '60s' },
-                      flags: {}})
+        args: { TOPIC: 'topic-1', VALUE: '60s' },
+        flags: {}})
                 .then(() => expect(cli.stderr).to.equal('Setting retention time to 60s and disabling compaction for topic topic-1 on kafka-1... done\n'))
                 .then(() => expect(cli.stdout).to.equal('Use `heroku kafka:topics:info topic-1` to monitor your topic.\n'))
     })
@@ -121,8 +121,8 @@ describe('kafka:topics:retention-time', () => {
                 { topic: { name: 'topic-1', retention_time_ms: null, compaction: true } }).reply(200)
 
       return cmd.run({app: 'myapp',
-                      args: { TOPIC: 'topic-1', VALUE: 'disable' },
-                      flags: {}})
+        args: { TOPIC: 'topic-1', VALUE: 'disable' },
+        flags: {}})
                 .then(() => expect(cli.stderr).to.equal('Disabling time-based retention for topic topic-1 on kafka-1... done\n'))
                 .then(() => expect(cli.stdout).to.equal('Use `heroku kafka:topics:info topic-1` to monitor your topic.\n'))
     })

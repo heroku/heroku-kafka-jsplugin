@@ -1,6 +1,6 @@
 'use strict'
 
-const expect = require('chai').expect
+const {assert, expect} = require('chai')
 const mocha = require('mocha')
 const describe = mocha.describe
 const it = mocha.it
@@ -13,8 +13,8 @@ const nock = require('nock')
 const EventEmitter = require('events')
 
 let planName
-const withCluster = function * (heroku, app, cluster, callback) {
-  yield callback({ name: 'kafka-1', id: '00000000-0000-0000-0000-000000000000', plan: { name: planName } })
+const withCluster = function * (heroku, app, cluster, c) {
+  yield c({ name: 'kafka-1', id: '00000000-0000-0000-0000-000000000000', plan: { name: planName } })
 }
 
 let consumer
@@ -78,8 +78,8 @@ describe('kafka:topics:tail', () => {
       .then(() => { throw new Error('expected error; got none') })
       .catch((err) => {
         expect(err.message).to.equal('`kafka:topics:tail` is not available in Heroku Private Spaces')
-        expect(cli.stdout).to.be.empty
-        expect(cli.stderr).to.be.empty
+        assert.empty(cli.stdout)
+        assert.empty(cli.stderr)
       })
   })
 
@@ -93,8 +93,8 @@ describe('kafka:topics:tail', () => {
       .then(() => { throw new Error('expected error; got none') })
       .catch((err) => {
         expect(err.message).to.equal(`Could not connect to kafka`)
-        expect(cli.stdout).to.be.empty
-        expect(cli.stderr).to.be.empty
+        assert.empty(cli.stdout)
+        assert.empty(cli.stderr)
       })
   })
 
@@ -108,8 +108,8 @@ describe('kafka:topics:tail', () => {
       .then(() => { throw new Error('expected error; got none') })
       .catch((err) => {
         expect(err.message).to.equal('Could not subscribe to topic')
-        expect(cli.stdout).to.be.empty
-        expect(cli.stderr).to.be.empty
+        assert.empty(cli.stdout)
+        assert.empty(cli.stderr)
       })
   })
 
@@ -118,8 +118,8 @@ describe('kafka:topics:tail', () => {
     api.get('/apps/myapp/addon-attachments/kafka-1')
       .reply(200, { name: 'KAFKA' })
 
-    consumer.subscribe = (topic, callback) => {
-      callback([
+    consumer.subscribe = (topic, c) => {
+      c([
         { offset: 1, message: { value: Buffer.from('hello') } },
         { offset: 2, message: { value: Buffer.from('world') } },
         { offset: 3, message: { value: null } }
@@ -129,7 +129,7 @@ describe('kafka:topics:tail', () => {
 
     return cmd.run({app: 'myapp', args: { TOPIC: 'topic-1' }})
               .then(() => {
-                expect(cli.stdout).to.equal('topic-1 42 1 5 hello\ntopic-1 42 2 5 world\ntopic-1 42 3 0 NULL\n')
+                return expect(cli.stdout).to.equal('topic-1 42 1 5 hello\ntopic-1 42 2 5 world\ntopic-1 42 3 0 NULL\n') &&
                 expect(cli.stderr).to.be.empty
               })
   })
@@ -142,9 +142,9 @@ describe('kafka:topics:tail', () => {
     api.get('/apps/myapp/addon-attachments/kafka-1')
       .reply(200, { name: 'KAFKA' })
 
-    consumer.subscribe = (topic, callback) => {
+    consumer.subscribe = (topic, c) => {
       expect(topic).to.equal('nile-1234.topic-1')
-      callback([
+      c([
         { offset: 1, message: { value: Buffer.from('hello') } },
         { offset: 2, message: { value: Buffer.from('world') } },
         { offset: 3, message: { value: null } }
@@ -154,7 +154,7 @@ describe('kafka:topics:tail', () => {
 
     return cmd.run({app: 'myapp', args: { TOPIC: 'topic-1' }})
               .then(() => {
-                expect(cli.stdout).to.equal('topic-1 42 1 5 hello\ntopic-1 42 2 5 world\ntopic-1 42 3 0 NULL\n')
+                return expect(cli.stdout).to.equal('topic-1 42 1 5 hello\ntopic-1 42 2 5 world\ntopic-1 42 3 0 NULL\n') &&
                 expect(cli.stderr).to.be.empty
               })
   })
@@ -167,9 +167,9 @@ describe('kafka:topics:tail', () => {
     api.get('/apps/myapp/addon-attachments/kafka-1')
       .reply(200, { name: 'KAFKA' })
 
-    consumer.subscribe = (topic, callback) => {
+    consumer.subscribe = (topic, c) => {
       expect(topic).to.equal('nile-1234.topic-1')
-      callback([
+      c([
         { offset: 1, message: { value: Buffer.from('hello') } },
         { offset: 2, message: { value: Buffer.from('world') } },
         { offset: 3, message: { value: null } }
@@ -179,7 +179,7 @@ describe('kafka:topics:tail', () => {
 
     return cmd.run({app: 'myapp', args: { TOPIC: 'nile-1234.topic-1' }})
               .then(() => {
-                expect(cli.stdout).to.equal('nile-1234.topic-1 42 1 5 hello\nnile-1234.topic-1 42 2 5 world\nnile-1234.topic-1 42 3 0 NULL\n')
+                return expect(cli.stdout).to.equal('nile-1234.topic-1 42 1 5 hello\nnile-1234.topic-1 42 2 5 world\nnile-1234.topic-1 42 3 0 NULL\n') &&
                 expect(cli.stderr).to.be.empty
               })
   })

@@ -11,8 +11,8 @@ const nock = require('nock')
 
 const cli = require('heroku-cli-util')
 
-const withCluster = function * (heroku, app, cluster, callback) {
-  yield callback({ name: 'kafka-1', id: '00000000-0000-0000-0000-000000000000' })
+const withCluster = function * (heroku, app, cluster, c) {
+  yield c({ name: 'kafka-1', id: '00000000-0000-0000-0000-000000000000' })
 }
 
 let lastApp
@@ -59,8 +59,8 @@ describe('kafka:upgrade', () => {
     kafka.put(upgradeUrl('00000000-0000-0000-0000-000000000000')).reply(200)
 
     return cmd.run({app: 'myapp',
-                    args: {},
-                    flags: {confirm: 'myapp', version: '0.10'}})
+      args: {},
+      flags: {confirm: 'myapp', version: '0.10'}})
               .then(() => {
                 expect(lastApp).to.equal('myapp')
                 expect(lastConfirm).to.equal('myapp')
@@ -70,12 +70,12 @@ describe('kafka:upgrade', () => {
 
   it('triggers an upgrade to the desired version', () => {
     kafka.put(upgradeUrl('00000000-0000-0000-0000-000000000000', {confirm: 'myapp',
-                                     version: '0.10'}))
+      version: '0.10'}))
          .reply(200, { message: 'Triggered failure on node 1.2.3.4' })
 
     return cmd.run({app: 'myapp',
-                    args: {},
-                    flags: {confirm: 'myapp', version: '0.10'}})
+      args: {},
+      flags: {confirm: 'myapp', version: '0.10'}})
               .then(() => expect(cli.stderr).to.equal('Upgrading to version 0.10... started.\n\n\n'))
               .then(() => expect(cli.stdout).to.equal('Use `heroku kafka:wait` to monitor the upgrade.\n'))
   })

@@ -11,8 +11,8 @@ const nock = require('nock')
 
 const cli = require('heroku-cli-util')
 
-const withCluster = function * (heroku, app, cluster, callback) {
-  yield callback({ name: 'kafka-1', id: '00000000-0000-0000-0000-000000000000' })
+const withCluster = function * (heroku, app, cluster, c) {
+  yield c({ name: 'kafka-1', id: '00000000-0000-0000-0000-000000000000' })
 }
 
 let lastApp
@@ -68,45 +68,45 @@ describe('kafka:fail', () => {
 
   it('triggers failure', () => {
     kafka.post(failUrl('00000000-0000-0000-0000-000000000000', {confirm: 'myapp',
-                                   catastrophic: false,
-                                   zookeeper: false}))
+      catastrophic: false,
+      zookeeper: false}))
          .reply(200, { message: 'Triggered failure on node 1.2.3.4' })
 
     return cmd.run({app: 'myapp',
-                    args: {},
-                    flags: {confirm: 'myapp',
-                            catastrophic: false,
-                            zookeeper: false}})
+      args: {},
+      flags: {confirm: 'myapp',
+        catastrophic: false,
+        zookeeper: false}})
               .then(() => expect(cli.stderr).to.equal('Triggering failure... done\n'))
               .then(() => expect(cli.stdout).to.equal('Triggered failure on node 1.2.3.4\n'))
   })
 
   it('passes the --catastrophic flag', () => {
     kafka.post(failUrl('00000000-0000-0000-0000-000000000000', {confirm: 'myapp',
-                                   catastrophic: true,
-                                   zookeeper: false}))
+      catastrophic: true,
+      zookeeper: false}))
          .reply(200, { message: 'Triggered failure on node 1.2.3.4' })
 
     return cmd.run({app: 'myapp',
-                    args: {},
-                    flags: {confirm: 'myapp',
-                            catastrophic: true,
-                            zookeeper: false}})
+      args: {},
+      flags: {confirm: 'myapp',
+        catastrophic: true,
+        zookeeper: false}})
               .then(() => expect(cli.stderr).to.equal('Triggering failure... done\n'))
               .then(() => expect(cli.stdout).to.equal('Triggered failure on node 1.2.3.4\n'))
   })
 
   it('passes the --zookeeper flag', () => {
     kafka.post(failUrl('00000000-0000-0000-0000-000000000000', {confirm: 'myapp',
-                                   catastrophic: false,
-                                   zookeeper: true}))
+      catastrophic: false,
+      zookeeper: true}))
          .reply(200, { message: 'Triggered failure on node 1.2.3.4' })
 
     return cmd.run({app: 'myapp',
-                    args: {},
-                    flags: {confirm: 'myapp',
-                            catastrophic: false,
-                            zookeeper: true}})
+      args: {},
+      flags: {confirm: 'myapp',
+        catastrophic: false,
+        zookeeper: true}})
               .then(() => expect(cli.stderr).to.equal('Triggering failure... done\n'))
               .then(() => expect(cli.stdout).to.equal('Triggered failure on node 1.2.3.4\n'))
   })

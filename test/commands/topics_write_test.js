@@ -1,6 +1,6 @@
 'use strict'
 
-const expect = require('chai').expect
+const {assert, expect} = require('chai')
 const mocha = require('mocha')
 const describe = mocha.describe
 const it = mocha.it
@@ -13,8 +13,8 @@ const cli = require('heroku-cli-util')
 const nock = require('nock')
 
 let planName
-const withCluster = function * (heroku, app, cluster, callback) {
-  yield callback({ name: 'kafka-1', id: '00000000-0000-0000-0000-000000000000', plan: { name: planName } })
+const withCluster = function * (heroku, app, cluster, c) {
+  yield c({ name: 'kafka-1', id: '00000000-0000-0000-0000-000000000000', plan: { name: planName } })
 }
 
 let producer
@@ -116,11 +116,11 @@ describe('kafka:topics:write', () => {
     }
 
     return cmd.run({app: 'myapp',
-                    args: { TOPIC: 'topic-1', MESSAGE: 'hello world' },
-                    flags: {}})
+      args: { TOPIC: 'topic-1', MESSAGE: 'hello world' },
+      flags: {}})
               .then(() => {
-                expect(cli.stdout).to.be.empty
-                expect(cli.stderr).to.be.empty
+                assert.empty(cli.stdout)
+                assert.empty(cli.stderr)
               })
   })
 
@@ -140,11 +140,11 @@ describe('kafka:topics:write', () => {
     }
 
     return cmd.run({app: 'myapp',
-                    args: { TOPIC: 'topic-1', MESSAGE: 'hello world' },
-                    flags: {}})
+      args: { TOPIC: 'topic-1', MESSAGE: 'hello world' },
+      flags: {}})
               .then(() => {
-                expect(cli.stdout).to.be.empty
-                expect(cli.stderr).to.be.empty
+                assert.empty(cli.stdout)
+                assert.empty(cli.stderr)
               })
   })
 
@@ -164,11 +164,11 @@ describe('kafka:topics:write', () => {
     }
 
     return cmd.run({app: 'myapp',
-                    args: { TOPIC: 'nile-1234.topic-1', MESSAGE: 'hello world' },
-                    flags: {}})
+      args: { TOPIC: 'nile-1234.topic-1', MESSAGE: 'hello world' },
+      flags: {}})
               .then(() => {
-                expect(cli.stdout).to.be.empty
-                expect(cli.stderr).to.be.empty
+                assert.empty(cli.stdout)
+                assert.empty(cli.stderr)
               })
   })
 
@@ -185,11 +185,11 @@ describe('kafka:topics:write', () => {
     }
 
     return cmd.run({app: 'myapp',
-                    args: { TOPIC: 'topic-1', MESSAGE: 'hello world' },
-                    flags: { partition: '3' }})
+      args: { TOPIC: 'topic-1', MESSAGE: 'hello world' },
+      flags: { partition: '3' }})
               .then(() => {
-                expect(cli.stdout).to.be.empty
-                expect(cli.stderr).to.be.empty
+                assert.empty(cli.stdout)
+                assert.empty(cli.stderr)
               })
   })
 
@@ -206,11 +206,11 @@ describe('kafka:topics:write', () => {
     }
 
     return cmd.run({app: 'myapp',
-                    args: { TOPIC: 'topic-1', MESSAGE: 'hello world' },
-                    flags: { 'key': '1234' }})
+      args: { TOPIC: 'topic-1', MESSAGE: 'hello world' },
+      flags: { 'key': '1234' }})
               .then(() => {
-                expect(cli.stdout).to.be.empty
-                expect(cli.stderr).to.be.empty
+                assert.empty(cli.stdout)
+                assert.empty(cli.stderr)
               })
   })
 })
