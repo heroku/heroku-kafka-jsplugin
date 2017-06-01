@@ -96,8 +96,8 @@ let cmd = {
 module.exports = {
   cmd,
   deprecated: Object.assign({}, cmd, { command: 'tail',
-                                       hidden: true,
-                                       run: cli.command(co.wrap(deprecated(tail, cmd.command))) }),
+    hidden: true,
+    run: cli.command(co.wrap(deprecated(tail, cmd.command))) }),
   // N.B.: exporting this here and relying on the exported version lets
   // us mock it out in tests
   process

@@ -51,7 +51,7 @@ module.exports = {
       hasValue: false },
     { name: 'zookeeper',
       description: 'induce failure on one of the cluster\'s Zookeeper nodes instead',
-    hasValue: false },
+      hasValue: false },
     { name: 'confirm',
       description: 'pass the app name to skip the manual confirmation prompt',
       hasValue: true,

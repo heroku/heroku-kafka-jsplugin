@@ -11,8 +11,8 @@ const proxyquire = require('proxyquire')
 const cli = require('heroku-cli-util')
 const nock = require('nock')
 
-const withCluster = function * (heroku, app, cluster, callback) {
-  yield callback({ name: 'kafka-1', id: '00000000-0000-0000-0000-000000000000' })
+const withCluster = function * (heroku, app, cluster, c) {
+  yield c({ name: 'kafka-1', id: '00000000-0000-0000-0000-000000000000' })
 }
 
 let lastApp
@@ -66,8 +66,8 @@ describe('kafka:consumer-groups:destroy', () => {
     ).reply(200)
 
     return cmd.run({app: 'myapp',
-                  args: { CONSUMER_GROUP: 'consumer-group-1' },
-                  flags: { confirm: 'myapp' }})
+      args: { CONSUMER_GROUP: 'consumer-group-1' },
+      flags: { confirm: 'myapp' }})
       .then(() => {
         expect(cli.stdout).to.equal('Your consumer group has been deleted\n')
       })
@@ -89,8 +89,8 @@ describe('kafka:consumer-groups:destroy', () => {
     lastMsg = null
 
     return cmd.run({app: 'myapp',
-                    args: { CONSUMER_GROUP: 'consumer-group-1' },
-                    flags: { confirm: 'myapp' }})
+      args: { CONSUMER_GROUP: 'consumer-group-1' },
+      flags: { confirm: 'myapp' }})
               .then(() => {
                 expect(lastApp).to.equal('myapp')
                 expect(lastConfirm).to.equal('myapp')

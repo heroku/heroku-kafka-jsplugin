@@ -87,6 +87,6 @@ let cmd = {
 module.exports = {
   cmd,
   deprecated: Object.assign({}, cmd, { command: 'create',
-                                       hidden: true,
-                                       run: cli.command(co.wrap(deprecated(createTopic, cmd.command))) })
+    hidden: true,
+    run: cli.command(co.wrap(deprecated(createTopic, cmd.command))) })
 }
