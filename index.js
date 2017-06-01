@@ -34,7 +34,7 @@ exports.commands = [
   require('./commands/configure.js'),
 
   // aliases for deprecated commands
-  require('./commands/topics_create.js').deprecated,
+  require('./commands/topics_create_deprecated.js').deprecated,
   require('./commands/topics_destroy.js').deprecated,
   require('./commands/topics_info.js').deprecated,
   require('./commands/topics.js').deprecated,

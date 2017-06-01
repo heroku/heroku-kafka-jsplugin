@@ -13,6 +13,8 @@
   ],
   "license": "ISC",
   "dependencies": {
+    "cli-engine-command": "4.0.3",
+    "cli-engine-heroku": "0.3.1",
     "co": "4.6.0",
     "co-wait": "0.0.0",
     "debug": "2.2.0",
@@ -39,6 +41,6 @@
     "nock": "^8.0.0",
     "nyc": "^8.1.0",
     "proxyquire": "^1.7.10",
-    "standard": "8.0.0"
+    "standard": "8.3"
   }
 }
