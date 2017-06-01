@@ -5,7 +5,7 @@ const mocha = require('mocha')
 const describe = mocha.describe
 const it = mocha.it
 
-var index = require('../index')
+var index = require('../commands')
 
 describe('commands', function () {
   index.commands.forEach(function (command) {

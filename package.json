@@ -1,17 +1,11 @@
 {
   "name": "heroku-kafka",
-  "version": "2.9.4",
   "description": "heroku plugin to manage heroku kafka",
-  "main": "index.js",
+  "version": "2.9.4",
   "author": "Heroku kafka@heroku.com",
-  "repository": "heroku/heroku-kafka-jsplugin",
   "bugs": {
     "url": "https://github.com/heroku/heroku-kafka-jsplugin/issues"
   },
-  "keywords": [
-    "heroku-plugin"
-  ],
-  "license": "ISC",
   "dependencies": {
     "co": "4.6.0",
     "co-wait": "0.0.0",
@@ -22,12 +16,6 @@
     "lodash.uniqby": "4.6.1",
     "no-kafka": "github:hunterloftis/kafka",
     "node-spinner": "0.0.4"
-  },
-  "scripts": {
-    "test": "standard && nyc mocha",
-    "qtest": "mocha",
-    "standardize": "standard --fix",
-    "coverage": "nyc report --reporter=text-lcov | coveralls"
   },
   "devDependencies": {
     "chai": "^3.5.0",
@@ -40,5 +28,21 @@
     "nyc": "^8.1.0",
     "proxyquire": "^1.7.10",
     "standard": "8.0.0"
+  },
+  "files": [
+    "commands",
+    "lib"
+  ],
+  "keywords": [
+    "heroku-plugin"
+  ],
+  "license": "ISC",
+  "main": "commands/index.js",
+  "repository": "heroku/heroku-kafka-jsplugin",
+  "scripts": {
+    "coverage": "nyc report --reporter=text-lcov | coveralls",
+    "qtest": "mocha",
+    "standardize": "standard --fix",
+    "test": "standard && nyc mocha"
   }
 }
