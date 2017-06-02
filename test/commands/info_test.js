@@ -75,6 +75,8 @@ describe('kafka:info', () => {
       state: { message: 'available' },
       robot: { is_robot: false },
       topics: ['__consumer_offsets', 'messages'],
+      limits: {},
+      partition_replica_count: 132,
       messages_in_per_sec: 0,
       bytes_in_per_sec: 0,
       bytes_out_per_sec: 0,
@@ -86,7 +88,8 @@ describe('kafka:info', () => {
       state: { message: 'available' },
       robot: { is_robot: false },
       topics: ['__consumer_offsets', 'messages'],
-      limits: {max_topics: 10},
+      limits: {max_topics: 10, max_partition_replica_count: 32},
+      partition_replica_count: 12,
       messages_in_per_sec: 0,
       bytes_in_per_sec: 0,
       bytes_out_per_sec: 0,
@@ -115,14 +118,15 @@ Traffic:  0 bytes/s in / 0 bytes/s out
 Add-on:   kafka-1
 
 === HEROKU_KAFKA_PURPLE_URL
-Plan:     heroku-kafka:beta-3
-Status:   available
-Version:  0.10.0.0
-Created:  2016-11-14T14:26:20.245+00:00
-Topics:   1 / 10 topics, see heroku kafka:topics
-Messages: 0 messages/s
-Traffic:  0 bytes/s in / 0 bytes/s out
-Add-on:   kafka-2
+Plan:       heroku-kafka:beta-3
+Status:     available
+Version:    0.10.0.0
+Created:    2016-11-14T14:26:20.245+00:00
+Topics:     1 / 10 topics, see heroku kafka:topics
+Partitions: 12 / 32 partition replicas (partitions * replication factor)
+Messages:   0 messages/s
+Traffic:    0 bytes/s in / 0 bytes/s out
+Add-on:     kafka-2
 
 `))
     })
@@ -138,14 +142,15 @@ Add-on:   kafka-2
       return cmd.run({app: 'myapp', args: {CLUSTER: 'kafka-2'}})
         .then(() => expect(cli.stderr).to.be.empty)
         .then(() => expect(cli.stdout).to.equal(`=== HEROKU_KAFKA_PURPLE_URL
-Plan:     heroku-kafka:beta-3
-Status:   available
-Version:  0.10.0.0
-Created:  2016-11-14T14:26:20.245+00:00
-Topics:   1 / 10 topics, see heroku kafka:topics
-Messages: 0 messages/s
-Traffic:  0 bytes/s in / 0 bytes/s out
-Add-on:   kafka-2
+Plan:       heroku-kafka:beta-3
+Status:     available
+Version:    0.10.0.0
+Created:    2016-11-14T14:26:20.245+00:00
+Topics:     1 / 10 topics, see heroku kafka:topics
+Partitions: 12 / 32 partition replicas (partitions * replication factor)
+Messages:   0 messages/s
+Traffic:    0 bytes/s in / 0 bytes/s out
+Add-on:     kafka-2
 
 `))
     })
@@ -160,14 +165,15 @@ Add-on:   kafka-2
 
       return cmd.run({app: 'myapp', args: {}})
         .then(() => expect(cli.stdout).to.equal(`=== HEROKU_KAFKA_PURPLE_URL
-Plan:     heroku-kafka:beta-3
-Status:   available
-Version:  0.10.0.0
-Created:  2016-11-14T14:26:20.245+00:00
-Topics:   1 / 10 topics, see heroku kafka:topics
-Messages: 0 messages/s
-Traffic:  0 bytes/s in / 0 bytes/s out
-Add-on:   kafka-2
+Plan:       heroku-kafka:beta-3
+Status:     available
+Version:    0.10.0.0
+Created:    2016-11-14T14:26:20.245+00:00
+Topics:     1 / 10 topics, see heroku kafka:topics
+Partitions: 12 / 32 partition replicas (partitions * replication factor)
+Messages:   0 messages/s
+Traffic:    0 bytes/s in / 0 bytes/s out
+Add-on:     kafka-2
 
 `))
         .then(() => expect(cli.stderr).to.equal(` ▸    kafka-1 is not yet provisioned.
