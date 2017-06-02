@@ -50,19 +50,5 @@ commands should bump the minor, and major and breaking changes should
 bump the major. Avoid breaking changes and be sure to discuss them
 with Product first.
 
- * Check out branch X.Y.Z
- * Run `npm version X.Y.Z` (this will create a commit and tag it)
- * Run `git push origin --tags X.Y.Z` to push to GitHub and then
-   submit a pull request
- * Once the pull request is approved, merge the branch into master
-   locally, and push master directly to GitHub. This will implicitly
-   merge the outstanding pull request.
- * Run `npm publish` to deploy the new version
-
-The unorthodox mechanism around merging the PR is to preserve git tags
-on the version bump commit, to make it easier to check out a
-particular version. Note that if there are commits to master between
-submitting a pull request and getting it approved, you will need to
-first rebase the pull request on top of master and then force-push to
-update the original X.Y.Z branch on GitHub. The final merge must be
-fast-forward to preserve the semantics of the tag.
+Deploy the actual release with `npm run release`, which will run tests,
+tag, push to git, and publish to `npm`.
