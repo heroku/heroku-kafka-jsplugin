@@ -43,6 +43,7 @@
   "scripts": {
     "coverage": "nyc report --reporter=text-lcov | coveralls",
     "qtest": "mocha",
+    "release": "np",
     "standardize": "standard --fix",
     "test": "standard && nyc mocha"
   }
