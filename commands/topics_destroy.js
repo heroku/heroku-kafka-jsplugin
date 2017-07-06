@@ -11,7 +11,7 @@ const VERSION = 'v0'
 function * destroyTopic (context, heroku) {
   yield withCluster(heroku, context.app, context.args.CLUSTER, function * (addon) {
     yield cli.confirmApp(context.app, context.flags.confirm,
-                         `This command will affect the cluster: ${addon.name}, which is on ${context.app}`)
+      `This command will affect the cluster: ${addon.name}, which is on ${context.app}`)
 
     yield cli.action(`Deleting topic ${context.args.TOPIC}`, co(function * () {
       const topicName = context.args.TOPIC
@@ -59,6 +59,6 @@ let cmd = {
 module.exports = {
   cmd,
   deprecated: Object.assign({}, cmd, { command: 'delete',
-                                       hidden: true,
-                                       run: cli.command(co.wrap(deprecated(destroyTopic, cmd.command))) })
+    hidden: true,
+    run: cli.command(co.wrap(deprecated(destroyTopic, cmd.command))) })
 }

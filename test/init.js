@@ -1,4 +1,5 @@
 'use strict'
+/* eslint no-multi-spaces: off */
 
 const cli = require('heroku-cli-util')         // Load heroku-cli-util helpers
 const nock = require('nock')                   // Load nock

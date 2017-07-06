@@ -1,4 +1,5 @@
 'use strict'
+/* eslint standard/no-callback-literal: off, no-unused-expressions: off */
 
 const expect = require('chai').expect
 const mocha = require('mocha')
@@ -128,10 +129,10 @@ describe('kafka:topics:tail', () => {
     }
 
     return cmd.run({app: 'myapp', args: { TOPIC: 'topic-1' }})
-              .then(() => {
-                expect(cli.stdout).to.equal('topic-1 42 1 5 hello\ntopic-1 42 2 5 world\ntopic-1 42 3 0 NULL\n')
-                expect(cli.stderr).to.be.empty
-              })
+      .then(() => {
+        expect(cli.stdout).to.equal('topic-1 42 1 5 hello\ntopic-1 42 2 5 world\ntopic-1 42 3 0 NULL\n')
+        expect(cli.stderr).to.be.empty
+      })
   })
 
   it('tails a topic with a prefix and prints the results', () => {
@@ -153,10 +154,10 @@ describe('kafka:topics:tail', () => {
     }
 
     return cmd.run({app: 'myapp', args: { TOPIC: 'topic-1' }})
-              .then(() => {
-                expect(cli.stdout).to.equal('topic-1 42 1 5 hello\ntopic-1 42 2 5 world\ntopic-1 42 3 0 NULL\n')
-                expect(cli.stderr).to.be.empty
-              })
+      .then(() => {
+        expect(cli.stdout).to.equal('topic-1 42 1 5 hello\ntopic-1 42 2 5 world\ntopic-1 42 3 0 NULL\n')
+        expect(cli.stderr).to.be.empty
+      })
   })
 
   it('tails a topic with a prefixed name and prints the results', () => {
@@ -178,9 +179,9 @@ describe('kafka:topics:tail', () => {
     }
 
     return cmd.run({app: 'myapp', args: { TOPIC: 'nile-1234.topic-1' }})
-              .then(() => {
-                expect(cli.stdout).to.equal('nile-1234.topic-1 42 1 5 hello\nnile-1234.topic-1 42 2 5 world\nnile-1234.topic-1 42 3 0 NULL\n')
-                expect(cli.stderr).to.be.empty
-              })
+      .then(() => {
+        expect(cli.stdout).to.equal('nile-1234.topic-1 42 1 5 hello\nnile-1234.topic-1 42 2 5 world\nnile-1234.topic-1 42 3 0 NULL\n')
+        expect(cli.stderr).to.be.empty
+      })
   })
 })

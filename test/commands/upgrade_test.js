@@ -1,4 +1,5 @@
 'use strict'
+/* eslint standard/no-callback-literal: off, no-unused-expressions: off */
 
 const expect = require('chai').expect
 const mocha = require('mocha')
@@ -59,24 +60,25 @@ describe('kafka:upgrade', () => {
     kafka.put(upgradeUrl('00000000-0000-0000-0000-000000000000')).reply(200)
 
     return cmd.run({app: 'myapp',
-                    args: {},
-                    flags: {confirm: 'myapp', version: '0.10'}})
-              .then(() => {
-                expect(lastApp).to.equal('myapp')
-                expect(lastConfirm).to.equal('myapp')
-                expect(lastMsg).to.equal(message)
-              })
+      args: {},
+      flags: {confirm: 'myapp', version: '0.10'}})
+      .then(() => {
+        expect(lastApp).to.equal('myapp')
+        expect(lastConfirm).to.equal('myapp')
+        expect(lastMsg).to.equal(message)
+      })
   })
 
   it('triggers an upgrade to the desired version', () => {
     kafka.put(upgradeUrl('00000000-0000-0000-0000-000000000000', {confirm: 'myapp',
-                                     version: '0.10'}))
-         .reply(200, { message: 'Triggered failure on node 1.2.3.4' })
+      version: '0.10'})
+    )
+      .reply(200, { message: 'Triggered failure on node 1.2.3.4' })
 
     return cmd.run({app: 'myapp',
-                    args: {},
-                    flags: {confirm: 'myapp', version: '0.10'}})
-              .then(() => expect(cli.stderr).to.equal('Upgrading to version 0.10... started.\n\n\n'))
-              .then(() => expect(cli.stdout).to.equal('Use `heroku kafka:wait` to monitor the upgrade.\n'))
+      args: {},
+      flags: {confirm: 'myapp', version: '0.10'}})
+      .then(() => expect(cli.stderr).to.equal('Upgrading to version 0.10... started.\n\n\n'))
+      .then(() => expect(cli.stdout).to.equal('Use `heroku kafka:wait` to monitor the upgrade.\n'))
   })
 })

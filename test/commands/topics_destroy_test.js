@@ -1,4 +1,5 @@
 'use strict'
+/* eslint standard/no-callback-literal: off, no-unused-expressions: off */
 
 const expect = require('chai').expect
 const mocha = require('mocha')
@@ -64,25 +65,27 @@ describe('kafka:topics:destroy', () => {
     lastMsg = null
 
     return cmd.run({app: 'myapp',
-                    args: { TOPIC: 'topic-1' },
-                    flags: { confirm: 'myapp' }})
-              .then(() => {
-                expect(lastApp).to.equal('myapp')
-                expect(lastConfirm).to.equal('myapp')
-                expect(lastMsg).to.equal(message)
-              })
+      args: { TOPIC: 'topic-1' },
+      flags: { confirm: 'myapp' }}
+    )
+      .then(() => {
+        expect(lastApp).to.equal('myapp')
+        expect(lastConfirm).to.equal('myapp')
+        expect(lastMsg).to.equal(message)
+      })
   })
 
   it('deletes the topic', () => {
     kafka.delete(deleteUrl('00000000-0000-0000-0000-000000000000', 'topic-1'), { topic_name: 'topic-1' })
-         .reply(200)
+      .reply(200)
 
     return cmd.run({app: 'myapp',
-                    args: { TOPIC: 'topic-1' },
-                    flags: { 'replication-factor': '3', confirm: 'myapp' }})
-              .then(() => {
-                expect(cli.stdout).to.equal('Your topic has been marked for deletion, and will be removed from the cluster shortly\n')
-                expect(cli.stderr).to.equal('Deleting topic topic-1... done\n')
-              })
+      args: { TOPIC: 'topic-1' },
+      flags: { 'replication-factor': '3', confirm: 'myapp' }}
+    )
+      .then(() => {
+        expect(cli.stdout).to.equal('Your topic has been marked for deletion, and will be removed from the cluster shortly\n')
+        expect(cli.stderr).to.equal('Deleting topic topic-1... done\n')
+      })
   })
 })

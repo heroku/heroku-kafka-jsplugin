@@ -1,4 +1,5 @@
 'use strict'
+/* eslint standard/no-callback-literal: off, no-unused-expressions: off */
 
 const expect = require('chai').expect
 const mocha = require('mocha')
@@ -59,55 +60,55 @@ describe('kafka:fail', () => {
     kafka.post(failUrl('00000000-0000-0000-0000-000000000000')).reply(200, { message: 'Triggered failure on node 1.2.3.4' })
 
     return cmd.run({app: 'myapp', args: {}, flags: {confirm: 'myapp'}})
-              .then(() => {
-                expect(lastApp).to.equal('myapp')
-                expect(lastConfirm).to.equal('myapp')
-                expect(lastMsg).to.equal(message)
-              })
+      .then(() => {
+        expect(lastApp).to.equal('myapp')
+        expect(lastConfirm).to.equal('myapp')
+        expect(lastMsg).to.equal(message)
+      })
   })
 
   it('triggers failure', () => {
     kafka.post(failUrl('00000000-0000-0000-0000-000000000000', {confirm: 'myapp',
-                                   catastrophic: false,
-                                   zookeeper: false}))
-         .reply(200, { message: 'Triggered failure on node 1.2.3.4' })
+      catastrophic: false,
+      zookeeper: false}))
+      .reply(200, { message: 'Triggered failure on node 1.2.3.4' })
 
     return cmd.run({app: 'myapp',
-                    args: {},
-                    flags: {confirm: 'myapp',
-                            catastrophic: false,
-                            zookeeper: false}})
-              .then(() => expect(cli.stderr).to.equal('Triggering failure... done\n'))
-              .then(() => expect(cli.stdout).to.equal('Triggered failure on node 1.2.3.4\n'))
+      args: {},
+      flags: {confirm: 'myapp',
+        catastrophic: false,
+        zookeeper: false}})
+      .then(() => expect(cli.stderr).to.equal('Triggering failure... done\n'))
+      .then(() => expect(cli.stdout).to.equal('Triggered failure on node 1.2.3.4\n'))
   })
 
   it('passes the --catastrophic flag', () => {
     kafka.post(failUrl('00000000-0000-0000-0000-000000000000', {confirm: 'myapp',
-                                   catastrophic: true,
-                                   zookeeper: false}))
-         .reply(200, { message: 'Triggered failure on node 1.2.3.4' })
+      catastrophic: true,
+      zookeeper: false}))
+      .reply(200, { message: 'Triggered failure on node 1.2.3.4' })
 
     return cmd.run({app: 'myapp',
-                    args: {},
-                    flags: {confirm: 'myapp',
-                            catastrophic: true,
-                            zookeeper: false}})
-              .then(() => expect(cli.stderr).to.equal('Triggering failure... done\n'))
-              .then(() => expect(cli.stdout).to.equal('Triggered failure on node 1.2.3.4\n'))
+      args: {},
+      flags: {confirm: 'myapp',
+        catastrophic: true,
+        zookeeper: false}})
+      .then(() => expect(cli.stderr).to.equal('Triggering failure... done\n'))
+      .then(() => expect(cli.stdout).to.equal('Triggered failure on node 1.2.3.4\n'))
   })
 
   it('passes the --zookeeper flag', () => {
     kafka.post(failUrl('00000000-0000-0000-0000-000000000000', {confirm: 'myapp',
-                                   catastrophic: false,
-                                   zookeeper: true}))
-         .reply(200, { message: 'Triggered failure on node 1.2.3.4' })
+      catastrophic: false,
+      zookeeper: true}))
+      .reply(200, { message: 'Triggered failure on node 1.2.3.4' })
 
     return cmd.run({app: 'myapp',
-                    args: {},
-                    flags: {confirm: 'myapp',
-                            catastrophic: false,
-                            zookeeper: true}})
-              .then(() => expect(cli.stderr).to.equal('Triggering failure... done\n'))
-              .then(() => expect(cli.stdout).to.equal('Triggered failure on node 1.2.3.4\n'))
+      args: {},
+      flags: {confirm: 'myapp',
+        catastrophic: false,
+        zookeeper: true}})
+      .then(() => expect(cli.stderr).to.equal('Triggering failure... done\n'))
+      .then(() => expect(cli.stdout).to.equal('Triggered failure on node 1.2.3.4\n'))
   })
 })
