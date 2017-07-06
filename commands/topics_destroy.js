@@ -9,23 +9,22 @@ let request = require('../lib/clusters').request
 const VERSION = 'v0'
 
 function * destroyTopic (context, heroku) {
-  yield withCluster(heroku, context.app, context.args.CLUSTER, function * (addon) {
-    yield cli.confirmApp(context.app, context.flags.confirm,
-      `This command will affect the cluster: ${addon.name}, which is on ${context.app}`)
+  let addon = yield withCluster(heroku, context.app, context.args.CLUSTER)
+  yield cli.confirmApp(context.app, context.flags.confirm,
+    `This command will affect the cluster: ${addon.name}, which is on ${context.app}`)
 
-    yield cli.action(`Deleting topic ${context.args.TOPIC}`, co(function * () {
-      const topicName = context.args.TOPIC
-      return yield request(heroku, {
-        method: 'DELETE',
-        body: {
-          topic_name: topicName
-        },
-        path: `/data/kafka/${VERSION}/clusters/${addon.id}/topics/${topicName}`
-      })
-    }))
+  yield cli.action(`Deleting topic ${context.args.TOPIC}`, co(function * () {
+    const topicName = context.args.TOPIC
+    return yield request(heroku, {
+      method: 'DELETE',
+      body: {
+        topic_name: topicName
+      },
+      path: `/data/kafka/${VERSION}/clusters/${addon.id}/topics/${topicName}`
+    })
+  }))
 
-    cli.log('Your topic has been marked for deletion, and will be removed from the cluster shortly')
-  })
+  cli.log('Your topic has been marked for deletion, and will be removed from the cluster shortly')
 }
 
 let cmd = {

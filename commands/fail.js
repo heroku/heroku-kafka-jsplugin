@@ -8,23 +8,20 @@ let request = require('../lib/clusters').request
 const VERSION = 'v0'
 
 function * fail (context, heroku) {
-  yield withCluster(heroku, context.app, context.args.CLUSTER, function * (addon) {
-    yield cli.confirmApp(context.app, context.flags.confirm,
-      `This command will affect the cluster: ${addon.name}, which is on ${context.app}\n\nThis command will forcibly terminate nodes in your cluster at random.\nYou should only run this command in controlled testing scenarios.`)
+  let addon = yield withCluster(heroku, context.app, context.args.CLUSTER)
+  yield cli.confirmApp(context.app, context.flags.confirm,
+    `This command will affect the cluster: ${addon.name}, which is on ${context.app}\n\nThis command will forcibly terminate nodes in your cluster at random.\nYou should only run this command in controlled testing scenarios.`)
 
-    let response = yield cli.action('Triggering failure', co(function * () {
-      return yield request(heroku, {
-        method: 'POST',
-        body: {
-          catastrophic: context.flags.catastrophic,
-          zookeeper: context.flags.zookeeper
-        },
-        path: `/data/kafka/${VERSION}/clusters/${addon.id}/induce-failure`
-      })
-    }))
+  let response = yield cli.action('Triggering failure', request(heroku, {
+    method: 'POST',
+    body: {
+      catastrophic: context.flags.catastrophic,
+      zookeeper: context.flags.zookeeper
+    },
+    path: `/data/kafka/${VERSION}/clusters/${addon.id}/induce-failure`
+  }))
 
-    cli.log(response.message)
-  })
+  cli.log(response.message)
 }
 
 module.exports = {

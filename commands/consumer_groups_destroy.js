@@ -8,24 +8,23 @@ let request = require('../lib/clusters').request
 const VERSION = 'v0'
 
 function * destroyConsumerGroup (context, heroku) {
-  yield withCluster(heroku, context.app, context.args.CLUSTER, function * (addon) {
-    yield cli.confirmApp(context.app, context.flags.confirm,
-      `This command will affect the cluster: ${addon.name}, which is on ${context.app}`)
+  let addon = yield withCluster(heroku, context.app, context.args.CLUSTER)
+  yield cli.confirmApp(context.app, context.flags.confirm,
+    `This command will affect the cluster: ${addon.name}, which is on ${context.app}`)
 
-    yield cli.action(`Deleting consumer group ${context.args.CONSUMER_GROUP}`, co(function * () {
-      return yield request(heroku, {
-        method: 'delete',
-        body: {
-          consumer_group: {
-            name: context.args.CONSUMER_GROUP
-          }
-        },
-        path: `/data/kafka/${VERSION}/clusters/${addon.id}/consumer_groups`
-      })
-    }))
+  yield cli.action(`Deleting consumer group ${context.args.CONSUMER_GROUP}`, co(function * () {
+    return yield request(heroku, {
+      method: 'delete',
+      body: {
+        consumer_group: {
+          name: context.args.CONSUMER_GROUP
+        }
+      },
+      path: `/data/kafka/${VERSION}/clusters/${addon.id}/consumer_groups`
+    })
+  }))
 
-    cli.log('Your consumer group has been deleted')
-  })
+  cli.log('Your consumer group has been deleted')
 }
 
 module.exports = {

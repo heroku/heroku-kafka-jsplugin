@@ -13,27 +13,26 @@ function * replicationFactor (context, heroku) {
   if (context.args.CLUSTER) {
     msg += ` on ${context.args.CLUSTER}`
   }
-  yield withCluster(heroku, context.app, context.args.CLUSTER, function * (addon) {
-    const topicName = context.args.TOPIC
+  let addon = yield withCluster(heroku, context.app, context.args.CLUSTER)
+  const topicName = context.args.TOPIC
 
-    let topicInfo = yield topicConfig(heroku, addon.id, topicName)
+  let topicInfo = yield topicConfig(heroku, addon.id, topicName)
 
-    yield cli.action(msg, co(function * () {
-      return yield request(heroku, {
-        method: 'PUT',
-        body: {
-          topic: {
-            name: topicName,
-            replication_factor: context.args.VALUE,
-            retention_time_ms: topicInfo.retention_time_ms,
-            compaction: topicInfo.compaction
-          }
-        },
-        path: `/data/kafka/${VERSION}/clusters/${addon.id}/topics/${topicName}`
-      })
-    }))
-    cli.log(`Use \`heroku kafka:topics:info ${context.args.TOPIC}\` to monitor your topic.`)
-  })
+  yield cli.action(msg, co(function * () {
+    return yield request(heroku, {
+      method: 'PUT',
+      body: {
+        topic: {
+          name: topicName,
+          replication_factor: context.args.VALUE,
+          retention_time_ms: topicInfo.retention_time_ms,
+          compaction: topicInfo.compaction
+        }
+      },
+      path: `/data/kafka/${VERSION}/clusters/${addon.id}/topics/${topicName}`
+    })
+  }))
+  cli.log(`Use \`heroku kafka:topics:info ${context.args.TOPIC}\` to monitor your topic.`)
 }
 
 module.exports = {

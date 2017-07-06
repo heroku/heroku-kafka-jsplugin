@@ -9,7 +9,7 @@ let request = require('../lib/clusters').request
 
 const VERSION = 'v0'
 
-function * zookeeper (context, heroku) {
+async function zookeeper (context, heroku) {
   let enabled = parseBool(context.args.VALUE)
   if (enabled === undefined) {
     cli.exit(1, `Unknown value '${context.args.VALUE}': must be 'on' or 'enable' to enable, or 'off' or 'disable' to disable`)
@@ -20,21 +20,20 @@ function * zookeeper (context, heroku) {
     msg += ` on ${context.args.CLUSTER}`
   }
 
-  yield withCluster(heroku, context.app, context.args.CLUSTER, function * (addon) {
-    if (!isPrivate(addon)) {
-      cli.exit(1, '`kafka:zookeeper` is only available in Heroku Private Spaces')
-    }
+  let addon = await withCluster(heroku, context.app, context.args.CLUSTER)
+  if (!isPrivate(addon)) {
+    cli.exit(1, '`kafka:zookeeper` is only available in Heroku Private Spaces')
+  }
 
-    yield cli.action(msg, co(function * () {
-      return yield request(heroku, {
-        method: 'POST',
-        body: {
-          enabled: enabled
-        },
-        path: `/data/kafka/${VERSION}/clusters/${addon.id}/zookeeper`
-      })
-    }))
-  })
+  await cli.action(msg, co(function * () {
+    return yield request(heroku, {
+      method: 'POST',
+      body: {
+        enabled: enabled
+      },
+      path: `/data/kafka/${VERSION}/clusters/${addon.id}/zookeeper`
+    })
+  }))
 }
 
 module.exports = {

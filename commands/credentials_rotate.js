@@ -1,21 +1,19 @@
 'use strict'
 
 let cli = require('heroku-cli-util')
-let co = require('co')
 let withCluster = require('../lib/clusters').withCluster
 let request = require('../lib/clusters').request
 
 const VERSION = 'v0'
 
-function * credentialsRotate (context, heroku) {
-  yield withCluster(heroku, context.app, context.args.CLUSTER, function * (addon) {
-    let response = yield request(heroku, {
-      method: 'POST',
-      path: `/data/kafka/${VERSION}/clusters/${addon.id}/rotate-credentials`
-    })
-
-    cli.log(response.message)
+async function credentialsRotate (context, heroku) {
+  let addon = await withCluster(heroku, context.app, context.args.CLUSTER)
+  let response = await request(heroku, {
+    method: 'POST',
+    path: `/data/kafka/${VERSION}/clusters/${addon.id}/rotate-credentials`
   })
+
+  cli.log(response.message)
 }
 
 module.exports = {
@@ -41,5 +39,5 @@ module.exports = {
       hasValue: false,
       required: true }
   ],
-  run: cli.command({preauth: true}, co.wrap(credentialsRotate))
+  run: cli.command({preauth: true}, credentialsRotate)
 }

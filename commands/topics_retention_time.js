@@ -19,43 +19,42 @@ function * retentionTime (context, heroku) {
     }
   }
 
-  yield withCluster(heroku, context.app, context.args.CLUSTER, function * (addon) {
-    const topicName = context.args.TOPIC
-    let [ topicInfo, addonInfo ] = yield [
-      topicConfig(heroku, addon.id, topicName),
-      fetchProvisionedInfo(heroku, addon)
-    ]
-    let cleanupPolicy = {
-      retention_time_ms: parsed,
-      compaction: (!parsed || (addonInfo.capabilities.supports_mixed_cleanup_policy && topicInfo.compaction))
+  let addon = yield withCluster(heroku, context.app, context.args.CLUSTER)
+  const topicName = context.args.TOPIC
+  let [ topicInfo, addonInfo ] = yield [
+    topicConfig(heroku, addon.id, topicName),
+    fetchProvisionedInfo(heroku, addon)
+  ]
+  let cleanupPolicy = {
+    retention_time_ms: parsed,
+    compaction: (!parsed || (addonInfo.capabilities.supports_mixed_cleanup_policy && topicInfo.compaction))
+  }
+
+  let msg
+  if (!parsed) {
+    msg = 'Disabling time-based retention'
+    if (cleanupPolicy.compaction !== topicInfo.compaction) {
+      msg += ` and ${cleanupPolicy.compaction ? 'enabling' : 'disabling'} compaction`
     }
-
-    let msg
-    if (!parsed) {
-      msg = 'Disabling time-based retention'
-      if (cleanupPolicy.compaction !== topicInfo.compaction) {
-        msg += ` and ${cleanupPolicy.compaction ? 'enabling' : 'disabling'} compaction`
-      }
-    } else {
-      msg = `Setting retention time to ${context.args.VALUE}`
-      if (!addonInfo.capabilities.supports_mixed_cleanup_policy) {
-        msg += ' and disabling compaction'
-      }
+  } else {
+    msg = `Setting retention time to ${context.args.VALUE}`
+    if (!addonInfo.capabilities.supports_mixed_cleanup_policy) {
+      msg += ' and disabling compaction'
     }
-    msg += ` for topic ${context.args.TOPIC} on ${addon.name}`
+  }
+  msg += ` for topic ${context.args.TOPIC} on ${addon.name}`
 
-    yield cli.action(msg, co(function * () {
-      return yield request(heroku, {
-        method: 'PUT',
-        body: {
-          topic: Object.assign({ name: topicName }, cleanupPolicy)
-        },
-        path: `/data/kafka/${VERSION}/clusters/${addon.id}/topics/${topicName}`
-      })
-    }))
+  yield cli.action(msg, co(function * () {
+    return yield request(heroku, {
+      method: 'PUT',
+      body: {
+        topic: Object.assign({ name: topicName }, cleanupPolicy)
+      },
+      path: `/data/kafka/${VERSION}/clusters/${addon.id}/topics/${topicName}`
+    })
+  }))
 
-    cli.log(`Use \`heroku kafka:topics:info ${context.args.TOPIC}\` to monitor your topic.`)
-  })
+  cli.log(`Use \`heroku kafka:topics:info ${context.args.TOPIC}\` to monitor your topic.`)
 }
 
 module.exports = {

@@ -1,5 +1,5 @@
 'use strict'
-/* eslint standard/no-callback-literal: off, no-unused-expressions: off */
+/* eslint no-unused-expressions: off */
 
 const expect = require('chai').expect
 const mocha = require('mocha')
@@ -14,8 +14,8 @@ const nock = require('nock')
 const EventEmitter = require('events')
 
 let planName
-const withCluster = function * (heroku, app, cluster, callback) {
-  yield callback({ name: 'kafka-1', id: '00000000-0000-0000-0000-000000000000', plan: { name: planName } })
+const withCluster = async function (heroku, app, cluster) {
+  return { name: 'kafka-1', id: '00000000-0000-0000-0000-000000000000', plan: { name: planName } }
 }
 
 let consumer
@@ -119,8 +119,8 @@ describe('kafka:topics:tail', () => {
     api.get('/apps/myapp/addon-attachments/kafka-1')
       .reply(200, { name: 'KAFKA' })
 
-    consumer.subscribe = (topic, callback) => {
-      callback([
+    consumer.subscribe = (topic, c) => {
+      c([
         { offset: 1, message: { value: Buffer.from('hello') } },
         { offset: 2, message: { value: Buffer.from('world') } },
         { offset: 3, message: { value: null } }
@@ -143,9 +143,9 @@ describe('kafka:topics:tail', () => {
     api.get('/apps/myapp/addon-attachments/kafka-1')
       .reply(200, { name: 'KAFKA' })
 
-    consumer.subscribe = (topic, callback) => {
+    consumer.subscribe = (topic, c) => {
       expect(topic).to.equal('nile-1234.topic-1')
-      callback([
+      c([
         { offset: 1, message: { value: Buffer.from('hello') } },
         { offset: 2, message: { value: Buffer.from('world') } },
         { offset: 3, message: { value: null } }
@@ -168,9 +168,9 @@ describe('kafka:topics:tail', () => {
     api.get('/apps/myapp/addon-attachments/kafka-1')
       .reply(200, { name: 'KAFKA' })
 
-    consumer.subscribe = (topic, callback) => {
+    consumer.subscribe = (topic, c) => {
       expect(topic).to.equal('nile-1234.topic-1')
-      callback([
+      c([
         { offset: 1, message: { value: Buffer.from('hello') } },
         { offset: 2, message: { value: Buffer.from('world') } },
         { offset: 3, message: { value: null } }
