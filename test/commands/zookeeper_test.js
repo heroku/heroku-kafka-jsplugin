@@ -1,4 +1,5 @@
 'use strict'
+/* eslint standard/no-callback-literal: off, no-unused-expressions: off */
 
 const expect = require('chai').expect
 const mocha = require('mocha')
@@ -65,8 +66,8 @@ describe('kafka:zookeeper', () => {
       kafka.post(configUrl('00000000-0000-0000-0000-000000000000'), { enabled: true }).reply(200)
 
       return cmd.run({app: 'myapp', args: { VALUE: value }})
-                .then(() => expect(cli.stderr).to.equal('Enabling Zookeeper access... done\n'))
-                .then(() => expect(cli.stdout).to.be.empty)
+        .then(() => expect(cli.stderr).to.equal('Enabling Zookeeper access... done\n'))
+        .then(() => expect(cli.stdout).to.be.empty)
     })
   })
 
@@ -76,8 +77,8 @@ describe('kafka:zookeeper', () => {
       kafka.post(configUrl('00000000-0000-0000-0000-000000000000'), { enabled: false }).reply(200)
 
       return cmd.run({app: 'myapp', args: { VALUE: value }})
-                .then(() => expect(cli.stderr).to.equal('Disabling Zookeeper access... done\n'))
-                .then(() => expect(cli.stdout).to.be.empty)
+        .then(() => expect(cli.stderr).to.equal('Disabling Zookeeper access... done\n'))
+        .then(() => expect(cli.stdout).to.be.empty)
     })
   })
 })

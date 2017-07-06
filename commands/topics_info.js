@@ -100,6 +100,6 @@ let cmd = {
 module.exports = {
   cmd,
   deprecated: Object.assign({}, cmd, { command: 'topic',
-                                       hidden: true,
-                                       run: cli.command(co.wrap(deprecated(kafkaTopic, cmd.command))) })
+    hidden: true,
+    run: cli.command(co.wrap(deprecated(kafkaTopic, cmd.command))) })
 }

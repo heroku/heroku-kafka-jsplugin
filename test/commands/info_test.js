@@ -1,4 +1,5 @@
 'use strict'
+/* eslint standard/no-callback-literal: off, no-unused-expressions: off */
 
 const expect = require('chai').expect
 const mocha = require('mocha')

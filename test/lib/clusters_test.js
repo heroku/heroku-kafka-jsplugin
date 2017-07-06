@@ -1,4 +1,5 @@
 'use strict'
+/* eslint standard/no-callback-literal: off, no-unused-expressions: off */
 
 const chai = require('chai')
 const chaiAsPromised = require('chai-as-promised')
@@ -44,9 +45,11 @@ describe('withCluster', () => {
     it('propagates the error if the fetcher rejects the promise', () => {
       fetchOne = () => Promise.reject(new Error('oh snap'))
       let called = false
-      return expect(co.wrap(clusters.withCluster)(heroku,
-                                                  'my-app', 'kafka-1',
-                                                  function * (arg) { called = true }))
+      return expect(co.wrap(clusters.withCluster)(
+        heroku,
+        'my-app', 'kafka-1',
+        function * (arg) { called = true })
+      )
         .to.be.rejected
         .then(() => { expect(called).to.be.false })
     })
@@ -55,9 +58,11 @@ describe('withCluster', () => {
       let addon = { name: 'kafka-1' }
       fetchOne = () => Promise.resolve(addon)
       let calledWith = addon
-      return expect(co.wrap(clusters.withCluster)(heroku,
-                                                  'my-app', 'kafka-1',
-                                                  function * (arg) { calledWith = arg }))
+      return expect(co.wrap(clusters.withCluster)(
+        heroku,
+        'my-app', 'kafka-1',
+        function * (arg) { calledWith = arg })
+      )
         .to.be.fulfilled
         .then(() => { expect(calledWith).to.equal(addon) })
     })
@@ -67,9 +72,11 @@ describe('withCluster', () => {
     it('warns and exits if no add-ons are found', () => {
       fetchAll = () => Promise.resolve([])
       let called = false
-      return expect(co.wrap(clusters.withCluster)(heroku,
-                                                  'my-app', null,
-                                                  function * (arg) { called = true }))
+      return expect(co.wrap(clusters.withCluster)(
+        heroku,
+        'my-app', null,
+        function * (arg) { called = true })
+      )
         .to.be.rejectedWith(cli.exit.ErrorExit, /found no kafka add-ons on my-app/)
         .then(() => { expect(called).to.be.false })
     })
@@ -77,9 +84,11 @@ describe('withCluster', () => {
     it('warns and exits if multiple add-ons are found', () => {
       fetchAll = () => Promise.resolve([ { name: 'kafka-1' }, { name: 'kafka-2' } ])
       let called = false
-      return expect(co.wrap(clusters.withCluster)(heroku,
-                                                  'my-app', null,
-                                                  function * (arg) { called = true }))
+      return expect(co.wrap(clusters.withCluster)(
+        heroku,
+        'my-app', null,
+        function * (arg) { called = true })
+      )
         .to.be.rejectedWith(cli.exit.ErrorExit, /found more than one kafka add-on on my-app: kafka-1, kafka-2/)
         .then(() => { expect(called).to.be.false })
     })
@@ -88,9 +97,11 @@ describe('withCluster', () => {
       let addon = { name: 'kafka-1' }
       fetchAll = () => Promise.resolve([ addon ])
       let calledWith = addon
-      return expect(co.wrap(clusters.withCluster)(heroku,
-                                                  'my-app', null,
-                                                  function * (arg) { calledWith = arg }))
+      return expect(co.wrap(clusters.withCluster)(
+        heroku,
+        'my-app', null,
+        function * (arg) { calledWith = arg })
+      )
         .to.be.fulfilled
         .then(() => { expect(calledWith).to.equal(addon) })
     })

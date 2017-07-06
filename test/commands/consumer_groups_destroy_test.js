@@ -1,4 +1,5 @@
 'use strict'
+/* eslint standard/no-callback-literal: off, no-unused-expressions: off */
 
 const expect = require('chai').expect
 const mocha = require('mocha')
@@ -66,8 +67,8 @@ describe('kafka:consumer-groups:destroy', () => {
     ).reply(200)
 
     return cmd.run({app: 'myapp',
-                  args: { CONSUMER_GROUP: 'consumer-group-1' },
-                  flags: { confirm: 'myapp' }})
+      args: { CONSUMER_GROUP: 'consumer-group-1' },
+      flags: { confirm: 'myapp' }})
       .then(() => {
         expect(cli.stdout).to.equal('Your consumer group has been deleted\n')
       })
@@ -89,8 +90,8 @@ describe('kafka:consumer-groups:destroy', () => {
     lastMsg = null
 
     return cmd.run({app: 'myapp',
-                    args: { CONSUMER_GROUP: 'consumer-group-1' },
-                    flags: { confirm: 'myapp' }})
+      args: { CONSUMER_GROUP: 'consumer-group-1' },
+      flags: { confirm: 'myapp' }})
               .then(() => {
                 expect(lastApp).to.equal('myapp')
                 expect(lastConfirm).to.equal('myapp')

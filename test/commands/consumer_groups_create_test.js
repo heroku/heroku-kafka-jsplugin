@@ -1,4 +1,5 @@
 'use strict'
+/* eslint standard/no-callback-literal: off, no-unused-expressions: off */
 
 const expect = require('chai').expect
 const mocha = require('mocha')
@@ -51,7 +52,7 @@ describe('kafka:consumer-groups:create', () => {
     ).reply(200)
 
     return cmd.run({app: 'myapp',
-                  args: { CONSUMER_GROUP: 'consumer-group-1' }})
+      args: { CONSUMER_GROUP: 'consumer-group-1' }})
       .then(() => {
         expect(cli.stdout).to.equal('Use `heroku kafka:consumer-groups` to list your consumer groups.\n')
       })
@@ -67,7 +68,7 @@ describe('kafka:consumer-groups:create', () => {
     ).reply(400, {message: 'this command is not required or enabled on dedicated clusters'})
 
     return cmd.run({app: 'myapp',
-                  args: { CONSUMER_GROUP: 'consumer-group-1' }})
+      args: { CONSUMER_GROUP: 'consumer-group-1' }})
       .then(() => {
         expect(cli.stderr).to.equal(`Creating consumer group consumer-group-1... !\n ▸    kafka-1 does not need consumer groups managed explicitly, so this command\n ▸    does nothing\n`)
       })

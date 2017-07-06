@@ -1,4 +1,5 @@
 'use strict'
+/* eslint standard/no-callback-literal: off, no-unused-expressions: off */
 
 const expect = require('chai').expect
 const mocha = require('mocha')
@@ -64,8 +65,8 @@ describe('kafka:topics:destroy', () => {
     lastMsg = null
 
     return cmd.run({app: 'myapp',
-                    args: { TOPIC: 'topic-1' },
-                    flags: { confirm: 'myapp' }})
+      args: { TOPIC: 'topic-1' },
+      flags: { confirm: 'myapp' }})
               .then(() => {
                 expect(lastApp).to.equal('myapp')
                 expect(lastConfirm).to.equal('myapp')
@@ -78,8 +79,8 @@ describe('kafka:topics:destroy', () => {
          .reply(200)
 
     return cmd.run({app: 'myapp',
-                    args: { TOPIC: 'topic-1' },
-                    flags: { 'replication-factor': '3', confirm: 'myapp' }})
+      args: { TOPIC: 'topic-1' },
+      flags: { 'replication-factor': '3', confirm: 'myapp' }})
               .then(() => {
                 expect(cli.stdout).to.equal('Your topic has been marked for deletion, and will be removed from the cluster shortly\n')
                 expect(cli.stderr).to.equal('Deleting topic topic-1... done\n')

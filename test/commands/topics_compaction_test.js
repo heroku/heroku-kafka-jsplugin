@@ -1,4 +1,5 @@
 'use strict'
+/* eslint standard/no-callback-literal: off, no-unused-expressions: off */
 
 const expect = require('chai').expect
 const mocha = require('mocha')
@@ -51,7 +52,7 @@ describe('kafka:topics:compaction', () => {
   describe('with unknown value specified', () => {
     it('shows an error and exits', () => {
       return expectExit(1, cmd.run({app: 'myapp',
-                                    args: { TOPIC: 'topic-1', VALUE: 'yep' }}))
+        args: { TOPIC: 'topic-1', VALUE: 'yep' }}))
         .then(() => expect(cli.stdout).to.be.empty)
         .then(() => expect(cli.stderr).to.equal(` ▸    Unknown value 'yep': must be 'on' or 'enable' to enable, or 'off' or
  ▸    'disable' to disable

@@ -1,4 +1,5 @@
 'use strict'
+/* eslint standard/no-callback-literal: off, no-unused-expressions: off */
 
 const expect = require('chai').expect
 const mocha = require('mocha')
@@ -116,8 +117,8 @@ describe('kafka:topics:write', () => {
     }
 
     return cmd.run({app: 'myapp',
-                    args: { TOPIC: 'topic-1', MESSAGE: 'hello world' },
-                    flags: {}})
+      args: { TOPIC: 'topic-1', MESSAGE: 'hello world' },
+      flags: {}})
               .then(() => {
                 expect(cli.stdout).to.be.empty
                 expect(cli.stderr).to.be.empty
@@ -140,8 +141,8 @@ describe('kafka:topics:write', () => {
     }
 
     return cmd.run({app: 'myapp',
-                    args: { TOPIC: 'topic-1', MESSAGE: 'hello world' },
-                    flags: {}})
+      args: { TOPIC: 'topic-1', MESSAGE: 'hello world' },
+      flags: {}})
               .then(() => {
                 expect(cli.stdout).to.be.empty
                 expect(cli.stderr).to.be.empty
@@ -164,8 +165,8 @@ describe('kafka:topics:write', () => {
     }
 
     return cmd.run({app: 'myapp',
-                    args: { TOPIC: 'nile-1234.topic-1', MESSAGE: 'hello world' },
-                    flags: {}})
+      args: { TOPIC: 'nile-1234.topic-1', MESSAGE: 'hello world' },
+      flags: {}})
               .then(() => {
                 expect(cli.stdout).to.be.empty
                 expect(cli.stderr).to.be.empty
@@ -185,8 +186,8 @@ describe('kafka:topics:write', () => {
     }
 
     return cmd.run({app: 'myapp',
-                    args: { TOPIC: 'topic-1', MESSAGE: 'hello world' },
-                    flags: { partition: '3' }})
+      args: { TOPIC: 'topic-1', MESSAGE: 'hello world' },
+      flags: { partition: '3' }})
               .then(() => {
                 expect(cli.stdout).to.be.empty
                 expect(cli.stderr).to.be.empty
@@ -206,8 +207,8 @@ describe('kafka:topics:write', () => {
     }
 
     return cmd.run({app: 'myapp',
-                    args: { TOPIC: 'topic-1', MESSAGE: 'hello world' },
-                    flags: { 'key': '1234' }})
+      args: { TOPIC: 'topic-1', MESSAGE: 'hello world' },
+      flags: { 'key': '1234' }})
               .then(() => {
                 expect(cli.stdout).to.be.empty
                 expect(cli.stderr).to.be.empty
