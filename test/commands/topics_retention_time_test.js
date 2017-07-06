@@ -64,68 +64,72 @@ describe('kafka:topics:retention-time', () => {
   describe('if the cluster supports a mixed cleanup policy', () => {
     beforeEach(() => {
       kafka.get(topicListUrl('00000000-0000-0000-0000-000000000000'))
-           .reply(200, { topics: [ { name: 'topic-1', retention_time_ms: 123, compaction: false } ] })
+        .reply(200, { topics: [ { name: 'topic-1', retention_time_ms: 123, compaction: false } ] })
       kafka.get(infoUrl('00000000-0000-0000-0000-000000000000'))
-           .reply(200, {
-             capabilities: { supports_mixed_cleanup_policy: true },
-             limits: { minimum_retention_ms: 20 }
-           })
+        .reply(200, {
+          capabilities: { supports_mixed_cleanup_policy: true },
+          limits: { minimum_retention_ms: 20 }
+        })
     })
 
     it('sets retention time and leaves compaction as is if a value is specified', () => {
       kafka.put(topicConfigUrl('00000000-0000-0000-0000-000000000000', 'topic-1'),
-                { topic: { name: 'topic-1', retention_time_ms: 60000, compaction: false } }).reply(200)
+        { topic: { name: 'topic-1', retention_time_ms: 60000, compaction: false } }).reply(200)
 
       return cmd.run({app: 'myapp',
         args: { TOPIC: 'topic-1', VALUE: '60s' },
-        flags: {}})
-                .then(() => expect(cli.stderr).to.equal('Setting retention time to 60s for topic topic-1 on kafka-1... done\n'))
-                .then(() => expect(cli.stdout).to.equal('Use `heroku kafka:topics:info topic-1` to monitor your topic.\n'))
+        flags: {}}
+      )
+        .then(() => expect(cli.stderr).to.equal('Setting retention time to 60s for topic topic-1 on kafka-1... done\n'))
+        .then(() => expect(cli.stdout).to.equal('Use `heroku kafka:topics:info topic-1` to monitor your topic.\n'))
     })
 
     it('clears retention and turns on compaction if `disable` is specified', () => {
       kafka.put(topicConfigUrl('00000000-0000-0000-0000-000000000000', 'topic-1'),
-                { topic: { name: 'topic-1', retention_time_ms: null, compaction: true } }).reply(200)
+        { topic: { name: 'topic-1', retention_time_ms: null, compaction: true } }).reply(200)
 
       return cmd.run({app: 'myapp',
         args: { TOPIC: 'topic-1', VALUE: 'disable' },
-        flags: {}})
-                .then(() => expect(cli.stderr).to.equal('Disabling time-based retention and enabling compaction for topic topic-1 on kafka-1... done\n'))
-                .then(() => expect(cli.stdout).to.equal('Use `heroku kafka:topics:info topic-1` to monitor your topic.\n'))
+        flags: {}}
+      )
+        .then(() => expect(cli.stderr).to.equal('Disabling time-based retention and enabling compaction for topic topic-1 on kafka-1... done\n'))
+        .then(() => expect(cli.stdout).to.equal('Use `heroku kafka:topics:info topic-1` to monitor your topic.\n'))
     })
   })
 
   describe('if the cluster does not support a mixed cleanup policy', () => {
     beforeEach(() => {
       kafka.get(topicListUrl('00000000-0000-0000-0000-000000000000'))
-           .reply(200, { topics: [ { name: 'topic-1', retention_time_ms: 123, compaction: true } ] })
+        .reply(200, { topics: [ { name: 'topic-1', retention_time_ms: 123, compaction: true } ] })
       kafka.get(infoUrl('00000000-0000-0000-0000-000000000000'))
-           .reply(200, {
-             capabilities: { supports_mixed_cleanup_policy: false },
-             limits: { minimum_retention_ms: 20 }
-           })
+        .reply(200, {
+          capabilities: { supports_mixed_cleanup_policy: false },
+          limits: { minimum_retention_ms: 20 }
+        })
     })
 
     it('sets retention time and turns off compaction if a value is specified', () => {
       kafka.put(topicConfigUrl('00000000-0000-0000-0000-000000000000', 'topic-1'),
-                { topic: { name: 'topic-1', retention_time_ms: 60000, compaction: false } }).reply(200)
+        { topic: { name: 'topic-1', retention_time_ms: 60000, compaction: false } }).reply(200)
 
       return cmd.run({app: 'myapp',
         args: { TOPIC: 'topic-1', VALUE: '60s' },
-        flags: {}})
-                .then(() => expect(cli.stderr).to.equal('Setting retention time to 60s and disabling compaction for topic topic-1 on kafka-1... done\n'))
-                .then(() => expect(cli.stdout).to.equal('Use `heroku kafka:topics:info topic-1` to monitor your topic.\n'))
+        flags: {}}
+      )
+        .then(() => expect(cli.stderr).to.equal('Setting retention time to 60s and disabling compaction for topic topic-1 on kafka-1... done\n'))
+        .then(() => expect(cli.stdout).to.equal('Use `heroku kafka:topics:info topic-1` to monitor your topic.\n'))
     })
 
     it('clears retention and turns on compaction if `disabled` is specified', () => {
       kafka.put(topicConfigUrl('00000000-0000-0000-0000-000000000000', 'topic-1'),
-                { topic: { name: 'topic-1', retention_time_ms: null, compaction: true } }).reply(200)
+        { topic: { name: 'topic-1', retention_time_ms: null, compaction: true } }).reply(200)
 
       return cmd.run({app: 'myapp',
         args: { TOPIC: 'topic-1', VALUE: 'disable' },
-        flags: {}})
-                .then(() => expect(cli.stderr).to.equal('Disabling time-based retention for topic topic-1 on kafka-1... done\n'))
-                .then(() => expect(cli.stdout).to.equal('Use `heroku kafka:topics:info topic-1` to monitor your topic.\n'))
+        flags: {}}
+      )
+        .then(() => expect(cli.stderr).to.equal('Disabling time-based retention for topic topic-1 on kafka-1... done\n'))
+        .then(() => expect(cli.stdout).to.equal('Use `heroku kafka:topics:info topic-1` to monitor your topic.\n'))
     })
   })
 })

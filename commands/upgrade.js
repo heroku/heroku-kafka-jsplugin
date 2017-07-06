@@ -10,9 +10,9 @@ const VERSION = 'v0'
 function * upgradeCluster (context, heroku) {
   yield withCluster(heroku, context.app, context.args.CLUSTER, function * (addon) {
     yield cli.confirmApp(context.app, context.flags.confirm,
-                         `This command will upgrade the brokers of the cluster to version ${context.flags.version}.
-                          Upgrading the cluster involves rolling restarts of brokers, and takes some time, depending on the
-                          size of the cluster.`)
+      `This command will upgrade the brokers of the cluster to version ${context.flags.version}.
+      Upgrading the cluster involves rolling restarts of brokers, and takes some time, depending on the
+      size of the cluster.`)
 
     let msg = 'Upgrading '
     if (context.args.CLUSTER) {

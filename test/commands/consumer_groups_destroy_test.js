@@ -92,10 +92,10 @@ describe('kafka:consumer-groups:destroy', () => {
     return cmd.run({app: 'myapp',
       args: { CONSUMER_GROUP: 'consumer-group-1' },
       flags: { confirm: 'myapp' }})
-              .then(() => {
-                expect(lastApp).to.equal('myapp')
-                expect(lastConfirm).to.equal('myapp')
-                expect(lastMsg).to.equal(message)
-              })
+      .then(() => {
+        expect(lastApp).to.equal('myapp')
+        expect(lastConfirm).to.equal('myapp')
+        expect(lastMsg).to.equal(message)
+      })
   })
 })

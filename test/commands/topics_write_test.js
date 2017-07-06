@@ -118,11 +118,12 @@ describe('kafka:topics:write', () => {
 
     return cmd.run({app: 'myapp',
       args: { TOPIC: 'topic-1', MESSAGE: 'hello world' },
-      flags: {}})
-              .then(() => {
-                expect(cli.stdout).to.be.empty
-                expect(cli.stderr).to.be.empty
-              })
+      flags: {}}
+    )
+      .then(() => {
+        expect(cli.stdout).to.be.empty
+        expect(cli.stderr).to.be.empty
+      })
   })
 
   it('uses a prefix if one exists', () => {
@@ -142,11 +143,12 @@ describe('kafka:topics:write', () => {
 
     return cmd.run({app: 'myapp',
       args: { TOPIC: 'topic-1', MESSAGE: 'hello world' },
-      flags: {}})
-              .then(() => {
-                expect(cli.stdout).to.be.empty
-                expect(cli.stderr).to.be.empty
-              })
+      flags: {}}
+    )
+      .then(() => {
+        expect(cli.stdout).to.be.empty
+        expect(cli.stderr).to.be.empty
+      })
   })
 
   it('uses a prefixed topic if one is used', () => {
@@ -166,11 +168,12 @@ describe('kafka:topics:write', () => {
 
     return cmd.run({app: 'myapp',
       args: { TOPIC: 'nile-1234.topic-1', MESSAGE: 'hello world' },
-      flags: {}})
-              .then(() => {
-                expect(cli.stdout).to.be.empty
-                expect(cli.stderr).to.be.empty
-              })
+      flags: {}}
+    )
+      .then(() => {
+        expect(cli.stdout).to.be.empty
+        expect(cli.stderr).to.be.empty
+      })
   })
 
   it('uses given partition if specified', () => {
@@ -187,11 +190,12 @@ describe('kafka:topics:write', () => {
 
     return cmd.run({app: 'myapp',
       args: { TOPIC: 'topic-1', MESSAGE: 'hello world' },
-      flags: { partition: '3' }})
-              .then(() => {
-                expect(cli.stdout).to.be.empty
-                expect(cli.stderr).to.be.empty
-              })
+      flags: { partition: '3' }}
+    )
+      .then(() => {
+        expect(cli.stdout).to.be.empty
+        expect(cli.stderr).to.be.empty
+      })
   })
 
   it('uses given message key if specified', () => {
@@ -208,10 +212,11 @@ describe('kafka:topics:write', () => {
 
     return cmd.run({app: 'myapp',
       args: { TOPIC: 'topic-1', MESSAGE: 'hello world' },
-      flags: { 'key': '1234' }})
-              .then(() => {
-                expect(cli.stdout).to.be.empty
-                expect(cli.stderr).to.be.empty
-              })
+      flags: { 'key': '1234' }}
+    )
+      .then(() => {
+        expect(cli.stdout).to.be.empty
+        expect(cli.stderr).to.be.empty
+      })
   })
 })

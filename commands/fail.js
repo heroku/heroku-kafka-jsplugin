@@ -10,7 +10,7 @@ const VERSION = 'v0'
 function * fail (context, heroku) {
   yield withCluster(heroku, context.app, context.args.CLUSTER, function * (addon) {
     yield cli.confirmApp(context.app, context.flags.confirm,
-                         `This command will affect the cluster: ${addon.name}, which is on ${context.app}\n\nThis command will forcibly terminate nodes in your cluster at random.\nYou should only run this command in controlled testing scenarios.`)
+      `This command will affect the cluster: ${addon.name}, which is on ${context.app}\n\nThis command will forcibly terminate nodes in your cluster at random.\nYou should only run this command in controlled testing scenarios.`)
 
     let response = yield cli.action('Triggering failure', co(function * () {
       return yield request(heroku, {

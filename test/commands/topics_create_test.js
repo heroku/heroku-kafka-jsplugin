@@ -56,7 +56,7 @@ describe('kafka:topics:create', () => {
 
   it('passes the topic name and specified flags', () => {
     kafka.get(infoUrl('00000000-0000-0000-0000-000000000000'))
-         .reply(200, { shared_cluster: false })
+      .reply(200, { shared_cluster: false })
     kafka.post(createUrl('00000000-0000-0000-0000-000000000000'),
       {
         topic: {
@@ -72,16 +72,17 @@ describe('kafka:topics:create', () => {
       args: { TOPIC: 'topic-1' },
       flags: { 'replication-factor': '3',
         'retention-time': '10ms',
-        'partitions': '7' }})
-              .then(() => {
-                expect(cli.stderr).to.equal('Creating topic topic-1 with compaction disabled and retention time 10 milliseconds on kafka-1... done\n')
-                expect(cli.stdout).to.equal('Use `heroku kafka:topics:info topic-1` to monitor your topic.\n')
-              })
+        'partitions': '7' }}
+    )
+      .then(() => {
+        expect(cli.stderr).to.equal('Creating topic topic-1 with compaction disabled and retention time 10 milliseconds on kafka-1... done\n')
+        expect(cli.stdout).to.equal('Use `heroku kafka:topics:info topic-1` to monitor your topic.\n')
+      })
   })
 
   it('defaults retention to the plan minimum if not specified even if retention specified', () => {
     kafka.get(infoUrl('00000000-0000-0000-0000-000000000000'))
-         .reply(200, { shared_cluster: false, limits: { minimum_retention_ms: 66 } })
+      .reply(200, { shared_cluster: false, limits: { minimum_retention_ms: 66 } })
     kafka.post(createUrl('00000000-0000-0000-0000-000000000000'),
       {
         topic: {
@@ -96,17 +97,18 @@ describe('kafka:topics:create', () => {
     return cmd.run({app: 'myapp',
       args: { TOPIC: 'topic-1' },
       flags: { 'replication-factor': '3',
-        'partitions': '7' }})
-              .then(() => {
-                expect(cli.stderr).to.equal('Creating topic topic-1 with compaction disabled and retention time 66 milliseconds on kafka-1... done\n')
-                expect(cli.stdout).to.equal('Use `heroku kafka:topics:info topic-1` to monitor your topic.\n')
-              })
+        'partitions': '7' }}
+    )
+      .then(() => {
+        expect(cli.stderr).to.equal('Creating topic topic-1 with compaction disabled and retention time 66 milliseconds on kafka-1... done\n')
+        expect(cli.stdout).to.equal('Use `heroku kafka:topics:info topic-1` to monitor your topic.\n')
+      })
   })
 
   describe('for multi-tenant plans', () => {
     it('defaults retention to the plan minimum if not specified even if compaction specified', () => {
       kafka.get(infoUrl('00000000-0000-0000-0000-000000000000'))
-           .reply(200, { shared_cluster: true, limits: { minimum_retention_ms: 66 } })
+        .reply(200, { shared_cluster: true, limits: { minimum_retention_ms: 66 } })
       kafka.post(createUrl('00000000-0000-0000-0000-000000000000'),
         {
           topic: {
@@ -122,11 +124,12 @@ describe('kafka:topics:create', () => {
         args: { TOPIC: 'topic-1' },
         flags: { 'replication-factor': '3',
           'partitions': '7',
-          'compaction': true }})
-                .then(() => {
-                  expect(cli.stderr).to.equal('Creating topic topic-1 with compaction enabled and retention time 66 milliseconds on kafka-1... done\n')
-                  expect(cli.stdout).to.equal('Use `heroku kafka:topics:info topic-1` to monitor your topic.\n')
-                })
+          'compaction': true }}
+      )
+        .then(() => {
+          expect(cli.stderr).to.equal('Creating topic topic-1 with compaction enabled and retention time 66 milliseconds on kafka-1... done\n')
+          expect(cli.stdout).to.equal('Use `heroku kafka:topics:info topic-1` to monitor your topic.\n')
+        })
     })
   })
 })
