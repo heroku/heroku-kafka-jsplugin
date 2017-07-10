@@ -123,7 +123,7 @@ Status:     available
 Version:    0.10.0.0
 Created:    2016-11-14T14:26:20.245+00:00
 Topics:     [█·········] 1 / 10 topics, see heroku kafka:topics
-Partitions: [████······] 12 / 32 partition replicas (partitions × replication factor)
+Partitions: [███·······] 12 / 32 partition replicas (partitions × replication factor)
 Messages:   0 messages/s
 Traffic:    0 bytes/s in / 0 bytes/s out
 Add-on:     kafka-2
@@ -147,7 +147,7 @@ Status:     available
 Version:    0.10.0.0
 Created:    2016-11-14T14:26:20.245+00:00
 Topics:     [█·········] 1 / 10 topics, see heroku kafka:topics
-Partitions: [████······] 12 / 32 partition replicas (partitions × replication factor)
+Partitions: [███·······] 12 / 32 partition replicas (partitions × replication factor)
 Messages:   0 messages/s
 Traffic:    0 bytes/s in / 0 bytes/s out
 Add-on:     kafka-2
@@ -170,7 +170,7 @@ Status:     available
 Version:    0.10.0.0
 Created:    2016-11-14T14:26:20.245+00:00
 Topics:     [█·········] 1 / 10 topics, see heroku kafka:topics
-Partitions: [████······] 12 / 32 partition replicas (partitions × replication factor)
+Partitions: [███·······] 12 / 32 partition replicas (partitions × replication factor)
 Messages:   0 messages/s
 Traffic:    0 bytes/s in / 0 bytes/s out
 Add-on:     kafka-2
