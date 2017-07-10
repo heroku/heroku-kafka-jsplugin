@@ -8,6 +8,10 @@ let request = require('../lib/clusters').request
 const VERSION = 'v0'
 
 function * credentialsRotate (context, heroku) {
+  if (!context.flags.reset) {
+    throw new Error('The --reset flag is required for this command')
+  }
+
   yield withCluster(heroku, context.app, context.args.CLUSTER, function * (addon) {
     let response = yield request(heroku, {
       method: 'POST',
