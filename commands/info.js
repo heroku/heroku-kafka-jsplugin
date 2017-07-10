@@ -3,6 +3,7 @@
 const co = require('co')
 const cli = require('heroku-cli-util')
 const humanize = require('humanize-plus')
+const pixelBar = require('pixelbar').default
 
 function configVarsFromName (attachments, name) {
   return attachments
@@ -33,7 +34,7 @@ function formatInfo (info) {
   if (limits.max_topics) {
     lines.push({
       name: 'Topics',
-      values: [`${topicCount} / ${limits.max_topics} topics, see heroku kafka:topics`]
+      values: [`${pixelBar(topicCount, limits.max_topics)} ${topicCount} / ${limits.max_topics} topics, see heroku kafka:topics`]
     })
   } else {
     lines.push({
@@ -49,7 +50,7 @@ function formatInfo (info) {
   if (limits.max_partition_replica_count) {
     lines.push({
       name: 'Partitions',
-      values: [ `${cluster.partition_replica_count} / ${limits.max_partition_replica_count} partition ${humanize.pluralize(cluster.partition_replica_count, 'replica')} (partitions * replication factor)` ]
+      values: [ `${pixelBar(cluster.partition_replica_count, limits.max_partition_replica_count)} ${cluster.partition_replica_count} / ${limits.max_partition_replica_count} partition ${humanize.pluralize(cluster.partition_replica_count, 'replica')} (partitions * replication factor)` ]
     })
   }
 
@@ -69,7 +70,7 @@ function formatInfo (info) {
     let percentage = ((size / limit) * 100.0).toFixed(2)
     lines.push({
       name: 'Data Size',
-      values: [`${humanize.fileSize(size)} / ${humanize.fileSize(limit)} (${percentage}%)`]
+      values: [`${pixelBar(size, limit)} ${humanize.fileSize(size)} / ${humanize.fileSize(limit)} (${percentage}%)`]
     })
   }
 
