@@ -1,7 +1,13 @@
 'use strict'
 /* eslint standard/no-callback-literal: off, no-unused-expressions: off */
 
-const expect = require('chai').expect
+const chai = require('chai')
+const chaiAsPromised = require('chai-as-promised')
+
+chai.use(chaiAsPromised)
+
+const expect = chai.expect
+
 const mocha = require('mocha')
 const describe = mocha.describe
 const it = mocha.it
@@ -47,5 +53,15 @@ describe('kafka:credentials', () => {
 
     return cmd.run({app: 'myapp', args: {CLUSTER: undefined}, flags: { reset: true }})
       .then(() => expect(cli.stderr).to.be.empty)
+  })
+
+  it(`requires the --reset flag`, () => {
+    return expect(cmd.run({app: 'myapp', args: {CLUSTER: undefined}, flags: {}}))
+      .to.be.rejected
+      .then((err) => {
+        expect(cli.stdout).to.be.empty
+        expect(cli.stderr).to.be.empty
+        expect(err.message).to.equal('The --reset flag is required for this command')
+      })
   })
 })
