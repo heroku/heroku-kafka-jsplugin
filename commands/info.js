@@ -50,7 +50,7 @@ function formatInfo (info) {
   if (limits.max_partition_replica_count) {
     lines.push({
       name: 'Partitions',
-      values: [ `${pixelBar(cluster.partition_replica_count, limits.max_partition_replica_count)} ${cluster.partition_replica_count} / ${limits.max_partition_replica_count} partition ${humanize.pluralize(cluster.partition_replica_count, 'replica')} (partitions * replication factor)` ]
+      values: [ `${pixelBar(cluster.partition_replica_count, limits.max_partition_replica_count)} ${cluster.partition_replica_count} / ${limits.max_partition_replica_count} partition ${humanize.pluralize(cluster.partition_replica_count, 'replica')} (partitions × replication factor)` ]
     })
   }
 
