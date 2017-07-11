@@ -3,6 +3,7 @@
 const co = require('co')
 const cli = require('heroku-cli-util')
 const humanize = require('humanize-plus')
+const utilizationBar = require('../lib/utilizationBar')
 
 function configVarsFromName (attachments, name) {
   return attachments
@@ -27,12 +28,13 @@ function formatInfo (info) {
     lines.push({ name: 'Robot TTL', values: [cluster.robot.robot_ttl] })
   }
 
+  let limits = cluster.limits
   // we hide __consumer_offsets in topic listing; don't count it
   const topicCount = cluster.topics.filter((topic) => topic !== '__consumer_offsets').length
-  if (cluster.limits && cluster.limits.max_topics) {
+  if (limits.max_topics) {
     lines.push({
       name: 'Topics',
-      values: [`${topicCount} / ${cluster.limits.max_topics} topics, see heroku kafka:topics`]
+      values: [`${utilizationBar(topicCount, limits.max_topics)} ${topicCount} / ${limits.max_topics} topics, see heroku kafka:topics`]
     })
   } else {
     lines.push({
@@ -45,6 +47,13 @@ function formatInfo (info) {
     lines.push({ name: 'Prefix', values: [cluster.topic_prefix] })
   }
 
+  if (limits.max_partition_replica_count) {
+    lines.push({
+      name: 'Partitions',
+      values: [ `${utilizationBar(cluster.partition_replica_count, limits.max_partition_replica_count)} ${cluster.partition_replica_count} / ${limits.max_partition_replica_count} partition ${humanize.pluralize(cluster.partition_replica_count, 'replica')} (partitions × replication factor)` ]
+    })
+  }
+
   lines.push({
     name: 'Messages',
     values: [`${humanize.intComma(cluster.messages_in_per_sec)} ${humanize.pluralize(cluster.messages_in_per_sec, 'message')}/s`]
@@ -55,13 +64,13 @@ function formatInfo (info) {
     values: [`${humanize.fileSize(cluster.bytes_in_per_sec)}/s in / ${humanize.fileSize(cluster.bytes_out_per_sec)}/s out`]
   })
 
-  if (cluster.data_size !== undefined && cluster.limits.data_size.limit_bytes !== undefined) {
+  if (cluster.data_size !== undefined && limits.data_size.limit_bytes !== undefined) {
     let size = cluster.data_size
-    let limit = cluster.limits.data_size.limit_bytes
+    let limit = limits.data_size.limit_bytes
     let percentage = ((size / limit) * 100.0).toFixed(2)
     lines.push({
       name: 'Data Size',
-      values: [`${humanize.fileSize(size)} / ${humanize.fileSize(limit)} (${percentage}%)`]
+      values: [`${utilizationBar(size, limit)} ${humanize.fileSize(size)} / ${humanize.fileSize(limit)} (${percentage}%)`]
     })
   }
 
