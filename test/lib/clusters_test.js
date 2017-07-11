@@ -18,6 +18,8 @@ const co = require('co')
 
 const heroku = {}
 
+const td = require('testdouble')
+
 let fetchAll
 let fetchOne
 
@@ -105,5 +107,90 @@ describe('withCluster', () => {
         .to.be.fulfilled
         .then(() => { expect(calledWith).to.equal(addon) })
     })
+  })
+})
+
+describe('topicConfig', () => {
+  beforeEach(() => {
+    cli.exit.mock()
+    cli.mockConsole()
+  })
+
+  it('finds the topic when not prefixed', async () => {
+    const addonId = '1234'
+    const topicName = 'foo'
+    const heroku = {
+      request: td.when(td.function()({
+        host: 'kafka-api.heroku.com',
+        accept: 'application/json',
+        path: `/data/kafka/v0/clusters/${addonId}/topics`
+      })).thenResolve({
+        topics: [
+          { name: topicName },
+          { name: 'bar' }
+        ]
+      })
+    }
+    const result = await co.wrap(clusters.topicConfig)(heroku, addonId, topicName)
+    expect(result.name).to.equal(topicName)
+  })
+
+  it('finds the topic when prefixed', async () => {
+    const addonId = '1234'
+    const topicName = 'foo'
+    const topicPrefix = 'wisła-3456.'
+    const heroku = {
+      request: td.when(td.function()({
+        host: 'kafka-api.heroku.com',
+        accept: 'application/json',
+        path: `/data/kafka/v0/clusters/${addonId}/topics`
+      })).thenResolve({
+        topics: [
+          { name: topicName, prefix: topicPrefix },
+          { name: 'bar', prefix: topicPrefix }
+        ]
+      })
+    }
+    const result = await co.wrap(clusters.topicConfig)(heroku, addonId, topicName)
+    expect(result.name).to.equal(topicName)
+  })
+
+  it('finds the topic if the prefix is specified explicitly', async () => {
+    const addonId = '1234'
+    const topicName = 'foo'
+    const topicPrefix = 'wisła-3456.'
+    const heroku = {
+      request: td.when(td.function()({
+        host: 'kafka-api.heroku.com',
+        accept: 'application/json',
+        path: `/data/kafka/v0/clusters/${addonId}/topics`
+      })).thenResolve({
+        topics: [
+          { name: topicName, prefix: topicPrefix },
+          { name: 'bar', prefix: topicPrefix }
+        ]
+      })
+    }
+    const result = await co.wrap(clusters.topicConfig)(heroku, addonId, topicPrefix + topicName)
+    expect(result.name).to.equal(topicName)
+  })
+
+  it('exits if it cannot find the topic', () => {
+    const addonId = '1234'
+    const topicName = 'foo'
+    const heroku = {
+      request: td.when(td.function()({
+        host: 'kafka-api.heroku.com',
+        accept: 'application/json',
+        path: `/data/kafka/v0/clusters/${addonId}/topics`
+      })).thenResolve({
+        topics: [
+          { name: 'bar' },
+          { name: 'baz' }
+        ]
+      })
+    }
+    expect(co.wrap(clusters.topicConfig)(heroku, addonId, topicName))
+      .to.be.rejectedWith(cli.exit.ErrorExit, `topic ${topicName} not found`)
   })
 })
