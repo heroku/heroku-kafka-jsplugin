@@ -63,17 +63,16 @@ function topicInfo (topic) {
 }
 
 function * kafkaTopic (context, heroku) {
-  yield withCluster(heroku, context.app, context.args.CLUSTER, function * (addon) {
-    let topicName = context.args.TOPIC
-    let topic = yield topicConfig(heroku, addon.id, topicName)
-    if (topic.partitions < 1) {
-      cli.exit(1, `topic ${topicName} is not available yet`)
-    } else {
-      cli.styledHeader(addon.name + ' :: ' + topicName)
-      cli.log()
-      cli.styledNameValues(topicInfo(topic))
-    }
-  })
+  let addon = yield withCluster(heroku, context.app, context.args.CLUSTER)
+  let topicName = context.args.TOPIC
+  let topic = yield topicConfig(heroku, addon.id, topicName)
+  if (topic.partitions < 1) {
+    cli.exit(1, `topic ${topicName} is not available yet`)
+  } else {
+    cli.styledHeader(addon.name + ' :: ' + topicName)
+    cli.log()
+    cli.styledNameValues(topicInfo(topic))
+  }
 }
 
 let cmd = {

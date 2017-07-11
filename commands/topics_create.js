@@ -22,37 +22,36 @@ function * createTopic (context, heroku) {
   }
   let compaction = flags['compaction'] || false
 
-  yield withCluster(heroku, context.app, context.args.CLUSTER, function * (addon) {
-    let addonInfo = yield fetchProvisionedInfo(heroku, addon)
+  let addon = yield withCluster(heroku, context.app, context.args.CLUSTER)
+  let addonInfo = yield fetchProvisionedInfo(heroku, addon)
 
-    if ((!compaction || addonInfo.shared_cluster) && !retentionTimeMillis) {
-      retentionTimeMillis = addonInfo.limits.minimum_retention_ms
-    }
+  if ((!compaction || addonInfo.shared_cluster) && !retentionTimeMillis) {
+    retentionTimeMillis = addonInfo.limits.minimum_retention_ms
+  }
 
-    let msg = `Creating topic ${context.args.TOPIC} with compaction ${compaction ? 'enabled' : 'disabled'}`
-    if (retentionTimeMillis) {
-      msg += ` and retention time ${formatIntervalFromMilliseconds(retentionTimeMillis)}`
-    }
-    msg += ` on ${addon.name}`
+  let msg = `Creating topic ${context.args.TOPIC} with compaction ${compaction ? 'enabled' : 'disabled'}`
+  if (retentionTimeMillis) {
+    msg += ` and retention time ${formatIntervalFromMilliseconds(retentionTimeMillis)}`
+  }
+  msg += ` on ${addon.name}`
 
-    yield cli.action(msg, co(function * () {
-      return yield request(heroku, {
-        method: 'POST',
-        body: {
-          topic: {
-            name: context.args.TOPIC,
-            retention_time_ms: retentionTimeMillis,
-            replication_factor: flags['replication-factor'],
-            partition_count: flags['partitions'],
-            compaction: compaction
-          }
-        },
-        path: `/data/kafka/${VERSION}/clusters/${addon.id}/topics`
-      })
-    }))
+  yield cli.action(msg, co(function * () {
+    return yield request(heroku, {
+      method: 'POST',
+      body: {
+        topic: {
+          name: context.args.TOPIC,
+          retention_time_ms: retentionTimeMillis,
+          replication_factor: flags['replication-factor'],
+          partition_count: flags['partitions'],
+          compaction: compaction
+        }
+      },
+      path: `/data/kafka/${VERSION}/clusters/${addon.id}/topics`
+    })
+  }))
 
-    cli.log(`Use \`heroku kafka:topics:info ${context.args.TOPIC}\` to monitor your topic.`)
-  })
+  cli.log(`Use \`heroku kafka:topics:info ${context.args.TOPIC}\` to monitor your topic.`)
 }
 
 let cmd = {

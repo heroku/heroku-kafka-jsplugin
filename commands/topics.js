@@ -10,45 +10,44 @@ let request = require('../lib/clusters').request
 const VERSION = 'v0'
 
 function * listTopics (context, heroku) {
-  yield withCluster(heroku, context.app, context.args.CLUSTER, function * (addon) {
-    let topics = yield request(heroku, {
-      path: `/data/kafka/${VERSION}/clusters/${addon.id}/topics`
-    })
-    cli.styledHeader('Kafka Topics on ' + (topics.attachment_name || 'HEROKU_KAFKA'))
+  let addon = yield withCluster(heroku, context.app, context.args.CLUSTER)
+  let topics = yield request(heroku, {
+    path: `/data/kafka/${VERSION}/clusters/${addon.id}/topics`
+  })
+  cli.styledHeader('Kafka Topics on ' + (topics.attachment_name || 'HEROKU_KAFKA'))
 
-    if (topics.topics.length !== 0 && topics.limits && topics.limits.max_topics) {
-      cli.log(`${topics.topics.length} / ${topics.limits.max_topics} topics`)
-    }
+  if (topics.topics.length !== 0 && topics.limits && topics.limits.max_topics) {
+    cli.log(`${topics.topics.length} / ${topics.limits.max_topics} topics`)
+  }
 
-    let filtered = topics.topics.filter((t) => t.name !== '__consumer_offsets')
-    let topicData = filtered.map((t) => {
-      return {
-        name: t.name,
-        messages: `${humanize.intComma(t.messages_in_per_second)}/sec`,
-        bytes: `${humanize.fileSize(t.bytes_in_per_second)}/sec`
-      }
-    })
-    cli.log()
-    if (topicData.length === 0) {
-      cli.log('No topics found on this Kafka cluster.')
-
-      if (topics.limits && topics.limits.max_topics) {
-        cli.log(`Use heroku kafka:topics:create to create a topic (limit ${topics.limits.max_topics}).`)
-      } else {
-        cli.log('Use heroku kafka:topics:create to create a topic.')
-      }
-    } else {
-      cli.table(topicData,
-        {
-          columns: [
-            {key: 'name', label: 'Name'},
-            {key: 'messages', label: 'Messages'},
-            {key: 'bytes', label: 'Traffic'}
-          ]
-        }
-      )
+  let filtered = topics.topics.filter((t) => t.name !== '__consumer_offsets')
+  let topicData = filtered.map((t) => {
+    return {
+      name: t.name,
+      messages: `${humanize.intComma(t.messages_in_per_second)}/sec`,
+      bytes: `${humanize.fileSize(t.bytes_in_per_second)}/sec`
     }
   })
+  cli.log()
+  if (topicData.length === 0) {
+    cli.log('No topics found on this Kafka cluster.')
+
+    if (topics.limits && topics.limits.max_topics) {
+      cli.log(`Use heroku kafka:topics:create to create a topic (limit ${topics.limits.max_topics}).`)
+    } else {
+      cli.log('Use heroku kafka:topics:create to create a topic.')
+    }
+  } else {
+    cli.table(topicData,
+      {
+        columns: [
+          {key: 'name', label: 'Name'},
+          {key: 'messages', label: 'Messages'},
+          {key: 'bytes', label: 'Traffic'}
+        ]
+      }
+    )
+  }
 }
 
 let cmd = {

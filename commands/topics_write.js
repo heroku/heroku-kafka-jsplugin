@@ -14,62 +14,61 @@ const CLIENT_ID = 'heroku-write-producer'
 const IDLE_TIMEOUT = 1000
 
 function * write (context, heroku) {
-  yield withCluster(heroku, context.app, context.args.CLUSTER, function * (addon) {
-    if (isPrivate(addon)) {
-      cli.exit(1, '`kafka:topics:write` is not available in Heroku Private Spaces')
-    }
+  let addon = yield withCluster(heroku, context.app, context.args.CLUSTER)
+  if (isPrivate(addon)) {
+    cli.exit(1, '`kafka:topics:write` is not available in Heroku Private Spaces')
+  }
 
-    let appConfig = yield heroku.get(`/apps/${context.app}/config-vars`)
-    let attachment = yield heroku.get(`/apps/${context.app}/addon-attachments/${addon.name}`)
-    let config = clusterConfig(attachment, appConfig)
+  let appConfig = yield heroku.get(`/apps/${context.app}/config-vars`)
+  let attachment = yield heroku.get(`/apps/${context.app}/addon-attachments/${addon.name}`)
+  let config = clusterConfig(attachment, appConfig)
 
-    let producer = new kafka.Producer({
-      idleTimeout: IDLE_TIMEOUT,
-      clientId: CLIENT_ID,
-      connectionString: config.url,
-      ssl: {
-        clientCert: config.clientCert,
-        clientCertKey: config.clientCertKey
-      },
-      logger: {
-        logLevel: 0
-      }
-    })
-
-    try {
-      yield producer.init()
-    } catch (e) {
-      debug(e)
-      cli.exit(1, 'Could not connect to kafka')
-    }
-
-    var topicName = context.args.TOPIC
-    if (config.prefix && !topicName.startsWith(config.prefix)) {
-      topicName = config.prefix + topicName
-    }
-
-    const partition = parseInt(context.flags.partition) || 0
-    const key = context.flags.key
-
-    const message = { value: context.args.MESSAGE }
-    if (key) {
-      message.key = key
-    }
-
-    const payload = {
-      topic: topicName,
-      partition: partition,
-      message: message
-    }
-
-    try {
-      yield producer.send(payload)
-      producer.end()
-    } catch (e) {
-      debug(e)
-      cli.exit(1, 'Could not write to topic')
+  let producer = new kafka.Producer({
+    idleTimeout: IDLE_TIMEOUT,
+    clientId: CLIENT_ID,
+    connectionString: config.url,
+    ssl: {
+      clientCert: config.clientCert,
+      clientCertKey: config.clientCertKey
+    },
+    logger: {
+      logLevel: 0
     }
   })
+
+  try {
+    yield producer.init()
+  } catch (e) {
+    debug(e)
+    cli.exit(1, 'Could not connect to kafka')
+  }
+
+  var topicName = context.args.TOPIC
+  if (config.prefix && !topicName.startsWith(config.prefix)) {
+    topicName = config.prefix + topicName
+  }
+
+  const partition = parseInt(context.flags.partition) || 0
+  const key = context.flags.key
+
+  const message = { value: context.args.MESSAGE }
+  if (key) {
+    message.key = key
+  }
+
+  const payload = {
+    topic: topicName,
+    partition: partition,
+    message: message
+  }
+
+  try {
+    yield producer.send(payload)
+    producer.end()
+  } catch (e) {
+    debug(e)
+    cli.exit(1, 'Could not write to topic')
+  }
 }
 
 let cmd = {

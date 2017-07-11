@@ -1,5 +1,5 @@
 'use strict'
-/* eslint standard/no-callback-literal: off, no-unused-expressions: off */
+/* eslint no-unused-expressions: off */
 
 const expect = require('chai').expect
 const mocha = require('mocha')
@@ -13,8 +13,8 @@ const cli = require('heroku-cli-util')
 const nock = require('nock')
 
 let planName
-const withCluster = function * (heroku, app, cluster, callback) {
-  yield callback({ name: 'kafka-1', id: '00000000-0000-0000-0000-000000000000', plan: { name: planName } })
+const withCluster = async function (heroku, app, cluster) {
+  return { name: 'kafka-1', id: '00000000-0000-0000-0000-000000000000', plan: { name: planName } }
 }
 
 const cmd = proxyquire('../../commands/credentials_rotate', {

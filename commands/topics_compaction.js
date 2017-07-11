@@ -17,42 +17,41 @@ function * compaction (context, heroku) {
     cli.exit(1, `Unknown value '${context.args.VALUE}': must be 'on' or 'enable' to enable, or 'off' or 'disable' to disable`)
   }
 
-  yield withCluster(heroku, context.app, context.args.CLUSTER, function * (addon) {
-    const topicName = context.args.TOPIC
-    let [ topicInfo, addonInfo ] = yield [
-      topicConfig(heroku, addon.id, topicName),
-      fetchProvisionedInfo(heroku, addon)
-    ]
-    let retentionTime
-    if (enabled) {
-      retentionTime = addonInfo.capabilities.supports_mixed_cleanup_policy ? topicInfo.retention_time_ms : null
-    } else {
-      retentionTime = topicInfo.retention_time_ms || addonInfo.limits.minimum_retention_ms
-    }
-    let cleanupPolicy = {
-      compaction: enabled,
-      retention_time_ms: retentionTime
-    }
+  let addon = yield withCluster(heroku, context.app, context.args.CLUSTER)
+  const topicName = context.args.TOPIC
+  let [ topicInfo, addonInfo ] = yield [
+    topicConfig(heroku, addon.id, topicName),
+    fetchProvisionedInfo(heroku, addon)
+  ]
+  let retentionTime
+  if (enabled) {
+    retentionTime = addonInfo.capabilities.supports_mixed_cleanup_policy ? topicInfo.retention_time_ms : null
+  } else {
+    retentionTime = topicInfo.retention_time_ms || addonInfo.limits.minimum_retention_ms
+  }
+  let cleanupPolicy = {
+    compaction: enabled,
+    retention_time_ms: retentionTime
+  }
 
-    let msg = `${enabled ? 'Enabling' : 'Disabling'} compaction`
-    if (enabled && !addonInfo.capabilities.supports_mixed_cleanup_policy) {
-      msg += ' and disabling time-based retention'
-    } else if (cleanupPolicy.retention_time_ms !== topicInfo.retention_time_ms) {
-      msg += ` and setting retention time to ${formatIntervalFromMilliseconds(retentionTime)}`
-    }
-    msg += ` for topic ${context.args.TOPIC} on ${addon.name}`
+  let msg = `${enabled ? 'Enabling' : 'Disabling'} compaction`
+  if (enabled && !addonInfo.capabilities.supports_mixed_cleanup_policy) {
+    msg += ' and disabling time-based retention'
+  } else if (cleanupPolicy.retention_time_ms !== topicInfo.retention_time_ms) {
+    msg += ` and setting retention time to ${formatIntervalFromMilliseconds(retentionTime)}`
+  }
+  msg += ` for topic ${context.args.TOPIC} on ${addon.name}`
 
-    yield cli.action(msg, co(function * () {
-      return yield request(heroku, {
-        method: 'PUT',
-        body: {
-          topic: Object.assign({ name: topicName }, cleanupPolicy)
-        },
-        path: `/data/kafka/${VERSION}/clusters/${addon.id}/topics/${topicName}`
-      })
-    }))
-    cli.log(`Use \`heroku kafka:topics:info ${context.args.TOPIC}\` to monitor your topic.`)
-  })
+  yield cli.action(msg, co(function * () {
+    return yield request(heroku, {
+      method: 'PUT',
+      body: {
+        topic: Object.assign({ name: topicName }, cleanupPolicy)
+      },
+      path: `/data/kafka/${VERSION}/clusters/${addon.id}/topics/${topicName}`
+    })
+  }))
+  cli.log(`Use \`heroku kafka:topics:info ${context.args.TOPIC}\` to monitor your topic.`)
 }
 
 module.exports = {
