@@ -3,11 +3,19 @@
 const expect = require('chai').expect
 const mocha = require('mocha')
 const describe = mocha.describe
+const beforeEach = mocha.beforeEach
 const it = mocha.it
+
+const cli = require('heroku-cli-util')
 
 const utilizationBar = require('../../lib/utilizationBar')
 
 describe('utilizationBar', function () {
+  beforeEach(() => {
+    cli.mockConsole()
+    cli.color.enabled = true
+  })
+
   const cases = [
     [0, 100, '[··········]', '[···············]'],
     [100, 100, '[\u001b[34m██████████\u001b[39m]', '[\u001b[34m███████████████\u001b[39m]'],
