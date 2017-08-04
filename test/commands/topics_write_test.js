@@ -55,6 +55,7 @@ describe('kafka:topics:write', () => {
     KAFKA_CLIENT_CERT: 'hunter3',
     KAFKA_CLIENT_CERT_KEY: 'hunter4'
   }
+  let stockConfigVars = Object.keys(config)
 
   beforeEach(() => {
     planName = 'heroku-kafka:beta-standard-2'
@@ -85,7 +86,7 @@ describe('kafka:topics:write', () => {
   it('warns and exits with an error if it cannot connect', () => {
     api.get('/apps/myapp/config-vars').reply(200, config)
     api.get('/apps/myapp/addon-attachments/kafka-1')
-      .reply(200, { name: 'KAFKA' })
+      .reply(200, { name: 'KAFKA', config_vars: stockConfigVars, app: { name: 'sushi' } })
     producer.init = () => { throw new Error('oh snap') }
 
     return expectExit(1, cmd.run({app: 'myapp', args: { TOPIC: 'topic-1' }}))
@@ -96,7 +97,7 @@ describe('kafka:topics:write', () => {
   it('warns and exits with an error if it cannot send the message', () => {
     api.get('/apps/myapp/config-vars').reply(200, config)
     api.get('/apps/myapp/addon-attachments/kafka-1')
-      .reply(200, { name: 'KAFKA' })
+      .reply(200, { name: 'KAFKA', config_vars: stockConfigVars, app: { name: 'sushi' } })
     producer.send = () => { throw new Error('oh snap') }
 
     return expectExit(1, cmd.run({app: 'myapp', args: { TOPIC: 'topic-1' }, flags: {}}))
@@ -107,7 +108,7 @@ describe('kafka:topics:write', () => {
   it('sends a message', () => {
     api.get('/apps/myapp/config-vars').reply(200, config)
     api.get('/apps/myapp/addon-attachments/kafka-1')
-      .reply(200, { name: 'KAFKA' })
+      .reply(200, { name: 'KAFKA', config_vars: stockConfigVars, app: { name: 'sushi' } })
 
     producer.send = (payload) => {
       expect(payload.topic).to.equal('topic-1')
@@ -132,7 +133,7 @@ describe('kafka:topics:write', () => {
     withPrefixConfig.KAFKA_PREFIX = 'nile-1234.'
     api.get('/apps/myapp/config-vars').reply(200, withPrefixConfig)
     api.get('/apps/myapp/addon-attachments/kafka-1')
-      .reply(200, { name: 'KAFKA' })
+      .reply(200, { name: 'KAFKA', config_vars: stockConfigVars.concat('KAFKA_PREFIX'), app: { name: 'sushi' } })
 
     producer.send = (payload) => {
       expect(payload.topic).to.equal('nile-1234.topic-1')
@@ -157,7 +158,7 @@ describe('kafka:topics:write', () => {
     withPrefixConfig.KAFKA_PREFIX = 'nile-1234.'
     api.get('/apps/myapp/config-vars').reply(200, withPrefixConfig)
     api.get('/apps/myapp/addon-attachments/kafka-1')
-      .reply(200, { name: 'KAFKA' })
+      .reply(200, { name: 'KAFKA', config_vars: stockConfigVars.concat('KAFKA_PREFIX'), app: { name: 'sushi' } })
 
     producer.send = (payload) => {
       expect(payload.topic).to.equal('nile-1234.topic-1')
@@ -179,7 +180,7 @@ describe('kafka:topics:write', () => {
   it('uses given partition if specified', () => {
     api.get('/apps/myapp/config-vars').reply(200, config)
     api.get('/apps/myapp/addon-attachments/kafka-1')
-      .reply(200, { name: 'KAFKA' })
+      .reply(200, { name: 'KAFKA', config_vars: stockConfigVars, app: { name: 'sushi' } })
 
     producer.send = (payload) => {
       expect(payload.topic).to.equal('topic-1')
@@ -201,7 +202,7 @@ describe('kafka:topics:write', () => {
   it('uses given message key if specified', () => {
     api.get('/apps/myapp/config-vars').reply(200, config)
     api.get('/apps/myapp/addon-attachments/kafka-1')
-      .reply(200, { name: 'KAFKA' })
+      .reply(200, { name: 'KAFKA', config_vars: stockConfigVars, app: { name: 'sushi' } })
 
     producer.send = (payload) => {
       expect(payload.topic).to.equal('topic-1')

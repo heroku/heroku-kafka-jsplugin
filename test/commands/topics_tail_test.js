@@ -53,6 +53,7 @@ describe('kafka:topics:tail', () => {
     KAFKA_CLIENT_CERT: 'hunter3',
     KAFKA_CLIENT_CERT_KEY: 'hunter4'
   }
+  let stockConfigVars = Object.keys(config)
 
   beforeEach(() => {
     planName = 'heroku-kafka:beta-standard-2'
@@ -87,7 +88,7 @@ describe('kafka:topics:tail', () => {
   it('warns and exits with an error if it cannot connect', () => {
     api.get('/apps/myapp/config-vars').reply(200, config)
     api.get('/apps/myapp/addon-attachments/kafka-1')
-      .reply(200, { name: 'KAFKA' })
+      .reply(200, { name: 'KAFKA', config_vars: stockConfigVars, app: { name: 'sushi' } })
     consumer.init = () => { throw new Error('oh snap') }
 
     return cmd.run({app: 'myapp', args: { TOPIC: 'topic-1' }})
@@ -102,7 +103,7 @@ describe('kafka:topics:tail', () => {
   it('warns and exits with an error if it cannot subscribe', () => {
     api.get('/apps/myapp/config-vars').reply(200, config)
     api.get('/apps/myapp/addon-attachments/kafka-1')
-      .reply(200, { name: 'KAFKA' })
+      .reply(200, { name: 'KAFKA', config_vars: stockConfigVars, app: { name: 'sushi' } })
     consumer.subscribe = () => { throw new Error('oh snap') }
 
     return cmd.run({app: 'myapp', args: { TOPIC: 'topic-1' }})
@@ -117,7 +118,7 @@ describe('kafka:topics:tail', () => {
   it('tails a topic and prints the results', () => {
     api.get('/apps/myapp/config-vars').reply(200, config)
     api.get('/apps/myapp/addon-attachments/kafka-1')
-      .reply(200, { name: 'KAFKA' })
+      .reply(200, { name: 'KAFKA', config_vars: stockConfigVars, app: { name: 'sushi' } })
 
     consumer.subscribe = (topic, callback) => {
       callback([
@@ -141,7 +142,7 @@ describe('kafka:topics:tail', () => {
     }, config)
     api.get('/apps/myapp/config-vars').reply(200, configWithPrefix)
     api.get('/apps/myapp/addon-attachments/kafka-1')
-      .reply(200, { name: 'KAFKA' })
+      .reply(200, { name: 'KAFKA', config_vars: stockConfigVars.concat('KAFKA_PREFIX'), app: { name: 'sushi' } })
 
     consumer.subscribe = (topic, callback) => {
       expect(topic).to.equal('nile-1234.topic-1')
@@ -166,7 +167,7 @@ describe('kafka:topics:tail', () => {
     }, config)
     api.get('/apps/myapp/config-vars').reply(200, configWithPrefix)
     api.get('/apps/myapp/addon-attachments/kafka-1')
-      .reply(200, { name: 'KAFKA' })
+      .reply(200, { name: 'KAFKA', config_vars: stockConfigVars.concat('KAFKA_PREFIX'), app: { name: 'sushi' } })
 
     consumer.subscribe = (topic, callback) => {
       expect(topic).to.equal('nile-1234.topic-1')

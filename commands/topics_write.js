@@ -20,7 +20,8 @@ function * write (context, heroku) {
     }
 
     let appConfig = yield heroku.get(`/apps/${context.app}/config-vars`)
-    let attachment = yield heroku.get(`/apps/${context.app}/addon-attachments/${addon.name}`)
+    let attachment = yield heroku.get(`/apps/${context.app}/addon-attachments/${addon.name}`,
+      { headers: { 'accept-inclusion': 'config_vars' } })
     let config = clusterConfig(attachment, appConfig)
 
     let producer = new kafka.Producer({
