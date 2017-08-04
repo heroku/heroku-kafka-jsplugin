@@ -153,3 +153,87 @@ describe('formatIntervalFromMilliseconds', function () {
     })
   })
 })
+
+describe('clusterConfig', () => {
+  it('pulls out the correct values out of the config', () => {
+    const attachment = {
+      name: 'kafka',
+      app: { name: 'sushi' },
+      config_vars: [
+        'KAFKA_URL', 'KAFKA_TRUSTED_CERT', 'KAFKA_CLIENT_CERT', 'KAFKA_CLIENT_CERT_KEY'
+      ]
+    }
+    const config = {
+      'KAFKA_URL': 'kafka://example.com',
+      'KAFKA_TRUSTED_CERT': '<trusted cert>',
+      'KAFKA_CLIENT_CERT': '<client cert>',
+      'KAFKA_CLIENT_CERT_KEY': '<client cert key>'
+    }
+    const result = shared.clusterConfig(attachment, config)
+    expect(result.url).to.equal('kafka://example.com')
+    expect(result.trustedCert).to.equal('<trusted cert>')
+    expect(result.clientCert).to.equal('<client cert>')
+    expect(result.clientCertKey).to.equal('<client cert key>')
+    expect(result.prefix).to.equal(undefined)
+  })
+
+  it('includes a prefix if one is present', () => {
+    const attachment = {
+      name: 'kafka',
+      app: { name: 'sushi' },
+      config_vars: [
+        'KAFKA_URL', 'KAFKA_TRUSTED_CERT', 'KAFKA_CLIENT_CERT', 'KAFKA_CLIENT_CERT_KEY', 'KAFKA_PREFIX'
+      ]
+    }
+    const config = {
+      'KAFKA_URL': 'kafka://example.com',
+      'KAFKA_TRUSTED_CERT': '<trusted cert>',
+      'KAFKA_CLIENT_CERT': '<client cert>',
+      'KAFKA_CLIENT_CERT_KEY': '<client cert key>',
+      'KAFKA_PREFIX': 'vistula-1000.'
+    }
+    const result = shared.clusterConfig(attachment, config)
+    expect(result.url).to.equal('kafka://example.com')
+    expect(result.trustedCert).to.equal('<trusted cert>')
+    expect(result.clientCert).to.equal('<client cert>')
+    expect(result.clientCertKey).to.equal('<client cert key>')
+    expect(result.prefix).to.equal('vistula-1000.')
+  })
+
+  it('raises if an expected key is missing in the attachment metadata', () => {
+    const attachment = {
+      name: 'kafka',
+      app: { name: 'sushi' },
+      config_vars: [
+        'KAFKA_URL', 'KAFKA_TRUSTED_CERT', 'KAFKA_CLIENT_CERT_KEY'
+      ]
+    }
+    const config = {
+      'KAFKA_URL': 'kafka://example.com',
+      'KAFKA_TRUSTED_CERT': '<trusted cert>',
+      'KAFKA_CLIENT_CERT': '<client cert>',
+      'KAFKA_CLIENT_CERT_KEY': '<client cert key>',
+      'KAFKA_PREFIX': 'vistula-1000.'
+    }
+    expect(() => shared.clusterConfig(attachment, config))
+      .to.throw(`Could not find CLIENT_CERT for ${attachment.name} on ${attachment.app.name}`)
+  })
+
+  it('raises if an expected value is missing in the app environment', () => {
+    const attachment = {
+      name: 'kafka',
+      app: { name: 'sushi' },
+      config_vars: [
+        'KAFKA_URL', 'KAFKA_TRUSTED_CERT', 'KAFKA_CLIENT_CERT', 'KAFKA_CLIENT_CERT_KEY'
+      ]
+    }
+    const config = {
+      'KAFKA_URL': 'kafka://example.com',
+      'KAFKA_TRUSTED_CERT': '<trusted cert>',
+      'KAFKA_CLIENT_CERT_KEY': '<client cert key>',
+      'KAFKA_PREFIX': 'vistula-1000.'
+    }
+    expect(() => shared.clusterConfig(attachment, config))
+      .to.throw(`Config value CLIENT_CERT for ${attachment.name} on ${attachment.app.name} is empty`)
+  })
+})
