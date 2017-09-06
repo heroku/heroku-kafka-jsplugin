@@ -7,7 +7,6 @@ exports.topic = {
 exports.commands = [
   require('./credentials_rotate.js'),
   require('./topics_compaction.js'),
-  require('./topics_info.js'),
   require('./topics_replication_factor.js'),
   require('./topics_retention_time.js'),
   require('./consumer_groups.js'),
