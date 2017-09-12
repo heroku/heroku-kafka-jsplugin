@@ -19,6 +19,9 @@ function * listTopics (context, heroku) {
     if (topics.topics.length !== 0 && topics.limits && topics.limits.max_topics) {
       cli.log(`${topics.topics.length} / ${topics.limits.max_topics} topics`)
     }
+    if (topics.prefix) {
+      cli.log(`prefix: ${topics.prefix}`)
+    }
 
     let filtered = topics.topics.filter((t) => t.name !== '__consumer_offsets')
     let topicData = filtered.map((t) => {
@@ -57,6 +60,9 @@ let cmd = {
   description: 'lists available Kafka topics',
   help: `
     Lists available Kafka topics.
+
+    Note that some plans use a topic prefix; to learn more,
+    visit https://devcenter.heroku.com/articles/multi-tenant-kafka-on-heroku#connecting-kafka-prefix
 
     Examples:
 

@@ -71,6 +71,38 @@ Retention:          24 hours
       .then(() => expect(cli.stderr).to.be.empty)
   })
 
+  it('displays a topic prefix if one is specified', () => {
+    kafka.get(topicsUrl('00000000-0000-0000-0000-000000000000')).reply(200, {
+      attachment_name: 'HEROKU_KAFKA_BLUE_URL',
+      topics: [
+        {
+          name: 'topic-1',
+          prefix: 'wisła-12345.',
+          messages_in_per_second: 0,
+          bytes_in_per_second: 0,
+          bytes_out_per_second: 0,
+          replication_factor: 3,
+          partitions: 3,
+          compaction: false,
+          retention_time_ms: 86400000
+        }
+      ]
+    })
+
+    return cmd.run({app: 'myapp', args: { TOPIC: 'topic-1' }})
+      .then(() => expect(cli.stdout).to.equal(`=== kafka-1 :: topic-1
+
+Topic Prefix:       wisła-12345.
+Producers:          0 messages/second (0 bytes/second) total
+Consumers:          0 bytes/second total
+Partitions:         3 partitions
+Replication Factor: 3
+Compaction:         Compaction is disabled for topic-1
+Retention:          24 hours
+`))
+      .then(() => expect(cli.stderr).to.be.empty)
+  })
+
   it('tells user the topic is not ready', () => {
     kafka.get(topicsUrl('00000000-0000-0000-0000-000000000000')).reply(200, {
       attachment_name: 'HEROKU_KAFKA_BLUE_URL',
