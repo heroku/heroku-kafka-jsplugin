@@ -44,7 +44,7 @@ function topicInfo (topic) {
   if (topic.prefix) {
     lines.unshift({
       name: 'Topic Prefix',
-      values: [ topic.prefix ]
+      values: [ cli.color.green(topic.prefix) ]
     })
   }
 

@@ -16,11 +16,17 @@ function * listTopics (context, heroku) {
     })
     cli.styledHeader('Kafka Topics on ' + (topics.attachment_name || 'HEROKU_KAFKA'))
 
-    if (topics.topics.length !== 0 && topics.limits && topics.limits.max_topics) {
-      cli.log(`${topics.topics.length} / ${topics.limits.max_topics} topics`)
-    }
-    if (topics.prefix) {
-      cli.log(`prefix: ${topics.prefix}`)
+    if (topics.topics.length !== 0) {
+      const extraInfo = []
+      if (topics.limits && topics.limits.max_topics) {
+        extraInfo.push(`${topics.topics.length} / ${topics.limits.max_topics} topics`)
+      }
+      if (topics.prefix) {
+        extraInfo.push(`prefix: ${cli.color.green(topics.prefix)}`)
+      }
+      if (extraInfo.length > 0) {
+        cli.log(extraInfo.join('; '))
+      }
     }
 
     let filtered = topics.topics.filter((t) => t.name !== '__consumer_offsets')
