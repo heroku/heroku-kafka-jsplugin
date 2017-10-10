@@ -103,7 +103,7 @@ describe('kafka:topics:create', () => {
     )
       .then(() => {
         expect(cli.stderr).to.equal('Creating topic topic-1 with compaction disabled and retention time 10 milliseconds on kafka-1... done\n')
-        expect(cli.stdout).to.equal(`Use \`heroku kafka:topics:info topic-1\` to monitor your topic.\nYour topic is using the prefix '${prefix}'. Learn more in Dev Center:\n  https://devcenter.heroku.com/articles/multi-tenant-kafka-on-heroku#connecting-kafka-prefix\n`)
+        expect(cli.stdout).to.equal(`Use \`heroku kafka:topics:info topic-1\` to monitor your topic.\nYour topic is using the prefix ${prefix}. Learn more in Dev Center:\n  https://devcenter.heroku.com/articles/multi-tenant-kafka-on-heroku#connecting-kafka-prefix\n`)
       })
   })
 

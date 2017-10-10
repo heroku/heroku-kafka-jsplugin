@@ -53,7 +53,7 @@ function * createTopic (context, heroku) {
 
     cli.log(`Use \`heroku kafka:topics:info ${context.args.TOPIC}\` to monitor your topic.`)
     if (addonInfo.topic_prefix) {
-      cli.log(`Your topic is using the prefix '${addonInfo.topic_prefix}'. Learn more in Dev Center:`)
+      cli.log(`Your topic is using the prefix ${cli.color.green(addonInfo.topic_prefix)}. Learn more in Dev Center:`)
       cli.log('  https://devcenter.heroku.com/articles/multi-tenant-kafka-on-heroku#connecting-kafka-prefix')
     }
   })
