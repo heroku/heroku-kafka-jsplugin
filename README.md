@@ -39,8 +39,6 @@ $ yarn
 $ heroku plugins:link
 ```
 
-If you add a new command, change a command's args/flags or other metadata, you need to re-run `plugins:link`
-
 
 ## Publishing
 
