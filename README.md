@@ -36,19 +36,14 @@ For normal development, the initial setup is:
 ``` sh-session
 # ensure node 8.x is installed
 $ yarn
-$ heroku plugins:link .
+$ heroku plugins:link
 ```
 
 If you add a new command, change a command's args/flags or other metadata, you need to re-run `plugins:link`
 
 
-## Deploying
+## Publishing
 
-First pick the new version number X.Y.Z based on the current
-version. Following SemVer, fixes should bump the patch version, new
-commands should bump the minor, and major and breaking changes should
-bump the major. Avoid breaking changes and be sure to discuss them
-with Product first.
-
-Deploy the actual release with `npm run release`, which will run tests,
-tag, push to git, and publish to `npm`.
+To publish new versions, see
+[https://github.com/heroku/dod-ops/blob/master/playbooks/cli-plugins.md](the
+data plugin documentation).
