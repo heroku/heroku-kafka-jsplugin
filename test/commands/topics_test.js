@@ -102,6 +102,32 @@ topic-2  12/sec    3 bytes/sec
         .then(() => expect(cli.stderr).to.be.empty)
     })
 
+    it('includes prefix information if one exists', () => {
+      const prefix = 'russian-12345.'
+      kafka.get(topicsUrl('00000000-0000-0000-0000-000000000000')).reply(200, {
+        attachment_name: 'HEROKU_KAFKA_BLUE_URL',
+        prefix,
+        topics: [
+          { name: 'topic-1', messages_in_per_second: 10.0, bytes_in_per_second: 0 },
+          { name: 'topic-2', messages_in_per_second: 12.0, bytes_in_per_second: 3 }
+        ],
+        limits: {
+          max_topics: 10
+        }
+      })
+
+      return cmd.run({app: 'myapp', args: {}})
+        .then(() => expect(cli.stdout).to.equal(`=== Kafka Topics on HEROKU_KAFKA_BLUE_URL
+2 / 10 topics; prefix: ${prefix}
+
+Name     Messages  Traffic
+───────  ────────  ───────────
+topic-1  10/sec    0 bytes/sec
+topic-2  12/sec    3 bytes/sec
+`))
+        .then(() => expect(cli.stderr).to.be.empty)
+    })
+
     it('omits information about the special __consumer_offsets topic', () => {
       kafka.get(topicsUrl('00000000-0000-0000-0000-000000000000')).reply(200, {
         attachment_name: 'HEROKU_KAFKA_BLUE_URL',

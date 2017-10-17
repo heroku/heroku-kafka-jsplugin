@@ -41,6 +41,13 @@ function topicInfo (topic) {
     }
   ]
 
+  if (topic.prefix) {
+    lines.unshift({
+      name: 'Topic Prefix',
+      values: [ cli.color.green(topic.prefix) ]
+    })
+  }
+
   if (topic.compaction) {
     lines.push({
       name: 'Compaction',
@@ -85,7 +92,10 @@ let cmd = {
     { name: 'CLUSTER', optional: true }
   ],
   help: `
-    Shows information about a topic in your Kafka cluster
+    Shows information about a topic in your Kafka cluster.
+
+    Note that some plans use a topic prefix; to learn more,
+    visit https://devcenter.heroku.com/articles/multi-tenant-kafka-on-heroku#connecting-kafka-prefix
 
     Examples:
 

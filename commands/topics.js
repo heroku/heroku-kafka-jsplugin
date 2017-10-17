@@ -16,8 +16,17 @@ function * listTopics (context, heroku) {
     })
     cli.styledHeader('Kafka Topics on ' + (topics.attachment_name || 'HEROKU_KAFKA'))
 
-    if (topics.topics.length !== 0 && topics.limits && topics.limits.max_topics) {
-      cli.log(`${topics.topics.length} / ${topics.limits.max_topics} topics`)
+    if (topics.topics.length !== 0) {
+      const extraInfo = []
+      if (topics.limits && topics.limits.max_topics) {
+        extraInfo.push(`${topics.topics.length} / ${topics.limits.max_topics} topics`)
+      }
+      if (topics.prefix) {
+        extraInfo.push(`prefix: ${cli.color.green(topics.prefix)}`)
+      }
+      if (extraInfo.length > 0) {
+        cli.log(extraInfo.join('; '))
+      }
     }
 
     let filtered = topics.topics.filter((t) => t.name !== '__consumer_offsets')
@@ -57,6 +66,9 @@ let cmd = {
   description: 'lists available Kafka topics',
   help: `
     Lists available Kafka topics.
+
+    Note that some plans use a topic prefix; to learn more,
+    visit https://devcenter.heroku.com/articles/multi-tenant-kafka-on-heroku#connecting-kafka-prefix
 
     Examples:
 
