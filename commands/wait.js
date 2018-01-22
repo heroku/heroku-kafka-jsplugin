@@ -8,7 +8,7 @@ const HerokuKafkaClusters = require('../lib/clusters').HerokuKafkaClusters
 function * run (context, heroku) {
   const fetcher = require('../lib/fetcher')(heroku)
   const app = context.app
-  const cluster = context.args.cluster
+  const cluster = context.args.CLUSTER
 
   const shogun = new HerokuKafkaClusters(heroku, process.env, context)
 
