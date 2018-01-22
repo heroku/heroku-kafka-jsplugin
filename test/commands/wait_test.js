@@ -50,7 +50,7 @@ describe('kafka:wait', () => {
       .get(waitUrl('00000000-0000-0000-0000-000000000000')).reply(200, {'waiting?': true, message: 'pending'})
       .get(waitUrl('00000000-0000-0000-0000-000000000000')).reply(200, {'waiting?': false, message: 'available'})
 
-    return cmd.run({app: 'myapp', args: {cluster: 'KAFKA_URL'}, flags: {'wait-interval': '1'}})
+    return cmd.run({app: 'myapp', args: {CLUSTER: 'KAFKA_URL'}, flags: {'wait-interval': '1'}})
       .then(() => expect(cli.stdout).to.be.empty)
       .then(() => expect(cli.stderr).to.equal(`Waiting for cluster kafka-1... pending
 Waiting for cluster kafka-1... available
