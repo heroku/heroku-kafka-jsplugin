@@ -2,7 +2,6 @@
 
 const cli = require('heroku-cli-util')
 const co = require('co')
-const kafka = require('no-kafka')
 
 const debug = require('../lib/debug')
 const clusterConfig = require('../lib/shared').clusterConfig
@@ -15,6 +14,7 @@ const IDLE_TIMEOUT = 1000
 const MAX_LENGTH = 80
 
 function * tail (context, heroku) {
+  const kafka = require('no-kafka')
   yield withCluster(heroku, context.app, context.args.CLUSTER, function * (addon) {
     if (isPrivate(addon)) {
       throw new Error('`kafka:topics:tail` is not available in Heroku Private Spaces')
