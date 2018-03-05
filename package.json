@@ -14,8 +14,10 @@
     "heroku-cli-util": "6.1.17",
     "humanize-plus": "^1.8.2",
     "lodash.uniqby": "4.7.0",
-    "no-kafka": "github:hunterloftis/kafka",
     "node-spinner": "0.0.4"
+  },
+  "optionalDependencies": {
+    "no-kafka": "github:hunterloftis/kafka"
   },
   "devDependencies": {
     "chai": "^3.5.0",
