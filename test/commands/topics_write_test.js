@@ -42,7 +42,7 @@ const cmd = proxyquire('../../commands/topics_write', {
   '../lib/clusters': {
     withCluster
   },
-  'no-kafka': {
+  '@heroku/no-kafka': {
     Producer: FakeProducer
   }
 }).cmd

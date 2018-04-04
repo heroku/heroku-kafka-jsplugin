@@ -38,7 +38,7 @@ const tail = proxyquire('../../commands/topics_tail', {
   '../lib/clusters': {
     withCluster
   },
-  'no-kafka': {
+  '@heroku/no-kafka': {
     SimpleConsumer: FakeConsumer
   }
 })
