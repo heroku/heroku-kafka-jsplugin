@@ -2,6 +2,19 @@
 # yarn lockfile v1
 
 
+"@heroku/no-kafka@^2.4.1":
+  version "2.4.1"
+  resolved "https://registry.yarnpkg.com/@heroku/no-kafka/-/no-kafka-2.4.1.tgz#27a81fc3c3ae01526c7bdff5b90fa3f956bc71b0"
+  dependencies:
+    bin-protocol "^3.0.0"
+    bluebird "^3.3.3"
+    buffer-crc32 "^0.2.5"
+    hashring "^3.2.0"
+    lodash "^4.5.0"
+    nice-simple-logger "^1.0.1"
+    snappyjs "^0.6.0"
+    wrr-pool "^1.0.3"
+
 acorn-jsx@^3.0.0:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/acorn-jsx/-/acorn-jsx-3.0.1.tgz#afdf9488fb1ecefc8348f6fb22f464e32a58b36b"
@@ -2056,19 +2069,6 @@ nice-simple-logger@^1.0.1:
   resolved "https://registry.yarnpkg.com/nice-simple-logger/-/nice-simple-logger-1.0.1.tgz#0f9e648527be7be3e49ab76fa8c8c098af951bf6"
   dependencies:
     lodash "^4.3.0"
-
-no-kafka@jdxcode/kafka#snappyjs:
-  version "2.4.1"
-  resolved "https://codeload.github.com/jdxcode/kafka/tar.gz/ae8f929f83e017f054fa556c1648ec6831c371bf"
-  dependencies:
-    bin-protocol "^3.0.0"
-    bluebird "^3.3.3"
-    buffer-crc32 "^0.2.5"
-    hashring "^3.2.0"
-    lodash "^4.5.0"
-    nice-simple-logger "^1.0.1"
-    snappyjs "^0.6.0"
-    wrr-pool "^1.0.3"
 
 nock@^8.0.0:
   version "8.2.1"

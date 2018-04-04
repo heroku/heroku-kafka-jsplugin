@@ -7,6 +7,7 @@
     "url": "https://github.com/heroku/heroku-kafka-jsplugin/issues"
   },
   "dependencies": {
+    "@heroku/no-kafka": "^2.4.1",
     "co": "4.6.0",
     "co-wait": "0.0.0",
     "debug": "2.6.8",
@@ -14,7 +15,6 @@
     "heroku-cli-util": "6.1.17",
     "humanize-plus": "^1.8.2",
     "lodash.uniqby": "4.7.0",
-    "no-kafka": "jdxcode/kafka#snappyjs",
     "node-spinner": "0.0.4"
   },
   "devDependencies": {
