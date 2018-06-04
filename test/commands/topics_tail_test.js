@@ -129,9 +129,34 @@ describe('kafka:topics:tail', () => {
       tail.process.emit('SIGINT')
     }
 
-    return cmd.run({app: 'myapp', args: { TOPIC: 'topic-1' }})
+    return cmd.run({app: 'myapp', args: { TOPIC: 'topic-1' }, flags: {}})
       .then(() => {
         expect(cli.stdout).to.equal('topic-1 42 1 5 hello\ntopic-1 42 2 5 world\ntopic-1 42 3 0 NULL\n')
+        expect(cli.stderr).to.be.empty
+      })
+  })
+
+  it('tails a topic and prints the results limited by max-length flag', () => {
+    api.get('/apps/myapp/config-vars').reply(200, config)
+    api.get('/apps/myapp/addon-attachments/kafka-1')
+      .reply(200, { name: 'KAFKA', config_vars: stockConfigVars, app: { name: 'sushi' } })
+
+    consumer.subscribe = (topic, callback) => {
+      callback([
+        { offset: 1, message: { value: Buffer.from('hello, this is a slightly longer message that shows an output just a litte bit longer than 80') } },
+        { offset: 2, message: { value: Buffer.from('Hodor. Hodor hodor... Hodor hodor hodor hodor. Hodor, hodor. Hodor. Hodor, hodor, hodor. Hodor hodor?! Hodor, hodor.') } },
+        { offset: 3, message: { value: Buffer.from('world') } },
+        { offset: 4, message: { value: null } }
+      ], undefined, 42)
+      tail.process.emit('SIGINT')
+    }
+
+    return cmd.run({app: 'myapp', args: { TOPIC: 'topic-1' }, flags: { 'max-length': '100' }})
+      .then(() => {
+        expect(cli.stdout).to.equal('topic-1 42 1 93 hello, this is a slightly longer message that shows an output just a litte bit longer than 80\n' +
+                                    'topic-1 42 2 116 Hodor. Hodor hodor... Hodor hodor hodor hodor. Hodor, hodor. Hodor. Hodor, hodor, hodor. Hodor hodor\n' +
+                                    'topic-1 42 3 5 world\n' +
+                                    'topic-1 42 4 0 NULL\n')
         expect(cli.stderr).to.be.empty
       })
   })
@@ -154,7 +179,7 @@ describe('kafka:topics:tail', () => {
       tail.process.emit('SIGINT')
     }
 
-    return cmd.run({app: 'myapp', args: { TOPIC: 'topic-1' }})
+    return cmd.run({app: 'myapp', args: { TOPIC: 'topic-1' }, flags: {}})
       .then(() => {
         expect(cli.stdout).to.equal('topic-1 42 1 5 hello\ntopic-1 42 2 5 world\ntopic-1 42 3 0 NULL\n')
         expect(cli.stderr).to.be.empty
@@ -179,7 +204,7 @@ describe('kafka:topics:tail', () => {
       tail.process.emit('SIGINT')
     }
 
-    return cmd.run({app: 'myapp', args: { TOPIC: 'nile-1234.topic-1' }})
+    return cmd.run({app: 'myapp', args: { TOPIC: 'nile-1234.topic-1' }, flags: {}})
       .then(() => {
         expect(cli.stdout).to.equal('nile-1234.topic-1 42 1 5 hello\nnile-1234.topic-1 42 2 5 world\nnile-1234.topic-1 42 3 0 NULL\n')
         expect(cli.stderr).to.be.empty

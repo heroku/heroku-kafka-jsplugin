@@ -60,7 +60,7 @@ function * tail (context, heroku) {
               cli.log(context.args.TOPIC, partition, m.offset, 0, 'NULL')
               return
             }
-            let length = Math.min(buffer.length, MAX_LENGTH)
+            let length = Math.min(buffer.length, parseInt(context.flags['max-length']) || MAX_LENGTH)
             let body = buffer.toString('utf8', 0, length)
             cli.log(context.args.TOPIC, partition, m.offset, buffer.length, body)
           })
@@ -81,6 +81,9 @@ let cmd = {
     { name: 'TOPIC' },
     { name: 'CLUSTER', optional: true }
   ],
+  flags: [
+    { name: 'max-length', description: 'number of characters per message to output', hasValue: true }
+  ],
   help: `
     Tails a topic in Kafka. Note: kafka:tail is not available in Heroku Private Spaces.
 
@@ -88,6 +91,7 @@ let cmd = {
 
     $ heroku kafka:topics:tail page-visits
     $ heroku kafka:topics:tail page-visits kafka-aerodynamic-32763
+    $ heroku kafka:topics:tail page-visits --max-length 200
 `,
   needsApp: true,
   needsAuth: true,
