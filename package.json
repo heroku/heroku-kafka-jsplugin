@@ -1,7 +1,7 @@
 {
   "name": "heroku-kafka",
   "description": "heroku plugin to manage heroku kafka",
-  "version": "2.9.17",
+  "version": "2.10.0",
   "author": "Heroku kafka@heroku.com",
   "bugs": {
     "url": "https://github.com/heroku/heroku-kafka-jsplugin/issues"
