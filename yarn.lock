@@ -1434,7 +1434,7 @@ heroku-cli-util@6.1.17:
     supports-color "^3.1.2"
     tunnel-agent "^0.4.3"
 
-heroku-cli-util@8.0.12:
+heroku-cli-util@^8.0.12:
   version "8.0.12"
   resolved "https://registry.yarnpkg.com/heroku-cli-util/-/heroku-cli-util-8.0.12.tgz#a2a13126095887c16afc01e3ac0f7816ddbe2a05"
   integrity sha512-63wB17oSktlA/HzpIV/PGe8Isq5AZArT51KAW1gg54zyYRIiHOwXik93HZuuRVUaVrWvVUhItFeLgqMwAwlTsw==
@@ -3181,8 +3181,9 @@ stringify-object-es5@^2.5.0:
     is-regexp "^1.0.0"
 
 stringstream@~0.0.4:
-  version "0.0.5"
-  resolved "https://registry.yarnpkg.com/stringstream/-/stringstream-0.0.5.tgz#4e484cd4de5a0bbbee18e46307710a8a81621878"
+  version "0.0.6"
+  resolved "https://registry.yarnpkg.com/stringstream/-/stringstream-0.0.6.tgz#7880225b0d4ad10e30927d167a1d6f2fd3b33a72"
+  integrity sha512-87GEBAkegbBcweToUrdzf3eLhWNg06FJTebl4BVJz/JgWy8CvEr9dRtX5qWphiynMSQlxxi+QqN0z5T32SLlhA==
 
 strip-ansi@^3.0.0, strip-ansi@^3.0.1:
   version "3.0.1"
