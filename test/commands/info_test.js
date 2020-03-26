@@ -81,6 +81,7 @@ describe('kafka:info', () => {
       bytes_in_per_sec: 0,
       bytes_out_per_sec: 0,
       version: ['0.10.0.0'],
+      customer_encryption_key: 'arn:aws:kms:us-east-1:123456789012:key/a1b23c4d-a1b2-c3d4-e5f6-a1b2c3d4e5f6',
       created_at: '2016-11-14T14:26:20.245+00:00'
     }
     let clusterB = {
@@ -108,14 +109,15 @@ describe('kafka:info', () => {
       return cmd.run({app: 'myapp', args: {}})
         .then(() => expect(cli.stderr).to.be.empty)
         .then(() => expect(cli.stdout).to.equal(`=== KAFKA_URL, HEROKU_KAFKA_COBALT_URL
-Plan:     heroku-kafka:beta-3
-Status:   available
-Version:  0.10.0.0
-Created:  2016-11-14T14:26:20.245+00:00
-Topics:   1 topic, see heroku kafka:topics
-Messages: 0 messages/s
-Traffic:  0 bytes/s in / 0 bytes/s out
-Add-on:   kafka-1
+Plan:                    heroku-kafka:beta-3
+Status:                  available
+Version:                 0.10.0.0
+Created:                 2016-11-14T14:26:20.245+00:00
+Topics:                  1 topic, see heroku kafka:topics
+Messages:                0 messages/s
+Traffic:                 0 bytes/s in / 0 bytes/s out
+Customer Encryption Key: arn:aws:kms:us-east-1:123456789012:key/a1b23c4d-a1b2-c3d4-e5f6-a1b2c3d4e5f6
+Add-on:                  kafka-1
 
 === HEROKU_KAFKA_PURPLE_URL
 Plan:       heroku-kafka:beta-3

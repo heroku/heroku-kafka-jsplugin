@@ -74,6 +74,13 @@ function formatInfo (info) {
     })
   }
 
+  if (cluster.customer_encryption_key) {
+    lines.push({
+      name: 'Customer Encryption Key',
+      values: [cluster.customer_encryption_key]
+    })
+  }
+
   lines.push({name: 'Add-on', values: [cli.color.addon(addon.name)]})
 
   return lines
