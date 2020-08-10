@@ -1,7 +1,7 @@
 ## Heroku Kafka Plugin
 
-[![Build Status](https://travis-ci.org/heroku/heroku-kafka-jsplugin.svg?branch=master)](https://travis-ci.org/heroku/heroku-kafka-jsplugin)
-[![Coverage Status](https://coveralls.io/repos/github/heroku/heroku-kafka-jsplugin/badge.svg?branch=master)](https://coveralls.io/github/heroku/heroku-kafka-jsplugin?branch=master)
+[![Build Status](https://travis-ci.org/heroku/heroku-kafka-jsplugin.svg?branch=main)](https://travis-ci.org/heroku/heroku-kafka-jsplugin)
+[![Coverage Status](https://coveralls.io/repos/github/heroku/heroku-kafka-jsplugin/badge.svg?branch=main)](https://coveralls.io/github/heroku/heroku-kafka-jsplugin?branch=main)
 
 A plugin to manage Heroku Kafka.
 
