@@ -53,18 +53,24 @@ describe('parseDuration', function () {
 
 describe('isPrivate', function () {
   let cases = [
-    [ { plan: { name: 'beta-standard-0' } }, false ],
-    [ { plan: { name: 'beta-standard-1' } }, false ],
-    [ { plan: { name: 'beta-standard-2' } }, false ],
-    [ { plan: { name: 'beta-extended-0' } }, false ],
-    [ { plan: { name: 'beta-extended-1' } }, false ],
-    [ { plan: { name: 'beta-extended-2' } }, false ],
-    [ { plan: { name: 'beta-private-standard-0' } }, true ],
-    [ { plan: { name: 'beta-private-standard-1' } }, true ],
-    [ { plan: { name: 'beta-private-standard-2' } }, true ],
-    [ { plan: { name: 'beta-private-extended-0' } }, true ],
-    [ { plan: { name: 'beta-private-extended-1' } }, true ],
-    [ { plan: { name: 'beta-private-extended-2' } }, true ]
+    [ { plan: { name: 'standard-0' } }, false ],
+    [ { plan: { name: 'standard-1' } }, false ],
+    [ { plan: { name: 'standard-2' } }, false ],
+    [ { plan: { name: 'extended-0' } }, false ],
+    [ { plan: { name: 'extended-1' } }, false ],
+    [ { plan: { name: 'extended-2' } }, false ],
+    [ { plan: { name: 'private-standard-0' } }, true ],
+    [ { plan: { name: 'private-standard-1' } }, true ],
+    [ { plan: { name: 'private-standard-2' } }, true ],
+    [ { plan: { name: 'private-extended-0' } }, true ],
+    [ { plan: { name: 'private-extended-1' } }, true ],
+    [ { plan: { name: 'private-extended-2' } }, true ]
+    [ { plan: { name: 'shield-standard-0' } }, true ],
+    [ { plan: { name: 'shield-standard-1' } }, true ],
+    [ { plan: { name: 'shield-standard-2' } }, true ],
+    [ { plan: { name: 'shield-extended-0' } }, true ],
+    [ { plan: { name: 'shield-extended-1' } }, true ],
+    [ { plan: { name: 'shield-extended-2' } }, true ]
   ]
   cases.forEach(function (testcase) {
     let addon = testcase[0]
