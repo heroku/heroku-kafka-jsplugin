@@ -64,7 +64,7 @@ describe('isPrivate', function () {
     [ { plan: { name: 'private-standard-2' } }, true ],
     [ { plan: { name: 'private-extended-0' } }, true ],
     [ { plan: { name: 'private-extended-1' } }, true ],
-    [ { plan: { name: 'private-extended-2' } }, true ]
+    [ { plan: { name: 'private-extended-2' } }, true ],
     [ { plan: { name: 'shield-standard-0' } }, true ],
     [ { plan: { name: 'shield-standard-1' } }, true ],
     [ { plan: { name: 'shield-standard-2' } }, true ],
