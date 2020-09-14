@@ -74,17 +74,6 @@ describe('kafka:topics:tail', () => {
     tail.process = global.process
   })
 
-  it('warns and exits with an error if used with a Private Spaces cluster', () => {
-    planName = 'heroku-kafka:beta-private-standard-2'
-    return cmd.run({app: 'myapp', args: { TOPIC: 'topic-1' }})
-      .then(() => { throw new Error('expected error; got none') })
-      .catch((err) => {
-        expect(err.message).to.equal('`kafka:topics:tail` is not available in Heroku Private Spaces')
-        expect(cli.stdout).to.be.empty
-        expect(cli.stderr).to.be.empty
-      })
-  })
-
   it('warns and exits with an error if it cannot connect', () => {
     api.get('/apps/myapp/config-vars').reply(200, config)
     api.get('/apps/myapp/addon-attachments/kafka-1')
