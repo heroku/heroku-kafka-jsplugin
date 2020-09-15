@@ -8,6 +8,7 @@ const it = mocha.it
 const beforeEach = mocha.beforeEach
 const afterEach = mocha.afterEach
 const proxyquire = require('proxyquire')
+const expectExit = require('../expect_exit')
 
 const cli = require('heroku-cli-util')
 const nock = require('nock')
