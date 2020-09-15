@@ -32,7 +32,7 @@ describe('kafka:zookeeper', () => {
   }
 
   beforeEach(() => {
-    planName = 'heroku-kafka:beta-private-standard-2'
+    planName = 'heroku-kafka:private-standard-2'
     kafka = nock('https://kafka-api.heroku.com:443')
     cli.mockConsole()
     cli.exit.mock()
@@ -44,7 +44,7 @@ describe('kafka:zookeeper', () => {
   })
 
   it('warns and exits with an error if used with a non-Private Spaces cluster', () => {
-    planName = 'heroku-kafka:beta-standard-2'
+    planName = 'heroku-kafka:standard-2'
     return expectExit(1, cmd.run({app: 'myapp', args: { VALUE: 'enable' }}))
       .then(() => expect(cli.stdout).to.be.empty)
       .then(() => expect(cli.stderr).to.equal(' ▸    `kafka:zookeeper` is only available in Heroku Private Spaces\n'))
