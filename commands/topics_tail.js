@@ -62,7 +62,7 @@ function * tail (context, heroku) {
         })
       } catch (e) {
         debug(e)
-        reject(new Error('Could not subscribe to topic'))
+        cli.exit(1, 'Could not subscribe to topic')
       }
     })
   })

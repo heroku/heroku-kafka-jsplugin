@@ -80,13 +80,9 @@ describe('kafka:topics:tail', () => {
       .reply(200, { name: 'KAFKA', config_vars: stockConfigVars, app: { name: 'sushi' } })
     consumer.init = () => { throw new Error('oh snap') }
 
-    return cmd.run({app: 'myapp', args: { TOPIC: 'topic-1' }})
-      .then(() => { throw new Error('expected error; got none') })
-      .catch((err) => {
-        expect(err.message).to.equal(`Could not connect to kafka`)
-        expect(cli.stdout).to.be.empty
-        expect(cli.stderr).to.be.empty
-      })
+    return expectExit(1, cmd.run({app: 'myapp', args: { TOPIC: 'topic-1' }}))
+      .then(() => expect(cli.stdout).to.be.empty)
+      .then(() => expect(cli.stderr).to.equal(` ▸    Could not connect to kafka\n`))
   })
 
   it('warns and exits with an error if it cannot subscribe', () => {
@@ -95,13 +91,9 @@ describe('kafka:topics:tail', () => {
       .reply(200, { name: 'KAFKA', config_vars: stockConfigVars, app: { name: 'sushi' } })
     consumer.subscribe = () => { throw new Error('oh snap') }
 
-    return cmd.run({app: 'myapp', args: { TOPIC: 'topic-1' }})
-      .then(() => { throw new Error('expected error; got none') })
-      .catch((err) => {
-        expect(err.message).to.equal('Could not subscribe to topic')
-        expect(cli.stdout).to.be.empty
-        expect(cli.stderr).to.be.empty
-      })
+    return expectExit(1, cmd.run({app: 'myapp', args: { TOPIC: 'topic-1' }, flags: {}}))
+      .then(() => expect(cli.stdout).to.be.empty)
+      .then(() => expect(cli.stderr).to.equal(` ▸    Could not subscribe to topic\n`))
   })
 
   it('tails a topic and prints the results', () => {
