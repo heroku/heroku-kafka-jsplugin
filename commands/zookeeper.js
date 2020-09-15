@@ -3,7 +3,7 @@
 let cli = require('heroku-cli-util')
 let co = require('co')
 let parseBool = require('../lib/shared').parseBool
-let isPrivate = require('../lib/shared').isPrivate
+let isZookeeperAllowed = require('../lib/shared').isPrivate
 let withCluster = require('../lib/clusters').withCluster
 let request = require('../lib/clusters').request
 
