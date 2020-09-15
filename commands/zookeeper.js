@@ -3,7 +3,7 @@
 let cli = require('heroku-cli-util')
 let co = require('co')
 let parseBool = require('../lib/shared').parseBool
-let isPrivate = require('../lib/shared').isPrivate
+let isZookeeperAllowed = require('../lib/shared').isZookeeperAllowed
 let withCluster = require('../lib/clusters').withCluster
 let request = require('../lib/clusters').request
 
@@ -21,7 +21,7 @@ function * zookeeper (context, heroku) {
   }
 
   yield withCluster(heroku, context.app, context.args.CLUSTER, function * (addon) {
-    if (!isPrivate(addon)) {
+    if (!isZookeeperAllowed(addon)) {
       cli.exit(1, '`kafka:zookeeper` is only available in Heroku Private Spaces')
     }
 

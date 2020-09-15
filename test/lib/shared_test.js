@@ -51,7 +51,7 @@ describe('parseDuration', function () {
   })
 })
 
-describe('isPrivate', function () {
+describe('isZookeeperAllowed', function () {
   let cases = [
     [ { plan: { name: 'standard-0' } }, false ],
     [ { plan: { name: 'standard-1' } }, false ],
@@ -65,19 +65,19 @@ describe('isPrivate', function () {
     [ { plan: { name: 'private-extended-0' } }, true ],
     [ { plan: { name: 'private-extended-1' } }, true ],
     [ { plan: { name: 'private-extended-2' } }, true ],
-    [ { plan: { name: 'shield-standard-0' } }, true ],
-    [ { plan: { name: 'shield-standard-1' } }, true ],
-    [ { plan: { name: 'shield-standard-2' } }, true ],
-    [ { plan: { name: 'shield-extended-0' } }, true ],
-    [ { plan: { name: 'shield-extended-1' } }, true ],
-    [ { plan: { name: 'shield-extended-2' } }, true ]
+    [ { plan: { name: 'shield-standard-0' } }, false ],
+    [ { plan: { name: 'shield-standard-1' } }, false ],
+    [ { plan: { name: 'shield-standard-2' } }, false ],
+    [ { plan: { name: 'shield-extended-0' } }, false ],
+    [ { plan: { name: 'shield-extended-1' } }, false ],
+    [ { plan: { name: 'shield-extended-2' } }, false ]
   ]
   cases.forEach(function (testcase) {
     let addon = testcase[0]
     let expected = testcase[1]
 
-    it(`considers '${addon.plan.name}' to${expected ? '' : ' not'} be private'`, function () {
-      let actual = shared.isPrivate(addon)
+    it(`considers '${addon.plan.name}' to${expected ? '' : ' not'} be allowed to enable zookeeper'`, function () {
+      let actual = shared.isZookeeperAllowed(addon)
       expect(actual).to.equal(expected)
     })
   })
