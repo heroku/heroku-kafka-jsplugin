@@ -35,7 +35,7 @@ function * tail (context, heroku) {
       yield consumer.init()
     } catch (e) {
       debug(e)
-      throw new Error('Could not connect to kafka')
+      cli.exit(1, 'Could not connect to kafka')
     }
 
     var topicName = context.args.TOPIC
