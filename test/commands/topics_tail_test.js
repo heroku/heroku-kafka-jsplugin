@@ -8,6 +8,7 @@ const it = mocha.it
 const beforeEach = mocha.beforeEach
 const afterEach = mocha.afterEach
 const proxyquire = require('proxyquire')
+const expectExit = require('../expect_exit')
 
 const cli = require('heroku-cli-util')
 const nock = require('nock')
@@ -74,30 +75,15 @@ describe('kafka:topics:tail', () => {
     tail.process = global.process
   })
 
-  it('warns and exits with an error if used with a Private Spaces cluster', () => {
-    planName = 'heroku-kafka:beta-private-standard-2'
-    return cmd.run({app: 'myapp', args: { TOPIC: 'topic-1' }})
-      .then(() => { throw new Error('expected error; got none') })
-      .catch((err) => {
-        expect(err.message).to.equal('`kafka:topics:tail` is not available in Heroku Private Spaces')
-        expect(cli.stdout).to.be.empty
-        expect(cli.stderr).to.be.empty
-      })
-  })
-
   it('warns and exits with an error if it cannot connect', () => {
     api.get('/apps/myapp/config-vars').reply(200, config)
     api.get('/apps/myapp/addon-attachments/kafka-1')
       .reply(200, { name: 'KAFKA', config_vars: stockConfigVars, app: { name: 'sushi' } })
     consumer.init = () => { throw new Error('oh snap') }
 
-    return cmd.run({app: 'myapp', args: { TOPIC: 'topic-1' }})
-      .then(() => { throw new Error('expected error; got none') })
-      .catch((err) => {
-        expect(err.message).to.equal(`Could not connect to kafka`)
-        expect(cli.stdout).to.be.empty
-        expect(cli.stderr).to.be.empty
-      })
+    return expectExit(1, cmd.run({app: 'myapp', args: { TOPIC: 'topic-1' }}))
+      .then(() => expect(cli.stdout).to.be.empty)
+      .then(() => expect(cli.stderr).to.equal(` ▸    Could not connect to kafka\n`))
   })
 
   it('warns and exits with an error if it cannot subscribe', () => {
@@ -106,13 +92,9 @@ describe('kafka:topics:tail', () => {
       .reply(200, { name: 'KAFKA', config_vars: stockConfigVars, app: { name: 'sushi' } })
     consumer.subscribe = () => { throw new Error('oh snap') }
 
-    return cmd.run({app: 'myapp', args: { TOPIC: 'topic-1' }})
-      .then(() => { throw new Error('expected error; got none') })
-      .catch((err) => {
-        expect(err.message).to.equal('Could not subscribe to topic')
-        expect(cli.stdout).to.be.empty
-        expect(cli.stderr).to.be.empty
-      })
+    return expectExit(1, cmd.run({app: 'myapp', args: { TOPIC: 'topic-1' }, flags: {}}))
+      .then(() => expect(cli.stdout).to.be.empty)
+      .then(() => expect(cli.stderr).to.equal(` ▸    Could not subscribe to topic\n`))
   })
 
   it('tails a topic and prints the results', () => {

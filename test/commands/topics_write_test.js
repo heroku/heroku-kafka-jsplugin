@@ -76,13 +76,6 @@ describe('kafka:topics:write', () => {
     api.done()
   })
 
-  it('warns and exits with an error if used with a Private Spaces cluster', () => {
-    planName = 'heroku-kafka:beta-private-standard-2'
-    return expectExit(1, cmd.run({app: 'myapp', args: { TOPIC: 'topic-1' }}))
-      .then(() => expect(cli.stdout).to.be.empty)
-      .then(() => expect(cli.stderr).to.equal(' ▸    `kafka:topics:write` is not available in Heroku Private Spaces\n'))
-  })
-
   it('warns and exits with an error if it cannot connect', () => {
     api.get('/apps/myapp/config-vars').reply(200, config)
     api.get('/apps/myapp/addon-attachments/kafka-1')

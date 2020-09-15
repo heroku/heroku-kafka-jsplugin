@@ -5,7 +5,6 @@ const co = require('co')
 
 const debug = require('../lib/debug')
 const clusterConfig = require('../lib/shared').clusterConfig
-const isPrivate = require('../lib/shared').isPrivate
 const deprecated = require('../lib/shared').deprecated
 const withCluster = require('../lib/clusters').withCluster
 
@@ -16,10 +15,6 @@ const MAX_LENGTH = 80
 function * tail (context, heroku) {
   const kafka = require('@heroku/no-kafka')
   yield withCluster(heroku, context.app, context.args.CLUSTER, function * (addon) {
-    if (isPrivate(addon)) {
-      throw new Error('`kafka:topics:tail` is not available in Heroku Private Spaces')
-    }
-
     let appConfig = yield heroku.get(`/apps/${context.app}/config-vars`)
     let attachment = yield heroku.get(`/apps/${context.app}/addon-attachments/${addon.name}`,
       { headers: { 'accept-inclusion': 'config_vars' } })
@@ -40,7 +35,7 @@ function * tail (context, heroku) {
       yield consumer.init()
     } catch (e) {
       debug(e)
-      throw new Error('Could not connect to kafka')
+      cli.exit(1, 'Could not connect to kafka')
     }
 
     var topicName = context.args.TOPIC
@@ -67,7 +62,7 @@ function * tail (context, heroku) {
         })
       } catch (e) {
         debug(e)
-        reject(new Error('Could not subscribe to topic'))
+        cli.exit(1, 'Could not subscribe to topic')
       }
     })
   })
