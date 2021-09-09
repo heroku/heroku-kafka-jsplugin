@@ -71,7 +71,7 @@ function * write (context, heroku) {
 let cmd = {
   topic: 'kafka',
   command: 'topics:write',
-  description: '(only outside Private Spaces) writes a message to a Kafka topic',
+  description: 'writes a message to a Kafka topic',
   args: [
     { name: 'TOPIC' },
     { name: 'MESSAGE' },
@@ -82,7 +82,8 @@ let cmd = {
     { name: 'partition', description: 'the partition to write to', hasValue: true }
   ],
   help: `
-    Writes a message to the specified Kafka topic. Note: kafka:tail is not available in Heroku Private Spaces.
+    Writes a message to the specified Kafka topic. Note: For Private and Shield plans,
+    configure mutual TLS first to allow external connections to your cluster.
 
     Examples:
 
