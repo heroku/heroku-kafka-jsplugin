@@ -71,7 +71,7 @@ function * tail (context, heroku) {
 let cmd = {
   topic: 'kafka',
   command: 'topics:tail',
-  description: '(only outside Private Spaces) tails a topic in Kafka',
+  description: 'tails a topic in Kafka',
   args: [
     { name: 'TOPIC' },
     { name: 'CLUSTER', optional: true }
@@ -80,7 +80,8 @@ let cmd = {
     { name: 'max-length', description: 'number of characters per message to output', hasValue: true }
   ],
   help: `
-    Tails a topic in Kafka. Note: kafka:tail is not available in Heroku Private Spaces.
+    Consumes messages from a topic in Kafka.  Note: For Private and Shield plans,
+    configure mutual TLS first to allow external connections to your cluster.
 
     Examples:
 
