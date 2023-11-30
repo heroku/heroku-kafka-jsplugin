@@ -121,7 +121,7 @@ describe('topicConfig', () => {
     const topicName = 'foo'
     const heroku = {
       request: td.when(td.function()({
-        host: 'kafka-api.heroku.com',
+        host: 'api.data.heroku.com',
         accept: 'application/json',
         path: `/data/kafka/v0/clusters/${addonId}/topics`
       })).thenResolve({
@@ -141,7 +141,7 @@ describe('topicConfig', () => {
     const topicPrefix = 'wisła-3456.'
     const heroku = {
       request: td.when(td.function()({
-        host: 'kafka-api.heroku.com',
+        host: 'api.data.heroku.com',
         accept: 'application/json',
         path: `/data/kafka/v0/clusters/${addonId}/topics`
       })).thenResolve({
@@ -161,7 +161,7 @@ describe('topicConfig', () => {
     const topicPrefix = 'wisła-3456.'
     const heroku = {
       request: td.when(td.function()({
-        host: 'kafka-api.heroku.com',
+        host: 'api.data.heroku.com',
         accept: 'application/json',
         path: `/data/kafka/v0/clusters/${addonId}/topics`
       })).thenResolve({
@@ -180,7 +180,7 @@ describe('topicConfig', () => {
     const topicName = 'foo'
     const heroku = {
       request: td.when(td.function()({
-        host: 'kafka-api.heroku.com',
+        host: 'api.data.heroku.com',
         accept: 'application/json',
         path: `/data/kafka/v0/clusters/${addonId}/topics`
       })).thenResolve({

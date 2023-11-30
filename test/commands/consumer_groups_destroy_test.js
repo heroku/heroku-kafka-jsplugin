@@ -44,7 +44,7 @@ describe('kafka:consumer-groups:destroy', () => {
 
   beforeEach(() => {
     confirm = cli.confirmApp
-    kafka = nock('https://kafka-api.heroku.com:443')
+    kafka = nock('https://api.data.heroku.com:443')
 
     cli.exit.mock()
     cli.confirmApp = confirmApp

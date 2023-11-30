@@ -32,7 +32,7 @@ describe('kafka:consumer-groups', () => {
   }
 
   beforeEach(() => {
-    kafka = nock('https://kafka-api.heroku.com:443')
+    kafka = nock('https://api.data.heroku.com:443')
     cli.mockConsole()
     cli.exit.mock()
   })
