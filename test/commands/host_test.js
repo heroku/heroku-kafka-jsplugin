@@ -10,6 +10,6 @@ const host = require('../../lib/host.js')
 
 describe('host', () => {
   it(`is the default host`, () => {
-    expect(host()).to.equal('kafka-api.heroku.com')
+    expect(host()).to.equal('api.data.heroku.com')
   })
 })

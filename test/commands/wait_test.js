@@ -37,7 +37,7 @@ describe('kafka:wait', () => {
   beforeEach(() => {
     cli.mockConsole()
     cli.exit.mock()
-    kafka = nock('https://kafka-api.heroku.com')
+    kafka = nock('https://api.data.heroku.com')
   })
 
   afterEach(() => {
