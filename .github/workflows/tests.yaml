@@ -8,11 +8,11 @@ on:
 jobs:
   tests:
     name: Tests
-    runs-on: ubuntu-latest
+    runs-on: pub-hk-ubuntu-22.04-small
 
     strategy:
       matrix:
-        node-version: ["12.22.1", "14.16.1"]
+        node-version: ["16.20.2"]
 
     steps:
       - uses: actions/checkout@v3

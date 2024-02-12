@@ -30,8 +30,15 @@ describe('utilizationBar', function () {
     const expected10 = testcase[2]
     const expected15 = testcase[3]
     it(`Renders a ${current}/${total} bar correctly`, function () {
-      expect(utilizationBar(current, total)).to.equal(expected10)
-      expect(utilizationBar(current, total, 15)).to.equal(expected15)
+      const resultWithANSI = utilizationBar(current, total)
+      // eslint-disable-next-line no-control-regex
+      const resultWithoutANSI = resultWithANSI.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '')
+      const result2WithANSI = utilizationBar(current, total, 15)
+      // eslint-disable-next-line no-control-regex
+      const result2WithoutANSI = result2WithANSI.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '')
+
+      expect(resultWithoutANSI).to.equal(expected10)
+      expect(result2WithoutANSI).to.equal(expected15)
     })
   })
 })
