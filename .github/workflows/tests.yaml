@@ -8,7 +8,7 @@ on:
 jobs:
   tests:
     name: Tests
-    runs-on: pub-hk-ubuntu-22.04-small
+    runs-on: ubuntu-latest
 
     strategy:
       matrix:
