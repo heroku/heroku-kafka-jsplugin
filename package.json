@@ -18,8 +18,8 @@
     "node-spinner": "0.0.4"
   },
   "devDependencies": {
-    "chai": "^3.5.0",
-    "chai-as-promised": "^5.3.0",
+    "chai": "^4.4.1",
+    "chai-as-promised": "^7.1.2",
     "coveralls": "^2.11.12",
     "eslint": "^4.1.1",
     "eslint-config-standard": "^10.2.1",
@@ -27,8 +27,8 @@
     "eslint-plugin-node": "^5.1.0",
     "eslint-plugin-promise": "^3.5.0",
     "eslint-plugin-standard": "^3.0.1",
-    "mocha": "^3.0.2",
-    "nock": "^8.0.0",
+    "mocha": "^10.7.3",
+    "nock": "^13.5.4",
     "np": "2.15.0",
     "nyc": "^8.1.0",
     "proxyquire": "^1.7.10",
@@ -43,6 +43,15 @@
   ],
   "license": "ISC",
   "main": "commands/index.js",
+  "mocha": {
+    "require": [
+      "test/init.js"
+    ],
+    "watch-extensions": "ts",
+    "recursive": true,
+    "reporter": "spec",
+    "timeout": 360000
+  },
   "repository": "heroku/heroku-kafka-jsplugin",
   "scripts": {
     "coverage": "nyc report --reporter=text-lcov | coveralls",
