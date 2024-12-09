@@ -10,7 +10,7 @@
     "@heroku/no-kafka": "^2.4.1",
     "co": "4.6.0",
     "co-wait": "0.0.0",
-    "debug": "2.6.8",
+    "debug": "2.6.9",
     "heroku-cli-addons": "1.2.19",
     "heroku-cli-util": "^8.0.12",
     "humanize-plus": "^1.8.2",
