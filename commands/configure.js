@@ -1,6 +1,6 @@
 'use strict'
 
-let cli = require('heroku-cli-util')
+let cli = require('@heroku/heroku-cli-util')
 let co = require('co')
 let HerokuKafkaClusters = require('../lib/clusters').HerokuKafkaClusters
 let parseDuration = require('../lib/shared').parseDuration
@@ -9,7 +9,7 @@ function * configureTopic (context, heroku) {
   cli.warn('WARNING: kafka:configure is deprecated and will be removed in a future version; use kafka:topics:compaction, kafka:topics:retention-time, or kafka:topics:replication-factor instead')
 
   if (context.flags['no-compaction'] && context.flags['compaction']) {
-    cli.exit(1, "can't pass both no-compaction and compaction")
+    cli.exit(1, 'can\'t pass both no-compaction and compaction')
   }
 
   var flags = Object.assign({}, context.flags)

@@ -1,5 +1,4 @@
 'use strict'
-/* eslint standard/no-callback-literal: off, no-unused-expressions: off */
 
 const expect = require('chai').expect
 const mocha = require('mocha')
@@ -9,7 +8,7 @@ const beforeEach = mocha.beforeEach
 const afterEach = mocha.afterEach
 const proxyquire = require('proxyquire')
 
-const cli = require('heroku-cli-util')
+const cli = require('@heroku/heroku-cli-util')
 const nock = require('nock')
 
 const withCluster = function * (heroku, app, cluster, callback) {
@@ -58,7 +57,7 @@ describe('kafka:consumer-groups:create', () => {
       })
   })
 
-  it("doesn't raise when the api 400s", () => {
+  it('doesn\'t raise when the api 400s', () => {
     kafka.post(consumerGroupsUrl('00000000-0000-0000-0000-000000000000'),
       {
         consumer_group: {
@@ -70,7 +69,7 @@ describe('kafka:consumer-groups:create', () => {
     return cmd.run({app: 'myapp',
       args: { CONSUMER_GROUP: 'consumer-group-1' }})
       .then(() => {
-        expect(cli.stderr).to.equal(`Creating consumer group consumer-group-1... !\n ▸    kafka-1 does not need consumer groups managed explicitly, so this command\n ▸    does nothing\n`)
+        expect(cli.stderr).to.equal('Creating consumer group consumer-group-1... !\n ▸    kafka-1 does not need consumer groups managed explicitly, so this command\n ▸    does nothing\n')
       })
   })
 })

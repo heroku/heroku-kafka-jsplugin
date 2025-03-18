@@ -1,5 +1,4 @@
 'use strict'
-/* eslint standard/no-callback-literal: off, no-unused-expressions: off */
 
 const expect = require('chai').expect
 const mocha = require('mocha')
@@ -10,7 +9,7 @@ const afterEach = mocha.afterEach
 const proxyquire = require('proxyquire')
 const expectExit = require('../expect_exit')
 
-const cli = require('heroku-cli-util')
+const cli = require('@heroku/heroku-cli-util')
 const nock = require('nock')
 
 const withCluster = function * (heroku, app, cluster, callback) {
@@ -122,7 +121,7 @@ Retention:          24 hours
 
     return expectExit(1, cmd.run({app: 'myapp', args: { TOPIC: 'topic-1' }}))
       .then(() => expect(cli.stdout).to.be.empty)
-      .then(() => expect(cli.stderr).to.equal(` ▸    topic topic-1 is not available yet\n`))
+      .then(() => expect(cli.stderr).to.equal(' ▸    topic topic-1 is not available yet\n'))
   })
 
   it('tells user the topic does not exist', () => {
@@ -144,6 +143,6 @@ Retention:          24 hours
 
     return expectExit(1, cmd.run({app: 'myapp', args: { TOPIC: 'topic-1' }}))
       .then(() => expect(cli.stdout).to.be.empty)
-      .then(() => expect(cli.stderr).to.equal(` ▸    topic topic-1 not found\n`))
+      .then(() => expect(cli.stderr).to.equal(' ▸    topic topic-1 not found\n'))
   })
 })

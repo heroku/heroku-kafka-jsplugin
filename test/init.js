@@ -1,7 +1,7 @@
 'use strict'
 /* eslint no-multi-spaces: off */
 
-const cli = require('heroku-cli-util')         // Load heroku-cli-util helpers
+const cli = require('@heroku/heroku-cli-util')         // Load heroku-cli-util helpers
 const nock = require('nock')                   // Load nock
 cli.raiseErrors = true                         // Fully raise exceptions
 nock.disableNetConnect()                       // Disable HTTP connections

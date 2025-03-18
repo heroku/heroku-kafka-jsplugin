@@ -1,7 +1,7 @@
 'use strict'
 
 const co = require('co')
-const cli = require('heroku-cli-util')
+const cli = require('@heroku/heroku-cli-util')
 const humanize = require('humanize-plus')
 const utilizationBar = require('../lib/utilizationBar')
 
