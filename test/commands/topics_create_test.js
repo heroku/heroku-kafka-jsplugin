@@ -1,5 +1,4 @@
 'use strict'
-/* eslint standard/no-callback-literal: off, no-unused-expressions: off */
 
 const expect = require('chai').expect
 const mocha = require('mocha')
@@ -10,7 +9,7 @@ const afterEach = mocha.afterEach
 const proxyquire = require('proxyquire')
 const expectExit = require('../expect_exit')
 
-const cli = require('heroku-cli-util')
+const cli = require('@heroku/heroku-cli-util')
 const nock = require('nock')
 
 const withCluster = function * (heroku, app, cluster, callback) {
@@ -51,7 +50,7 @@ describe('kafka:topics:create', () => {
       args: { TOPIC: 'topic-1' },
       flags: { 'retention-time': '2 eons' }}))
       .then(() => expect(cli.stdout).to.be.empty)
-      .then(() => expect(cli.stderr).to.equal(` ▸    Could not parse retention time '2 eons'; expected value like '10d' or\n ▸    '36h'\n`))
+      .then(() => expect(cli.stderr).to.equal(' ▸    Could not parse retention time \'2 eons\'; expected value like \'10d\' or\n ▸    \'36h\'\n'))
   })
 
   it('passes the topic name and specified flags', () => {

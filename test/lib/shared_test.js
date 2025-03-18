@@ -6,7 +6,7 @@ const describe = mocha.describe
 const it = mocha.it
 const beforeEach = mocha.beforeEach
 
-const cli = require('heroku-cli-util')
+const cli = require('@heroku/heroku-cli-util')
 
 const shared = require('../../lib/shared')
 

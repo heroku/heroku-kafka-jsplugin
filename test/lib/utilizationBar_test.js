@@ -6,7 +6,7 @@ const describe = mocha.describe
 const beforeEach = mocha.beforeEach
 const it = mocha.it
 
-const cli = require('heroku-cli-util')
+const cli = require('@heroku/heroku-cli-util')
 
 const utilizationBar = require('../../lib/utilizationBar')
 
@@ -31,10 +31,10 @@ describe('utilizationBar', function () {
     const expected15 = testcase[3]
     it(`Renders a ${current}/${total} bar correctly`, function () {
       const resultWithANSI = utilizationBar(current, total)
-      // eslint-disable-next-line no-control-regex
+       
       const resultWithoutANSI = resultWithANSI.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '')
       const result2WithANSI = utilizationBar(current, total, 15)
-      // eslint-disable-next-line no-control-regex
+       
       const result2WithoutANSI = result2WithANSI.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '')
 
       expect(resultWithoutANSI).to.equal(expected10)

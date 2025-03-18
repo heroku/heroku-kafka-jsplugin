@@ -1,5 +1,4 @@
 'use strict'
-/* eslint standard/no-callback-literal: off, no-unused-expressions: off */
 
 const expect = require('chai').expect
 const mocha = require('mocha')
@@ -10,7 +9,7 @@ const afterEach = mocha.afterEach
 const proxyquire = require('proxyquire')
 const nock = require('nock')
 
-const cli = require('heroku-cli-util')
+const cli = require('@heroku/heroku-cli-util')
 
 const withCluster = function * (heroku, app, cluster, callback) {
   yield callback({ name: 'kafka-1', id: '00000000-0000-0000-0000-000000000000' })
