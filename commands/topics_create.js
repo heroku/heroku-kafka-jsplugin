@@ -26,7 +26,7 @@ function * createTopic (context, heroku) {
     let addonInfo = yield fetchProvisionedInfo(heroku, addon)
 
     if ((!compaction || addonInfo.shared_cluster) && !retentionTimeMillis) {
-      retentionTimeMillis = retentionTimeMillis = addonInfo.limits.default_retention_ms || addonInfo.limits.minimum_retention_ms
+      retentionTimeMillis = addonInfo.limits.default_retention_ms || addonInfo.limits.minimum_retention_ms
     }
 
     let msg = `Creating topic ${context.args.TOPIC} with compaction ${compaction ? 'enabled' : 'disabled'}`
