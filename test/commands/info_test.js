@@ -1,5 +1,4 @@
 'use strict'
-/* eslint standard/no-callback-literal: off, no-unused-expressions: off */
 
 const expect = require('chai').expect
 const mocha = require('mocha')
@@ -9,7 +8,7 @@ const beforeEach = mocha.beforeEach
 const afterEach = mocha.afterEach
 const proxyquire = require('proxyquire')
 
-const cli = require('heroku-cli-util')
+const cli = require('@heroku/heroku-cli-util')
 const nock = require('nock')
 
 let addon

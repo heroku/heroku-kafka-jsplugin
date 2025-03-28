@@ -1,5 +1,4 @@
 'use strict'
-/* eslint standard/no-callback-literal: off, no-unused-expressions: off */
 
 const chai = require('chai')
 const chaiAsPromised = require('chai-as-promised')
@@ -13,7 +12,7 @@ const describe = mocha.describe
 const it = mocha.it
 const beforeEach = mocha.beforeEach
 
-const cli = require('heroku-cli-util')
+const cli = require('@heroku/heroku-cli-util')
 const co = require('co')
 
 const heroku = {}

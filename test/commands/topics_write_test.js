@@ -1,5 +1,4 @@
 'use strict'
-/* eslint standard/no-callback-literal: off, no-unused-expressions: off */
 
 const expect = require('chai').expect
 const mocha = require('mocha')
@@ -10,7 +9,7 @@ const afterEach = mocha.afterEach
 const proxyquire = require('proxyquire')
 const expectExit = require('../expect_exit')
 
-const cli = require('heroku-cli-util')
+const cli = require('@heroku/heroku-cli-util')
 const nock = require('nock')
 
 let planName
@@ -84,7 +83,7 @@ describe('kafka:topics:write', () => {
 
     return expectExit(1, cmd.run({app: 'myapp', args: { TOPIC: 'topic-1' }}))
       .then(() => expect(cli.stdout).to.be.empty)
-      .then(() => expect(cli.stderr).to.equal(` ▸    Could not connect to kafka\n`))
+      .then(() => expect(cli.stderr).to.equal(' ▸    Could not connect to kafka\n'))
   })
 
   it('warns and exits with an error if it cannot send the message', () => {
@@ -95,7 +94,7 @@ describe('kafka:topics:write', () => {
 
     return expectExit(1, cmd.run({app: 'myapp', args: { TOPIC: 'topic-1' }, flags: {}}))
       .then(() => expect(cli.stdout).to.be.empty)
-      .then(() => expect(cli.stderr).to.equal(` ▸    Could not write to topic\n`))
+      .then(() => expect(cli.stderr).to.equal(' ▸    Could not write to topic\n'))
   })
 
   it('sends a message', () => {

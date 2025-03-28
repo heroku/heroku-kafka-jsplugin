@@ -1,6 +1,6 @@
 'use strict'
 
-let cli = require('heroku-cli-util')
+let cli = require('@heroku/heroku-cli-util')
 let co = require('co')
 let deprecated = require('../lib/shared').deprecated
 let withCluster = require('../lib/clusters').withCluster

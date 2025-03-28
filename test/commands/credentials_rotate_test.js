@@ -1,5 +1,4 @@
 'use strict'
-/* eslint standard/no-callback-literal: off, no-unused-expressions: off */
 
 const chai = require('chai')
 const chaiAsPromised = require('chai-as-promised')
@@ -15,7 +14,7 @@ const beforeEach = mocha.beforeEach
 const afterEach = mocha.afterEach
 const proxyquire = require('proxyquire')
 
-const cli = require('heroku-cli-util')
+const cli = require('@heroku/heroku-cli-util')
 const nock = require('nock')
 
 let planName
@@ -48,14 +47,14 @@ describe('kafka:credentials', () => {
     kafka.done()
   })
 
-  it(`rotates credentials`, () => {
+  it('rotates credentials', () => {
     kafka.post(credentialsUrl('00000000-0000-0000-0000-000000000000')).reply(200, {message: 'Rotated'})
 
     return cmd.run({app: 'myapp', args: {CLUSTER: undefined}, flags: { reset: true }})
       .then(() => expect(cli.stderr).to.be.empty)
   })
 
-  it(`requires the --reset flag`, () => {
+  it('requires the --reset flag', () => {
     return expect(cmd.run({app: 'myapp', args: {CLUSTER: undefined}, flags: {}}))
       .to.be.rejected
       .then((err) => {
