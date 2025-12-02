@@ -11,7 +11,7 @@
     "@heroku/no-kafka": "^2.4.1",
     "co": "4.6.0",
     "co-wait": "0.0.0",
-    "debug": "^2.6.9",
+    "debug": "^4.4.3",
     "humanize-plus": "^1.8.2",
     "lodash.memoize": "^4.1.2",
     "lodash.sortby": "^4.7.0",
