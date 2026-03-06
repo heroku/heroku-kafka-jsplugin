@@ -52,5 +52,8 @@
     "release": "np",
     "standardize": "standard --fix",
     "test": "eslint . commands lib test && nyc mocha"
+  },
+  "resolutions": {
+    "serialize-javascript": "^7.0.3"
   }
 }
