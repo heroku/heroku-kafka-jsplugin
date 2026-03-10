@@ -19,7 +19,7 @@
     "unexpected": "^13.2.1"
   },
   "devDependencies": {
-    "@eslint/js": "^9.22.0",
+    "@eslint/js": "^10.0.1",
     "chai": "^4.3.10",
     "chai-as-promised": "^7.1.1",
     "eslint": "^9.22.0",
