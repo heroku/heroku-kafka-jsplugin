@@ -1,10 +1,20 @@
 import cli from '@heroku/heroku-cli-util'
 import {withCluster, request} from '../lib/clusters.js'
+import { Addon } from '../lib/shared.js'
+import { HerokuClient } from '../types/command.js'
 
 const VERSION = 'v0'
 
-async function createConsumerGroup (context, heroku) {
-  await withCluster(heroku, context.app, context.args.CLUSTER, async (addon) => {
+interface Context {
+  app: string
+  args: {
+    CONSUMER_GROUP: string
+    CLUSTER?: string
+  }
+}
+
+async function createConsumerGroup (context: Context, heroku: HerokuClient): Promise<void> {
+  await withCluster(heroku, context.app, context.args.CLUSTER, async (addon: Addon) => {
     let msg = `Creating consumer group ${context.args.CONSUMER_GROUP}`
     if (context.args.CLUSTER) {
       msg += ` on ${context.args.CLUSTER}`
@@ -21,7 +31,7 @@ async function createConsumerGroup (context, heroku) {
         },
         path: `/data/kafka/${VERSION}/clusters/${addon.id}/consumer_groups`
       })
-    })()).catch(err => {
+    })()).catch((err: any) => {
       if (err.statusCode === 400 && err.body.message === 'this command is not required or enabled on dedicated clusters') {
         created = false
         cli.warn(`${cli.color.addon(addon.name)} does not need consumer groups managed explicitly, so this command does nothing`)

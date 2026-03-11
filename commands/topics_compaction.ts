@@ -1,16 +1,27 @@
 import cli from '@heroku/heroku-cli-util'
 import {parseBool, formatIntervalFromMilliseconds} from '../lib/shared.js'
 import {withCluster, request, topicConfig, fetchProvisionedInfo} from '../lib/clusters.js'
+import { Addon } from '../lib/shared.js'
+import { HerokuClient } from '../types/command.js'
 
 const VERSION = 'v0'
 
-async function compaction (context, heroku) {
+interface Context {
+  app: string
+  args: {
+    TOPIC: string
+    VALUE: string
+    CLUSTER?: string
+  }
+}
+
+async function compaction (context: Context, heroku: HerokuClient): Promise<void> {
   let enabled = parseBool(context.args.VALUE)
   if (enabled === undefined) {
     cli.exit(1, `Unknown value '${context.args.VALUE}': must be 'on' or 'enable' to enable, or 'off' or 'disable' to disable`)
   }
 
-  await withCluster(heroku, context.app, context.args.CLUSTER, async (addon) => {
+  await withCluster(heroku, context.app, context.args.CLUSTER, async (addon: Addon) => {
     const topicName = context.args.TOPIC
     let [ topicInfo, addonInfo ] = await Promise.all([
       topicConfig(heroku, addon.id, topicName),

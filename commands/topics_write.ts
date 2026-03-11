@@ -2,13 +2,28 @@ import cli from '@heroku/heroku-cli-util'
 import debug from '../lib/debug.js'
 import {clusterConfig} from '../lib/shared.js'
 import {withCluster} from '../lib/clusters.js'
+import { Addon } from '../lib/shared.js'
+import { HerokuClient } from '../types/command.js'
 
 const CLIENT_ID = 'heroku-write-producer'
 const IDLE_TIMEOUT = 1000
 
-async function write (context, heroku) {
+interface Context {
+  app: string
+  args: {
+    TOPIC: string
+    MESSAGE: string
+    CLUSTER?: string
+  }
+  flags: {
+    key?: string
+    partition?: string
+  }
+}
+
+async function write (context: Context, heroku: HerokuClient): Promise<void> {
   const kafka = await import('@heroku/no-kafka')
-  await withCluster(heroku, context.app, context.args.CLUSTER, async (addon) => {
+  await withCluster(heroku, context.app, context.args.CLUSTER, async (addon: Addon) => {
     let appConfig = await heroku.get(`/apps/${context.app}/config-vars`)
     let attachment = await heroku.get(`/apps/${context.app}/addon-attachments/${addon.name}`,
       { headers: { 'accept-inclusion': 'config_vars' } })
@@ -42,7 +57,7 @@ async function write (context, heroku) {
     const partition = parseInt(context.flags.partition) || 0
     const key = context.flags.key
 
-    const message = { value: context.args.MESSAGE }
+    const message: any = { value: context.args.MESSAGE }
     if (key) {
       message.key = key
     }

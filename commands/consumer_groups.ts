@@ -1,10 +1,19 @@
 import cli from '@heroku/heroku-cli-util'
 import {withCluster, request} from '../lib/clusters.js'
+import { Addon } from '../lib/shared.js'
+import { HerokuClient } from '../types/command.js'
 
 const VERSION = 'v0'
 
-async function listConsumerGroups (context, heroku) {
-  await withCluster(heroku, context.app, context.args.CLUSTER, async (addon) => {
+interface Context {
+  app: string
+  args: {
+    CLUSTER?: string
+  }
+}
+
+async function listConsumerGroups (context: Context, heroku: HerokuClient): Promise<void> {
+  await withCluster(heroku, context.app, context.args.CLUSTER, async (addon: Addon) => {
     let consumerGroups = await request(heroku, {
       path: `/data/kafka/${VERSION}/clusters/${addon.id}/consumer_groups`
     })

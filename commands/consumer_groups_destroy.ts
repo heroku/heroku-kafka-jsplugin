@@ -1,10 +1,23 @@
 import cli from '@heroku/heroku-cli-util'
 import {withCluster, request} from '../lib/clusters.js'
+import { Addon } from '../lib/shared.js'
+import { HerokuClient } from '../types/command.js'
 
 const VERSION = 'v0'
 
-async function destroyConsumerGroup (context, heroku) {
-  await withCluster(heroku, context.app, context.args.CLUSTER, async (addon) => {
+interface Context {
+  app: string
+  args: {
+    CONSUMER_GROUP: string
+    CLUSTER?: string
+  }
+  flags: {
+    confirm?: string
+  }
+}
+
+async function destroyConsumerGroup (context: Context, heroku: HerokuClient): Promise<void> {
+  await withCluster(heroku, context.app, context.args.CLUSTER, async (addon: Addon) => {
     await cli.confirmApp(context.app, context.flags.confirm,
       `This command will affect the cluster: ${addon.name}, which is on ${context.app}`)
 

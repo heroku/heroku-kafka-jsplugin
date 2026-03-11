@@ -1,10 +1,21 @@
 import cli from '@heroku/heroku-cli-util'
 import {parseDuration} from '../lib/shared.js'
 import {withCluster, request, topicConfig, fetchProvisionedInfo} from '../lib/clusters.js'
+import { Addon } from '../lib/shared.js'
+import { HerokuClient } from '../types/command.js'
 
 const VERSION = 'v0'
 
-async function retentionTime (context, heroku) {
+interface Context {
+  app: string
+  args: {
+    TOPIC: string
+    VALUE: string
+    CLUSTER?: string
+  }
+}
+
+async function retentionTime (context: Context, heroku: HerokuClient): Promise<void> {
   let parsed = null
   if (context.args.VALUE !== 'disable') {
     parsed = parseDuration(context.args.VALUE)
@@ -13,7 +24,7 @@ async function retentionTime (context, heroku) {
     }
   }
 
-  await withCluster(heroku, context.app, context.args.CLUSTER, async (addon) => {
+  await withCluster(heroku, context.app, context.args.CLUSTER, async (addon: Addon) => {
     const topicName = context.args.TOPIC
     let [ topicInfo, addonInfo ] = await Promise.all([
       topicConfig(heroku, addon.id, topicName),

@@ -1,12 +1,22 @@
 import cli from '@heroku/heroku-cli-util'
 import humanize from 'humanize-plus'
 import {withCluster, topicConfig} from '../lib/clusters.js'
+import { Addon } from '../lib/shared.js'
+import { HerokuClient } from '../types/command.js'
 
 const ONE_HOUR_IN_MS = 60 * 60 * 1000
 const TWENTY_FOUR_HOURS_IN_MS = ONE_HOUR_IN_MS * 24
 const TWO_DAYS_IN_MS = TWENTY_FOUR_HOURS_IN_MS * 2
 
-function retention (retentionTimeMs) {
+interface Context {
+  app: string
+  args: {
+    TOPIC: string
+    CLUSTER?: string
+  }
+}
+
+function retention (retentionTimeMs: number): string {
   if (retentionTimeMs < ONE_HOUR_IN_MS) {
     return `${Math.round(retentionTimeMs / 1000.0)} seconds`
   } else if (retentionTimeMs < TWO_DAYS_IN_MS) {
@@ -16,7 +26,7 @@ function retention (retentionTimeMs) {
   }
 }
 
-function topicInfo (topic) {
+function topicInfo (topic: any): Array<{name: string, values: string[]}> {
   let lines = [
     {
       name: 'Producers',
@@ -64,8 +74,8 @@ function topicInfo (topic) {
   return lines
 }
 
-async function kafkaTopic (context, heroku) {
-  await withCluster(heroku, context.app, context.args.CLUSTER, async (addon) => {
+async function kafkaTopic (context: Context, heroku: HerokuClient): Promise<void> {
+  await withCluster(heroku, context.app, context.args.CLUSTER, async (addon: Addon) => {
     let topicName = context.args.TOPIC
     let topic = await topicConfig(heroku, addon.id, topicName)
     if (topic.partitions < 1) {

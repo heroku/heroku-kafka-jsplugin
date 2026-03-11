@@ -1,10 +1,30 @@
 import cli from '@heroku/heroku-cli-util'
 import {withCluster, request} from '../lib/clusters.js'
+import { Addon } from '../lib/shared.js'
 
 const VERSION = 'v0'
 
-async function fail (context, heroku) {
-  await withCluster(heroku, context.app, context.args.CLUSTER, async (addon) => {
+interface Context {
+  app: string
+  args: {
+    CLUSTER?: string
+  }
+  flags: {
+    catastrophic?: boolean
+    zookeeper?: boolean
+    confirm?: string
+  }
+}
+
+interface HerokuClient {
+  request(params: any): Promise<any>
+  get(path: string, options?: any): Promise<any>
+  post(path: string, options?: any): Promise<any>
+  [key: string]: any
+}
+
+async function fail (context: Context, heroku: HerokuClient): Promise<void> {
+  await withCluster(heroku, context.app, context.args.CLUSTER, async (addon: Addon) => {
     await cli.confirmApp(context.app, context.flags.confirm,
       `This command will affect the cluster: ${addon.name}, which is on ${context.app}\n\nThis command will forcibly terminate nodes in your cluster at random.\nYou should only run this command in controlled testing scenarios.`)
 

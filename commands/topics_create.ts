@@ -1,10 +1,26 @@
 import cli from '@heroku/heroku-cli-util'
 import {parseDuration, formatIntervalFromMilliseconds} from '../lib/shared.js'
 import {withCluster, request, fetchProvisionedInfo} from '../lib/clusters.js'
+import { Addon } from '../lib/shared.js'
+import { HerokuClient } from '../types/command.js'
 
 const VERSION = 'v0'
 
-async function createTopic (context, heroku) {
+interface Context {
+  app: string
+  args: {
+    TOPIC: string
+    CLUSTER?: string
+  }
+  flags: {
+    'retention-time'?: string
+    'compaction'?: boolean
+    'replication-factor'?: string
+    'partitions'?: string
+  }
+}
+
+async function createTopic (context: Context, heroku: HerokuClient): Promise<void> {
   let flags = Object.assign({}, context.flags)
   let retentionTimeMillis
   if (flags['retention-time'] !== undefined) {
@@ -15,7 +31,7 @@ async function createTopic (context, heroku) {
   }
   let compaction = flags['compaction'] || false
 
-  await withCluster(heroku, context.app, context.args.CLUSTER, async (addon) => {
+  await withCluster(heroku, context.app, context.args.CLUSTER, async (addon: Addon) => {
     let addonInfo = await fetchProvisionedInfo(heroku, addon)
 
     if ((!compaction || addonInfo.shared_cluster) && !retentionTimeMillis) {

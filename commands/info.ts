@@ -4,15 +4,36 @@ import sortBy from 'lodash.sortby'
 import utilizationBar from '../lib/utilizationBar.js'
 import host from '../lib/host.js'
 import fetcherFn from '../lib/fetcher.js'
+import { Addon, Attachment } from '../lib/shared.js'
+import { HerokuClient } from '../types/command.js'
 
-function configVarsFromName (attachments, name) {
+interface Context {
+  app: string
+  args: {
+    CLUSTER?: string
+  }
+}
+
+interface ClusterInfo {
+  addon: Addon
+  attachments: Attachment[]
+  cluster: any
+  configVars?: string[]
+}
+
+interface InfoLine {
+  name: string
+  values: string[]
+}
+
+function configVarsFromName (attachments: Attachment[], name: string): string[] {
   return attachments
     .filter((att) => att.addon.name === name)
     .map((att) => att.name + '_URL')
     .sort((name) => name !== 'KAFKA_URL')
 }
 
-function formatInfo (info) {
+function formatInfo (info: ClusterInfo): InfoLine[] {
   const cluster = info.cluster
   const addon = info.addon
 
@@ -86,7 +107,7 @@ function formatInfo (info) {
   return lines
 }
 
-function displayCluster (cluster) {
+function displayCluster (cluster: ClusterInfo): void {
   cli.styledHeader(cluster.configVars.map(c => cli.color.configVar(c)).join(', '))
 
   let clusterInfo = formatInfo(cluster)
@@ -102,13 +123,13 @@ function displayCluster (cluster) {
   cli.log()
 }
 
-async function run (context, heroku) {
+async function run (context: Context, heroku: HerokuClient): Promise<void> {
   const fetcher = fetcherFn(heroku)
   const app = context.app
   const cluster = context.args.CLUSTER
 
-  let addons = []
-  let attachments = await heroku.get(`/apps/${app}/addon-attachments`)
+  let addons: Addon[] = []
+  let attachments: Attachment[] = await heroku.get(`/apps/${app}/addon-attachments`)
 
   if (cluster) {
     addons = await Promise.all([fetcher.addon(app, cluster)])
@@ -120,7 +141,7 @@ async function run (context, heroku) {
     }
   }
 
-  let clusters = await Promise.all(addons.map(async addon => {
+  let clusters: ClusterInfo[] = await Promise.all(addons.map(async (addon: Addon) => {
     return {
       addon,
       attachments,
@@ -128,16 +149,16 @@ async function run (context, heroku) {
         host: host(addon),
         method: 'get',
         path: `/data/kafka/v0/clusters/${addon.id}`
-      }).catch(err => {
+      }).catch((err: any) => {
         if (err.statusCode !== 404) throw err
         cli.warn(`${cli.color.addon(addon.name)} is not yet provisioned.\nRun ${cli.color.cmd('heroku kafka:wait')} to wait until the cluster is provisioned.`)
       })
     }
   }))
 
-  clusters = clusters.filter(cluster => cluster.cluster)
-  clusters.forEach(cluster => { cluster.configVars = configVarsFromName(cluster.attachments, cluster.addon.name) })
-  clusters = sortBy(clusters, cluster => cluster.configVars[0] !== 'KAFKA_URL', 'configVars[0]')
+  clusters = clusters.filter((cluster: ClusterInfo) => cluster.cluster)
+  clusters.forEach((cluster: ClusterInfo) => { cluster.configVars = configVarsFromName(cluster.attachments, cluster.addon.name) })
+  clusters = sortBy(clusters, (cluster: ClusterInfo) => cluster.configVars![0] !== 'KAFKA_URL', 'configVars[0]')
 
   clusters.forEach(displayCluster)
 }

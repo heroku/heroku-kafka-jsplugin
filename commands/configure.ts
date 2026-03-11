@@ -1,18 +1,30 @@
-'use strict'
+import cli from '@heroku/heroku-cli-util'
+import {HerokuKafkaClusters} from '../lib/clusters.js'
+import {parseDuration} from '../lib/shared.js'
+import { HerokuClient } from '../types/command.js'
 
-let cli = require('@heroku/heroku-cli-util')
-let co = require('co')
-let HerokuKafkaClusters = require('../lib/clusters').HerokuKafkaClusters
-let parseDuration = require('../lib/shared').parseDuration
+interface Context {
+  app: string
+  args: {
+    TOPIC: string
+    CLUSTER?: string
+  }
+  flags: {
+    'retention-time'?: string
+    'compaction'?: boolean
+    'no-compaction'?: boolean
+    'replication-factor'?: string
+  }
+}
 
-function * configureTopic (context, heroku) {
+async function configureTopic (context: Context, heroku: HerokuClient): Promise<void> {
   cli.warn('WARNING: kafka:configure is deprecated and will be removed in a future version; use kafka:topics:compaction, kafka:topics:retention-time, or kafka:topics:replication-factor instead')
 
   if (context.flags['no-compaction'] && context.flags['compaction']) {
     cli.exit(1, 'can\'t pass both no-compaction and compaction')
   }
 
-  var flags = Object.assign({}, context.flags)
+  let flags: any = Object.assign({}, context.flags)
   if (flags['retention-time'] !== undefined) {
     let value = flags['retention-time']
     let parsed = parseDuration(value)
@@ -30,14 +42,14 @@ function * configureTopic (context, heroku) {
   if (context.args.CLUSTER) {
     msg += ` on ${context.args.CLUSTER}`
   }
-  cli.action(msg, co(function * () {
-    return yield new HerokuKafkaClusters(heroku, process.env, context).configureTopic(context.args.CLUSTER, context.args.TOPIC, flags)
-  }))
+  await cli.action(msg, (async () => {
+    return await new HerokuKafkaClusters(heroku, process.env, context).configureTopic(context.args.CLUSTER, context.args.TOPIC, flags)
+  })())
 
   cli.log(`Use \`heroku kafka:topics:info ${context.args.TOPIC}\` to monitor your topic.`)
 }
 
-module.exports = {
+export default {
   hidden: true,
   topic: 'kafka',
   command: 'configure',
@@ -62,5 +74,5 @@ module.exports = {
     { name: 'no-compaction', description: 'disables compaction on the topic if passed', hasValue: false },
     { name: 'replication-factor', description: 'number of replicas each partition in the topic has', hasValue: true }
   ],
-  run: cli.command({preauth: true}, co.wrap(configureTopic))
+  run: cli.command({preauth: true}, configureTopic)
 }

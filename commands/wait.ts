@@ -1,19 +1,31 @@
 import cli from '@heroku/heroku-cli-util'
 import {HerokuKafkaClusters} from '../lib/clusters.js'
 import fetcherFn from '../lib/fetcher.js'
+import { Addon } from '../lib/shared.js'
+import { HerokuClient } from '../types/command.js'
 
-function sleep(ms) {
+interface Context {
+  app: string
+  args: {
+    CLUSTER?: string
+  }
+  flags: {
+    'wait-interval'?: string
+  }
+}
+
+function sleep(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
 
-async function run (context, heroku) {
+async function run (context: Context, heroku: HerokuClient): Promise<void> {
   const fetcher = fetcherFn(heroku)
   const app = context.app
   const cluster = context.args.CLUSTER
 
   const shogun = new HerokuKafkaClusters(heroku, process.env, context)
 
-  async function waitFor (cluster) {
+  async function waitFor (cluster: Addon): Promise<void> {
     let interval = parseInt(context.flags['wait-interval'])
     if (!interval || interval < 0) interval = 5
 
@@ -45,7 +57,7 @@ async function run (context, heroku) {
     }
   }
 
-  let clusters = []
+  let clusters: Addon[] = []
   if (cluster) {
     clusters = await Promise.all([fetcher.addon(app, cluster)])
   } else {

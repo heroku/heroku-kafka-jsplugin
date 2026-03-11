@@ -1,14 +1,25 @@
 import cli from '@heroku/heroku-cli-util'
 import {withCluster, request, topicConfig} from '../lib/clusters.js'
+import { Addon } from '../lib/shared.js'
+import { HerokuClient } from '../types/command.js'
 
 const VERSION = 'v0'
 
-async function replicationFactor (context, heroku) {
+interface Context {
+  app: string
+  args: {
+    TOPIC: string
+    VALUE: string
+    CLUSTER?: string
+  }
+}
+
+async function replicationFactor (context: Context, heroku: HerokuClient): Promise<void> {
   let msg = `Setting replication factor for topic ${context.args.TOPIC} to ${context.args.VALUE}`
   if (context.args.CLUSTER) {
     msg += ` on ${context.args.CLUSTER}`
   }
-  await withCluster(heroku, context.app, context.args.CLUSTER, async (addon) => {
+  await withCluster(heroku, context.app, context.args.CLUSTER, async (addon: Addon) => {
     const topicName = context.args.TOPIC
 
     let topicInfo = await topicConfig(heroku, addon.id, topicName)

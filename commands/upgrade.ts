@@ -1,10 +1,29 @@
 import cli from '@heroku/heroku-cli-util'
 import {withCluster, request} from '../lib/clusters.js'
+import { Addon } from '../lib/shared.js'
 
 const VERSION = 'v0'
 
-async function upgradeCluster (context, heroku) {
-  await withCluster(heroku, context.app, context.args.CLUSTER, async (addon) => {
+interface Context {
+  app: string
+  args: {
+    CLUSTER?: string
+  }
+  flags: {
+    version: string
+    confirm?: string
+  }
+}
+
+interface HerokuClient {
+  request(params: any): Promise<any>
+  get(path: string, options?: any): Promise<any>
+  post(path: string, options?: any): Promise<any>
+  [key: string]: any
+}
+
+async function upgradeCluster (context: Context, heroku: HerokuClient): Promise<void> {
+  await withCluster(heroku, context.app, context.args.CLUSTER, async (addon: Addon) => {
     await cli.confirmApp(context.app, context.flags.confirm,
       `This command will upgrade the brokers of the cluster to version ${context.flags.version}.
                           Upgrading the cluster involves rolling restarts of brokers, and takes some time, depending on the
