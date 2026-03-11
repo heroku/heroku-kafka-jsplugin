@@ -1,17 +1,10 @@
-'use strict'
+import {expect} from 'chai'
+import {describe, it, beforeEach, afterEach} from 'mocha'
+import esmock from 'esmock'
+import cli from '@heroku/heroku-cli-util'
+import nock from 'nock'
 
-const expect = require('chai').expect
-const mocha = require('mocha')
-const describe = mocha.describe
-const it = mocha.it
-const beforeEach = mocha.beforeEach
-const afterEach = mocha.afterEach
-const proxyquire = require('proxyquire')
-
-const cli = require('@heroku/heroku-cli-util')
-const nock = require('nock')
-
-let addon
+let addon: any
 let all = [
   {name: 'kafka-1', id: '00000000-0000-0000-0000-000000000000', plan: {name: 'heroku-kafka:beta-3'}},
   {name: 'kafka-2', id: '00000000-0000-0000-0000-000000000001', plan: {name: 'heroku-kafka:beta-3'}}
@@ -24,14 +17,15 @@ const fetcher = () => {
   }
 }
 
-const cmd = proxyquire('../../commands/info', {
-  '../lib/fetcher': fetcher
-}).info
+const cmd = (await esmock('../../commands/info.ts', {
+  '../../lib/fetcher.ts': fetcher
+})).info
 
 describe('kafka:info', () => {
-  let api, kafka
+  let api: nock.Scope
+  let kafka: nock.Scope
 
-  let infoUrl = (cluster) => {
+  const infoUrl = (cluster: string): string => {
     return `/data/kafka/v0/clusters/${cluster}`
   }
 
@@ -50,6 +44,7 @@ describe('kafka:info', () => {
   describe('with 0 dbs', () => {
     it('shows empty state', () => {
       all = []
+      api.get('/apps/myapp/addon-attachments').reply(200, [])
 
       return cmd.run({app: 'myapp', args: {}})
         .then(() => expect(cli.stdout).to.equal('myapp has no heroku-kafka clusters.\n'))

@@ -1,0 +1,6 @@
+{
+  "require": ["./test/init.ts"],
+  "spec": ["test/**/*.ts"],
+  "recursive": true,
+  "node-option": ["import=tsx"]
+}

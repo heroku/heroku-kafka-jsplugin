@@ -1,28 +1,19 @@
-'use strict'
-
-const chai = require('chai')
-const chaiAsPromised = require('chai-as-promised')
+import chai from 'chai'
+import chaiAsPromised from 'chai-as-promised'
+import {describe, it, beforeEach, afterEach} from 'mocha'
+import esmock from 'esmock'
+import cli from '@heroku/heroku-cli-util'
+import * as td from 'testdouble'
 
 chai.use(chaiAsPromised)
+const {expect} = chai
 
-const proxyquire = require('proxyquire')
-const expect = chai.expect
-const mocha = require('mocha')
-const describe = mocha.describe
-const it = mocha.it
-const beforeEach = mocha.beforeEach
+const heroku: any = {}
 
-const cli = require('@heroku/heroku-cli-util')
-const co = require('co')
+let fetchAll: any
+let fetchOne: any
 
-const heroku = {}
-
-const td = require('testdouble')
-
-let fetchAll
-let fetchOne
-
-const fetcher = (arg) => {
+const fetcher = (arg: any) => {
   expect(arg).to.equal(heroku)
   return {
     all: fetchAll,
@@ -30,8 +21,8 @@ const fetcher = (arg) => {
   }
 }
 
-const clusters = proxyquire('../../lib/clusters', {
-  './fetcher': fetcher
+const clusters = await esmock('../../lib/clusters.ts', {
+  '../../lib/fetcher.ts': fetcher
 })
 
 describe('withCluster', () => {
@@ -46,10 +37,10 @@ describe('withCluster', () => {
     it('propagates the error if the fetcher rejects the promise', () => {
       fetchOne = () => Promise.reject(new Error('oh snap'))
       let called = false
-      return expect(co.wrap(clusters.withCluster)(
+      return expect(clusters.withCluster(
         heroku,
         'my-app', 'kafka-1',
-        function * (arg) { called = true })
+        async (arg) => { called = true })
       )
         .to.be.rejected
         .then(() => { expect(called).to.be.false })
@@ -59,10 +50,10 @@ describe('withCluster', () => {
       let addon = { name: 'kafka-1' }
       fetchOne = () => Promise.resolve(addon)
       let calledWith = addon
-      return expect(co.wrap(clusters.withCluster)(
+      return expect(clusters.withCluster(
         heroku,
         'my-app', 'kafka-1',
-        function * (arg) { calledWith = arg })
+        async (arg) => { calledWith = arg })
       )
         .to.be.fulfilled
         .then(() => { expect(calledWith).to.equal(addon) })
@@ -73,10 +64,10 @@ describe('withCluster', () => {
     it('warns and exits if no add-ons are found', () => {
       fetchAll = () => Promise.resolve([])
       let called = false
-      return expect(co.wrap(clusters.withCluster)(
+      return expect(clusters.withCluster(
         heroku,
         'my-app', null,
-        function * (arg) { called = true })
+        async (arg) => { called = true })
       )
         .to.be.rejectedWith(cli.exit.ErrorExit, /found no kafka add-ons on my-app/)
         .then(() => { expect(called).to.be.false })
@@ -85,10 +76,10 @@ describe('withCluster', () => {
     it('warns and exits if multiple add-ons are found', () => {
       fetchAll = () => Promise.resolve([ { name: 'kafka-1' }, { name: 'kafka-2' } ])
       let called = false
-      return expect(co.wrap(clusters.withCluster)(
+      return expect(clusters.withCluster(
         heroku,
         'my-app', null,
-        function * (arg) { called = true })
+        async (arg) => { called = true })
       )
         .to.be.rejectedWith(cli.exit.ErrorExit, /found more than one kafka add-on on my-app: kafka-1, kafka-2/)
         .then(() => { expect(called).to.be.false })
@@ -98,10 +89,10 @@ describe('withCluster', () => {
       let addon = { name: 'kafka-1' }
       fetchAll = () => Promise.resolve([ addon ])
       let calledWith = addon
-      return expect(co.wrap(clusters.withCluster)(
+      return expect(clusters.withCluster(
         heroku,
         'my-app', null,
-        function * (arg) { calledWith = arg })
+        async (arg) => { calledWith = arg })
       )
         .to.be.fulfilled
         .then(() => { expect(calledWith).to.equal(addon) })
@@ -130,7 +121,7 @@ describe('topicConfig', () => {
         ]
       })
     }
-    const result = await co.wrap(clusters.topicConfig)(heroku, addonId, topicName)
+    const result = await clusters.topicConfig(heroku, addonId, topicName)
     expect(result.name).to.equal(topicName)
   })
 
@@ -150,7 +141,7 @@ describe('topicConfig', () => {
         ]
       })
     }
-    const result = await co.wrap(clusters.topicConfig)(heroku, addonId, topicName)
+    const result = await clusters.topicConfig(heroku, addonId, topicName)
     expect(result.name).to.equal(topicName)
   })
 
@@ -170,7 +161,7 @@ describe('topicConfig', () => {
         ]
       })
     }
-    const result = await co.wrap(clusters.topicConfig)(heroku, addonId, topicPrefix + topicName)
+    const result = await clusters.topicConfig(heroku, addonId, topicPrefix + topicName)
     expect(result.name).to.equal(topicName)
   })
 
@@ -189,7 +180,7 @@ describe('topicConfig', () => {
         ]
       })
     }
-    expect(co.wrap(clusters.topicConfig)(heroku, addonId, topicName))
+    expect(clusters.topicConfig(heroku, addonId, topicName))
       .to.be.rejectedWith(cli.exit.ErrorExit, `topic ${topicName} not found`)
   })
 })

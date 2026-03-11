@@ -25,10 +25,10 @@ export interface ClusterConfig {
 }
 
 function deprecated (cmd: any, newCmd: string, newTopic?: string): any {
-  return function * (context: any, heroku: any): any {
+  return async function (context: any, heroku: any): Promise<any> {
     const newName = `${newTopic || context.command.topic}:${newCmd}`
     cli.warn(`\nWARNING: ${context.command.topic}:${context.command.command} is deprecated; please use ${newName}\n`)
-    return yield * cmd(context, heroku)
+    return await cmd(context, heroku)
   }
 }
 

@@ -1,14 +1,7 @@
-'use strict'
-
-const expect = require('chai').expect
-const mocha = require('mocha')
-const describe = mocha.describe
-const it = mocha.it
-const beforeEach = mocha.beforeEach
-
-const cli = require('@heroku/heroku-cli-util')
-
-const shared = require('../../lib/shared')
+import {expect} from 'chai'
+import {describe, it, beforeEach} from 'mocha'
+import cli from '@heroku/heroku-cli-util'
+import * as shared from '../../lib/shared.ts'
 
 describe('parseDuration', function () {
   let cases = [
@@ -112,24 +105,24 @@ describe('parseBool', function () {
 describe('deprecated', function () {
   beforeEach(() => cli.mockConsole())
 
-  it('returns a function that prints a warning and runs the command', function () {
-    let context
-    let heroku
-    let fn = function * (c, h) {
+  it('returns a function that prints a warning and runs the command', async function () {
+    let context: any
+    let heroku: any
+    let fn = async (c: any, h: any) => {
       context = c
       heroku = h
-      yield 42
+      return 42
     }
     let wrapped = shared.deprecated(fn, 'new-command')
 
     let passedContext = { command: { command: 'foo', topic: 'bar' } }
     let passedHeroku = {}
 
-    let result = wrapped(passedContext, passedHeroku).next()
+    let result = await wrapped(passedContext, passedHeroku)
 
-    expect(context).to.eq(context)
-    expect(heroku).to.eq(heroku)
-    expect(result.value).to.eq(42)
+    expect(context).to.eq(passedContext)
+    expect(heroku).to.eq(passedHeroku)
+    expect(result).to.eq(42)
     expect(cli.stderr).to.match(/ ▸\s*WARNING: bar:foo is deprecated; please use bar:new-command/m)
   })
 })

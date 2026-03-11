@@ -1,15 +1,8 @@
-'use strict'
-
-const expect = require('chai').expect
-const mocha = require('mocha')
-const describe = mocha.describe
-const it = mocha.it
-const beforeEach = mocha.beforeEach
-const afterEach = mocha.afterEach
-const proxyquire = require('proxyquire')
-
-const cli = require('@heroku/heroku-cli-util')
-const nock = require('nock')
+import {expect} from 'chai'
+import {describe, it, beforeEach, afterEach} from 'mocha'
+import esmock from 'esmock'
+import cli from '@heroku/heroku-cli-util'
+import nock from 'nock'
 
 const all = [
   {name: 'kafka-1', id: '00000000-0000-0000-0000-000000000000', plan: {name: 'heroku-kafka:beta-3'}},
@@ -23,13 +16,13 @@ const fetcher = () => {
   }
 }
 
-const cmd = proxyquire('../../commands/wait', {
-  '../lib/fetcher': fetcher
+const cmd = await esmock('../../commands/wait.ts', {
+  '../../lib/fetcher.ts': fetcher
 })
 
 describe('kafka:wait', () => {
-  let kafka
-  let waitUrl = (cluster) => {
+  let kafka: nock.Scope
+  const waitUrl = (cluster: string): string => {
     return `/data/kafka/v0/clusters/${cluster}/wait_status`
   }
 
@@ -49,7 +42,7 @@ describe('kafka:wait', () => {
       .get(waitUrl('00000000-0000-0000-0000-000000000000')).reply(200, {'waiting?': true, message: 'pending'})
       .get(waitUrl('00000000-0000-0000-0000-000000000000')).reply(200, {'waiting?': false, message: 'available'})
 
-    return cmd.run({app: 'myapp', args: {CLUSTER: 'KAFKA_URL'}, flags: {'wait-interval': '1'}})
+    return cmd.default.run({app: 'myapp', args: {CLUSTER: 'KAFKA_URL'}, flags: {'wait-interval': '1'}})
       .then(() => expect(cli.stdout).to.be.empty)
       .then(() => expect(cli.stderr).to.equal(`Waiting for cluster kafka-1... pending
 Waiting for cluster kafka-1... available
@@ -61,7 +54,7 @@ Waiting for cluster kafka-1... available
       .get(waitUrl('00000000-0000-0000-0000-000000000000')).reply(200, {'waiting?': false})
       .get(waitUrl('00000000-0000-0000-0000-000000000001')).reply(200, {'waiting?': false})
 
-    return cmd.run({app: 'myapp', args: {}, flags: {}})
+    return cmd.default.run({app: 'myapp', args: {}, flags: {}})
       .then(() => expect(cli.stdout, 'to equal', ''))
       .then(() => expect(cli.stderr, 'to equal', ''))
   })
@@ -70,7 +63,7 @@ Waiting for cluster kafka-1... available
     kafka
       .get(waitUrl('00000000-0000-0000-0000-000000000000')).reply(200, {'error?': true, message: 'this is an error message'})
 
-    return cmd.run({app: 'myapp', args: {}, flags: {}})
+    return cmd.default.run({app: 'myapp', args: {}, flags: {}})
       .catch(err => {
         if (err.code !== 1) throw err
         expect(cli.stdout, 'to equal', '')

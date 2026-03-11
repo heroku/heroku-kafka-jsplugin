@@ -1,45 +1,40 @@
-'use strict'
+import {expect} from 'chai'
+import {describe, it, beforeEach, afterEach} from 'mocha'
 
-const expect = require('chai').expect
-const mocha = require('mocha')
-const describe = mocha.describe
-const it = mocha.it
-const beforeEach = mocha.beforeEach
-const afterEach = mocha.afterEach
-const proxyquire = require('proxyquire')
-const expectExit = require('../expect_exit')
 
-const cli = require('@heroku/heroku-cli-util')
-const nock = require('nock')
-const EventEmitter = require('events')
+
+
+import esmock from 'esmock'
+import expectExit from '../expect_exit.js'
+
+import cli from '@heroku/heroku-cli-util'
+import nock from 'nock'
+import { Addon } from '../../lib/shared.js'
+import {EventEmitter} from 'events'
 
 let planName
-const withCluster = function * (heroku, app, cluster, callback) {
-  yield callback({ name: 'kafka-1', id: '00000000-0000-0000-0000-000000000000', plan: { name: planName } })
+const withCluster = async (
+  heroku: any,
+  app: string,
+  cluster: string | undefined,
+  callback: (addon: Addon) => Promise<void>
+) => {
+  await callback({ name: 'kafka-1', id: '00000000-0000-0000-0000-000000000000', plan: { name: planName } })
 }
 
 let consumer
 
-class FakeConsumer {
-  constructor (opts) {
-    consumer.opts = opts
-  }
-
-  init () {
-    return consumer.init()
-  }
-
-  subscribe (topic, callback) {
-    return consumer.subscribe(topic, callback)
-  }
+const createSimpleConsumer = async (opts) => {
+  consumer.opts = opts
+  return consumer
 }
 
-const tail = proxyquire('../../commands/topics_tail', {
-  '../lib/clusters': {
+const tail = await esmock('../../commands/topics_tail.ts', {
+  '../../lib/clusters.ts': {
     withCluster
   },
-  '@heroku/no-kafka': {
-    SimpleConsumer: FakeConsumer
+  '../../lib/kafka.ts': {
+    createSimpleConsumer
   }
 })
 
@@ -65,13 +60,11 @@ describe('kafka:topics:tail', () => {
     api = nock('https://api.heroku.com:443')
 
     cli.mockConsole()
-    tail.process = new EventEmitter()
   })
 
   afterEach(() => {
     nock.cleanAll()
     api.done()
-    tail.process = global.process
   })
 
   it('warns and exits with an error if it cannot connect', () => {
@@ -107,7 +100,7 @@ describe('kafka:topics:tail', () => {
         { offset: 2, message: { value: Buffer.from('world') } },
         { offset: 3, message: { value: null } }
       ], undefined, 42)
-      tail.process.emit('SIGINT')
+      process.emit('SIGINT')
     }
 
     return cmd.run({app: 'myapp', args: { TOPIC: 'topic-1' }, flags: {}})
@@ -129,7 +122,7 @@ describe('kafka:topics:tail', () => {
         { offset: 3, message: { value: Buffer.from('world') } },
         { offset: 4, message: { value: null } }
       ], undefined, 42)
-      tail.process.emit('SIGINT')
+      process.emit('SIGINT')
     }
 
     return cmd.run({app: 'myapp', args: { TOPIC: 'topic-1' }, flags: { 'max-length': '100' }})
@@ -157,7 +150,7 @@ describe('kafka:topics:tail', () => {
         { offset: 2, message: { value: Buffer.from('world') } },
         { offset: 3, message: { value: null } }
       ], undefined, 42)
-      tail.process.emit('SIGINT')
+      process.emit('SIGINT')
     }
 
     return cmd.run({app: 'myapp', args: { TOPIC: 'topic-1' }, flags: {}})
@@ -182,7 +175,7 @@ describe('kafka:topics:tail', () => {
         { offset: 2, message: { value: Buffer.from('world') } },
         { offset: 3, message: { value: null } }
       ], undefined, 42)
-      tail.process.emit('SIGINT')
+      process.emit('SIGINT')
     }
 
     return cmd.run({app: 'myapp', args: { TOPIC: 'nile-1234.topic-1' }, flags: {}})

@@ -1,30 +1,34 @@
-'use strict'
+import {expect} from 'chai'
+import {describe, it, beforeEach, afterEach} from 'mocha'
 
-const expect = require('chai').expect
-const mocha = require('mocha')
-const describe = mocha.describe
-const it = mocha.it
-const beforeEach = mocha.beforeEach
-const afterEach = mocha.afterEach
-const proxyquire = require('proxyquire')
 
-const cli = require('@heroku/heroku-cli-util')
-const nock = require('nock')
 
-const withCluster = function * (heroku, app, cluster, callback) {
-  yield callback({ name: 'kafka-1', id: '00000000-0000-0000-0000-000000000000' })
+
+import esmock from 'esmock'
+
+import cli from '@heroku/heroku-cli-util'
+import nock from 'nock'
+import { Addon } from '../../lib/shared.js'
+
+const withCluster = async (
+  heroku: any,
+  app: string,
+  cluster: string | undefined,
+  callback: (addon: Addon) => Promise<void>
+) => {
+  await callback({ name: 'kafka-1', id: '00000000-0000-0000-0000-000000000000', plan: { name: 'test' } })
 }
 
-const cmd = proxyquire('../../commands/topics', {
-  '../lib/clusters': {
+const cmd = (await esmock('../../commands/topics.ts', {
+  '../../lib/clusters.ts': {
     withCluster
   }
-}).cmd
+})).cmd
 
 describe('kafka:topics', () => {
-  let kafka
+  let kafka: nock.Scope
 
-  let topicsUrl = (cluster) => {
+  const topicsUrl = (cluster: string):string => {
     return `/data/kafka/v0/clusters/${cluster}/topics`
   }
 

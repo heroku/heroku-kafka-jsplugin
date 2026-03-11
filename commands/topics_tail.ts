@@ -4,6 +4,7 @@ import {clusterConfig} from '../lib/shared.js'
 import {withCluster} from '../lib/clusters.js'
 import { Addon } from '../lib/shared.js'
 import { HerokuClient } from '../types/command.js'
+import * as kafka from '../lib/kafka.js'
 
 const CLIENT_ID = 'heroku-tail-consumer'
 const IDLE_TIMEOUT = 1000
@@ -21,13 +22,12 @@ interface Context {
 }
 
 async function tail (context: Context, heroku: HerokuClient): Promise<void> {
-  const kafka = await import('@heroku/no-kafka')
   await withCluster(heroku, context.app, context.args.CLUSTER, async (addon: Addon) => {
     let appConfig = await heroku.get(`/apps/${context.app}/config-vars`)
     let attachment = await heroku.get(`/apps/${context.app}/addon-attachments/${addon.name}`,
       { headers: { 'accept-inclusion': 'config_vars' } })
     let config = clusterConfig(attachment, appConfig)
-    let consumer = new kafka.default.SimpleConsumer({
+    let consumer = await kafka.createSimpleConsumer({
       idleTimeout: IDLE_TIMEOUT,
       clientId: CLIENT_ID,
       connectionString: config.url,

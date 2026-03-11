@@ -1,11 +1,9 @@
-'use strict'
+import {expect} from 'chai'
+import cli from '@heroku/heroku-cli-util'
 
-let expect = require('chai').expect
-let cli = require('@heroku/heroku-cli-util')
-
-function exit (code, gen) {
-  var actual
-  return gen.catch(function (err) {
+function exit (code: number, gen: Promise<any>): Promise<void> {
+  let actual: number | undefined
+  return gen.catch(function (err: any) {
     expect(err).to.be.an.instanceof(cli.exit.ErrorExit)
     actual = err.code
   }).then(function () {
@@ -14,4 +12,4 @@ function exit (code, gen) {
   })
 }
 
-module.exports = exit
+export default exit

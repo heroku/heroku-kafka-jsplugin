@@ -1,14 +1,7 @@
-'use strict'
-
-const expect = require('chai').expect
-const mocha = require('mocha')
-const describe = mocha.describe
-const beforeEach = mocha.beforeEach
-const it = mocha.it
-
-const cli = require('@heroku/heroku-cli-util')
-
-const utilizationBar = require('../../lib/utilizationBar')
+import {expect} from 'chai'
+import {describe, it, beforeEach} from 'mocha'
+import cli from '@heroku/heroku-cli-util'
+import utilizationBar from '../../lib/utilizationBar.js'
 
 describe('utilizationBar', function () {
   beforeEach(() => {

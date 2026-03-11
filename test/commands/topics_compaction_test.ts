@@ -1,39 +1,43 @@
-'use strict'
+import {expect} from 'chai'
+import {describe, it, beforeEach, afterEach} from 'mocha'
 
-const expect = require('chai').expect
-const mocha = require('mocha')
-const describe = mocha.describe
-const it = mocha.it
-const beforeEach = mocha.beforeEach
-const afterEach = mocha.afterEach
-const proxyquire = require('proxyquire')
-const expectExit = require('../expect_exit')
 
-const cli = require('@heroku/heroku-cli-util')
-const nock = require('nock')
 
-const withCluster = function * (heroku, app, cluster, callback) {
-  yield callback({ name: 'kafka-1', id: '00000000-0000-0000-0000-000000000000' })
+
+import esmock from 'esmock'
+import expectExit from '../expect_exit.js'
+
+import cli from '@heroku/heroku-cli-util'
+import nock from 'nock'
+import { Addon } from '../../lib/shared.js'
+
+const withCluster = async (
+  heroku: any,
+  app: string,
+  cluster: string | undefined,
+  callback: (addon: Addon) => Promise<void>
+) => {
+  await callback({ name: 'kafka-1', id: '00000000-0000-0000-0000-000000000000', plan: { name: 'test' } })
 }
 
-const cmd = proxyquire('../../commands/topics_compaction', {
-  '../lib/clusters': {
+const cmd = await esmock('../../commands/topics_compaction.ts', {
+  '../../lib/clusters.ts': {
     withCluster
   }
 })
 
 describe('kafka:topics:compaction', () => {
-  let kafka
+  let kafka: nock.Scope
 
   let topicConfigUrl = (cluster, topic) => {
     return `/data/kafka/v0/clusters/${cluster}/topics/${topic}`
   }
 
-  let topicListUrl = (cluster) => {
+  const topicListUrl = (cluster: string):string => {
     return `/data/kafka/v0/clusters/${cluster}/topics`
   }
 
-  let infoUrl = (cluster) => {
+  const infoUrl = (cluster: string):string => {
     return `/data/kafka/v0/clusters/${cluster}`
   }
 
@@ -50,7 +54,7 @@ describe('kafka:topics:compaction', () => {
 
   describe('with unknown value specified', () => {
     it('shows an error and exits', () => {
-      return expectExit(1, cmd.run({app: 'myapp',
+      return expectExit(1, cmd.default.run({app: 'myapp',
         args: { TOPIC: 'topic-1', VALUE: 'yep' }}))
         .then(() => expect(cli.stdout).to.be.empty)
         .then(() => expect(cli.stderr).to.equal(` ▸    Unknown value 'yep': must be 'on' or 'enable' to enable, or 'off' or
@@ -79,7 +83,7 @@ describe('kafka:topics:compaction', () => {
           { topic: { name: 'topic-1', compaction: true, retention_time_ms: 123 } })
           .reply(200)
 
-        return cmd.run({app: 'myapp', args: { TOPIC: 'topic-1', VALUE: value }})
+        return cmd.default.run({app: 'myapp', args: { TOPIC: 'topic-1', VALUE: value }})
           .then(() => expect(cli.stderr).to.equal('Enabling compaction for topic topic-1 on kafka-1... done\n'))
           .then(() => expect(cli.stdout).to.equal('Use `heroku kafka:topics:info topic-1` to monitor your topic.\n'))
       })
@@ -93,7 +97,7 @@ describe('kafka:topics:compaction', () => {
           { topic: { name: 'topic-1', compaction: false, retention_time_ms: 123 } })
           .reply(200)
 
-        return cmd.run({app: 'myapp', args: { TOPIC: 'topic-1', VALUE: value }})
+        return cmd.default.run({app: 'myapp', args: { TOPIC: 'topic-1', VALUE: value }})
           .then(() => expect(cli.stderr).to.equal('Disabling compaction for topic topic-1 on kafka-1... done\n'))
           .then(() => expect(cli.stdout).to.equal('Use `heroku kafka:topics:info topic-1` to monitor your topic.\n'))
       })
@@ -105,7 +109,7 @@ describe('kafka:topics:compaction', () => {
           { topic: { name: 'topic-1', compaction: false, retention_time_ms: 20 } })
           .reply(200)
 
-        return cmd.run({app: 'myapp', args: { TOPIC: 'topic-1', VALUE: value }})
+        return cmd.default.run({app: 'myapp', args: { TOPIC: 'topic-1', VALUE: value }})
           .then(() => expect(cli.stderr).to.equal('Disabling compaction and setting retention time to 20 milliseconds for topic topic-1 on kafka-1... done\n'))
           .then(() => expect(cli.stdout).to.equal('Use `heroku kafka:topics:info topic-1` to monitor your topic.\n'))
       })
@@ -129,7 +133,7 @@ describe('kafka:topics:compaction', () => {
           { topic: { name: 'topic-1', compaction: true, retention_time_ms: null } })
           .reply(200)
 
-        return cmd.run({app: 'myapp', args: { TOPIC: 'topic-1', VALUE: value }})
+        return cmd.default.run({app: 'myapp', args: { TOPIC: 'topic-1', VALUE: value }})
           .then(() => expect(cli.stderr).to.equal('Enabling compaction and disabling time-based retention for topic topic-1 on kafka-1... done\n'))
           .then(() => expect(cli.stdout).to.equal('Use `heroku kafka:topics:info topic-1` to monitor your topic.\n'))
       })
@@ -141,7 +145,7 @@ describe('kafka:topics:compaction', () => {
           { topic: { name: 'topic-1', compaction: false, retention_time_ms: 20 } })
           .reply(200)
 
-        return cmd.run({app: 'myapp', args: { TOPIC: 'topic-1', VALUE: value }})
+        return cmd.default.run({app: 'myapp', args: { TOPIC: 'topic-1', VALUE: value }})
           .then(() => expect(cli.stderr).to.equal('Disabling compaction and setting retention time to 20 milliseconds for topic topic-1 on kafka-1... done\n'))
           .then(() => expect(cli.stdout).to.equal('Use `heroku kafka:topics:info topic-1` to monitor your topic.\n'))
       })

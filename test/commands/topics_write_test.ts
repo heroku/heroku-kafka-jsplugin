@@ -1,50 +1,41 @@
-'use strict'
+import {expect} from 'chai'
+import {describe, it, beforeEach, afterEach} from 'mocha'
 
-const expect = require('chai').expect
-const mocha = require('mocha')
-const describe = mocha.describe
-const it = mocha.it
-const beforeEach = mocha.beforeEach
-const afterEach = mocha.afterEach
-const proxyquire = require('proxyquire')
-const expectExit = require('../expect_exit')
 
-const cli = require('@heroku/heroku-cli-util')
-const nock = require('nock')
+
+
+import esmock from 'esmock'
+import expectExit from '../expect_exit.js'
+
+import cli from '@heroku/heroku-cli-util'
+import nock from 'nock'
+import { Addon } from '../../lib/shared.js'
 
 let planName
-const withCluster = function * (heroku, app, cluster, callback) {
-  yield callback({ name: 'kafka-1', id: '00000000-0000-0000-0000-000000000000', plan: { name: planName } })
+const withCluster = async (
+  heroku: any,
+  app: string,
+  cluster: string | undefined,
+  callback: (addon: Addon) => Promise<void>
+) => {
+  await callback({ name: 'kafka-1', id: '00000000-0000-0000-0000-000000000000', plan: { name: planName } })
 }
 
 let producer
 
-class FakeProducer {
-  constructor (opts) {
-    producer.opts = opts
-  }
-
-  init () {
-    return producer.init()
-  }
-
-  send (payload) {
-    return producer.send(payload)
-  }
-
-  end () {
-    return producer.end()
-  }
+const createProducer = async (opts) => {
+  producer.opts = opts
+  return producer
 }
 
-const cmd = proxyquire('../../commands/topics_write', {
-  '../lib/clusters': {
+const cmd = (await esmock('../../commands/topics_write.ts', {
+  '../../lib/clusters.ts': {
     withCluster
   },
-  '@heroku/no-kafka': {
-    Producer: FakeProducer
+  '../../lib/kafka.ts': {
+    createProducer
   }
-}).cmd
+})).cmd
 
 describe('kafka:topics:write', () => {
   let api

@@ -1,10 +1,9 @@
-'use strict'
-/* globals describe beforeEach afterEach cli it nock */
-let cli = require('@heroku/heroku-cli-util')
-let resolve = require('../../lib/resolve')
-let expect = require('unexpected')
-let Heroku = require('heroku-client')
-let nock = require('nock')
+import {describe, it, beforeEach, afterEach} from 'mocha'
+import cli from '@heroku/heroku-cli-util'
+import * as resolve from '../../lib/resolve.js'
+import expect from 'unexpected'
+import Heroku from 'heroku-client'
+import nock from 'nock'
 
 describe('resolve', () => {
     beforeEach(function () {

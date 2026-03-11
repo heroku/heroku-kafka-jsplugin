@@ -1,39 +1,43 @@
-'use strict'
+import {expect} from 'chai'
+import {describe, it, beforeEach, afterEach} from 'mocha'
 
-const expect = require('chai').expect
-const mocha = require('mocha')
-const describe = mocha.describe
-const it = mocha.it
-const beforeEach = mocha.beforeEach
-const afterEach = mocha.afterEach
-const proxyquire = require('proxyquire')
-const expectExit = require('../expect_exit')
 
-const cli = require('@heroku/heroku-cli-util')
-const nock = require('nock')
 
-const withCluster = function * (heroku, app, cluster, callback) {
-  yield callback({ name: 'kafka-1', id: '00000000-0000-0000-0000-000000000000' })
+
+import esmock from 'esmock'
+import expectExit from '../expect_exit.js'
+
+import cli from '@heroku/heroku-cli-util'
+import nock from 'nock'
+import { Addon } from '../../lib/shared.js'
+
+const withCluster = async (
+  heroku: any,
+  app: string,
+  cluster: string | undefined,
+  callback: (addon: Addon) => Promise<void>
+) => {
+  await callback({ name: 'kafka-1', id: '00000000-0000-0000-0000-000000000000', plan: { name: 'test' } })
 }
 
-const cmd = proxyquire('../../commands/topics_retention_time', {
-  '../lib/clusters': {
+const cmd = await esmock('../../commands/topics_retention_time.ts', {
+  '../../lib/clusters.ts': {
     withCluster
   }
 })
 
 describe('kafka:topics:retention-time', () => {
-  let kafka
+  let kafka: nock.Scope
 
   let topicConfigUrl = (cluster, topic) => {
     return `/data/kafka/v0/clusters/${cluster}/topics/${topic}`
   }
 
-  let topicListUrl = (cluster) => {
+  const topicListUrl = (cluster: string):string => {
     return `/data/kafka/v0/clusters/${cluster}/topics`
   }
 
-  let infoUrl = (cluster) => {
+  const infoUrl = (cluster: string):string => {
     return `/data/kafka/v0/clusters/${cluster}`
   }
 
@@ -50,7 +54,7 @@ describe('kafka:topics:retention-time', () => {
 
   describe('with unknown value specified', () => {
     it('shows an error and exits', () => {
-      return expectExit(1, cmd.run({app: 'myapp',
+      return expectExit(1, cmd.default.run({app: 'myapp',
         args: { TOPIC: 'topic-1', VALUE: '1 fortnight' },
         flags: {}}))
         .then(() => expect(cli.stdout).to.be.empty)
@@ -75,7 +79,7 @@ describe('kafka:topics:retention-time', () => {
       kafka.put(topicConfigUrl('00000000-0000-0000-0000-000000000000', 'topic-1'),
         { topic: { name: 'topic-1', retention_time_ms: 60000, compaction: false } }).reply(200)
 
-      return cmd.run({app: 'myapp',
+      return cmd.default.run({app: 'myapp',
         args: { TOPIC: 'topic-1', VALUE: '60s' },
         flags: {}}
       )
@@ -87,7 +91,7 @@ describe('kafka:topics:retention-time', () => {
       kafka.put(topicConfigUrl('00000000-0000-0000-0000-000000000000', 'topic-1'),
         { topic: { name: 'topic-1', retention_time_ms: null, compaction: true } }).reply(200)
 
-      return cmd.run({app: 'myapp',
+      return cmd.default.run({app: 'myapp',
         args: { TOPIC: 'topic-1', VALUE: 'disable' },
         flags: {}}
       )
@@ -111,7 +115,7 @@ describe('kafka:topics:retention-time', () => {
       kafka.put(topicConfigUrl('00000000-0000-0000-0000-000000000000', 'topic-1'),
         { topic: { name: 'topic-1', retention_time_ms: 60000, compaction: false } }).reply(200)
 
-      return cmd.run({app: 'myapp',
+      return cmd.default.run({app: 'myapp',
         args: { TOPIC: 'topic-1', VALUE: '60s' },
         flags: {}}
       )
@@ -123,7 +127,7 @@ describe('kafka:topics:retention-time', () => {
       kafka.put(topicConfigUrl('00000000-0000-0000-0000-000000000000', 'topic-1'),
         { topic: { name: 'topic-1', retention_time_ms: null, compaction: true } }).reply(200)
 
-      return cmd.run({app: 'myapp',
+      return cmd.default.run({app: 'myapp',
         args: { TOPIC: 'topic-1', VALUE: 'disable' },
         flags: {}}
       )
