@@ -1,19 +1,43 @@
 import cli from '@heroku/heroku-cli-util'
 
-function deprecated (cmd, newCmd, newTopic) {
-  return function * (context, heroku) {
+export interface Attachment {
+  name: string
+  config_vars: string[]
+  app: {
+    name: string
+  }
+}
+
+export interface Addon {
+  id: string
+  name: string
+  plan: {
+    name: string
+  }
+}
+
+export interface ClusterConfig {
+  url: string | undefined
+  trustedCert: string | undefined
+  clientCert: string | undefined
+  clientCertKey: string | undefined
+  prefix?: string
+}
+
+function deprecated (cmd: any, newCmd: string, newTopic?: string): any {
+  return function * (context: any, heroku: any): any {
     const newName = `${newTopic || context.command.topic}:${newCmd}`
     cli.warn(`\nWARNING: ${context.command.topic}:${context.command.command} is deprecated; please use ${newName}\n`)
     return yield * cmd(context, heroku)
   }
 }
 
-function clusterConfig (attachment, config) {
+function clusterConfig (attachment: Attachment, config: Record<string, string>): ClusterConfig {
   if (!attachment) {
     throw new Error('Could not find add-on')
   }
 
-  const findVar = (suffix, required = true) => {
+  const findVar = (suffix: string, required: boolean = true): string | undefined => {
     const configKey = attachment.config_vars.find(v => v.endsWith('_' + suffix))
     if (!configKey) {
       if (required) {
@@ -38,11 +62,11 @@ function clusterConfig (attachment, config) {
   }
 }
 
-function isZookeeperAllowed (addon) {
+function isZookeeperAllowed (addon: Addon): boolean {
   return addon.plan.name.indexOf('private-') !== -1
 }
 
-function parseBool (boolStr) {
+function parseBool (boolStr: string): boolean | undefined {
   switch (boolStr) {
     case 'yes':
     case 'true':
@@ -57,7 +81,7 @@ function parseBool (boolStr) {
   }
 }
 
-function parseDuration (durationStr) {
+function parseDuration (durationStr: string): number | null {
   if (/^\d+$/.test(durationStr)) {
     return parseInt(durationStr, 10)
   } else {
@@ -102,9 +126,9 @@ function parseDuration (durationStr) {
   }
 }
 
-function formatIntervalFromMilliseconds (milliseconds) {
+function formatIntervalFromMilliseconds (milliseconds: number): string {
   let remaining = milliseconds
-  let multipliers = {
+  let multipliers: Record<string, number> = {
     day: (24 * 60 * 60 * 1000),
     hour: (60 * 60 * 1000),
     minute: (60 * 1000),
@@ -112,13 +136,13 @@ function formatIntervalFromMilliseconds (milliseconds) {
   }
   let intervals = Object.keys(multipliers)
     .sort((intervalA, intervalB) => multipliers[intervalB] - multipliers[intervalA])
-  let values = intervals.reduce((accum, interval) => { accum[interval] = 0; return accum }, {})
+  let values: Record<string, number> = intervals.reduce((accum, interval) => { accum[interval] = 0; return accum }, {} as Record<string, number>)
   let smallest = multipliers[intervals[intervals.length - 1]]
 
   while (remaining >= smallest) {
     let nextInterval = intervals.find((interval) => {
       return multipliers[interval] <= remaining
-    })
+    })!
     let nextIntervalValue = multipliers[nextInterval]
     let multiplier = 1
 

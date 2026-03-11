@@ -3,7 +3,7 @@ import globals from 'globals'
 
 export default [
   {
-    ignores: ['node_modules/**', '.nyc_output/**']
+    ignores: ['node_modules/**', '.nyc_output/**', 'dist/**', '**/*.d.ts', 'types/**']
   },
   {
     files: ['**/*.js'],
@@ -19,7 +19,9 @@ export default [
     rules: {
       'quotes': 'off',
       'semi': 'off',
-      'quotes': ['error', 'single']
+      'quotes': ['error', 'single'],
+      '@typescript-eslint/no-explicit-any': 'off',
+      'no-undef': 'off' // TypeScript handles this
     }
   }
 ]
