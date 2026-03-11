@@ -1,15 +1,11 @@
-'use strict'
-
-let cli = require('@heroku/heroku-cli-util')
-let co = require('co')
-let withCluster = require('../lib/clusters').withCluster
-let request = require('../lib/clusters').request
+import cli from '@heroku/heroku-cli-util'
+import {withCluster, request} from '../lib/clusters.js'
 
 const VERSION = 'v0'
 
-function * listConsumerGroups (context, heroku) {
-  yield withCluster(heroku, context.app, context.args.CLUSTER, function * (addon) {
-    let consumerGroups = yield request(heroku, {
+async function listConsumerGroups (context, heroku) {
+  await withCluster(heroku, context.app, context.args.CLUSTER, async (addon) => {
+    let consumerGroups = await request(heroku, {
       path: `/data/kafka/${VERSION}/clusters/${addon.id}/consumer_groups`
     })
     cli.styledHeader('Kafka Consumer Groups on ' + (context.args.CLUSTER || 'HEROKU_KAFKA'))
@@ -34,7 +30,7 @@ function * listConsumerGroups (context, heroku) {
   })
 }
 
-module.exports = {
+export default {
   topic: 'kafka',
   command: 'consumer-groups',
   description: 'lists available Kafka consumer groups',
@@ -52,5 +48,5 @@ module.exports = {
   ],
   needsApp: true,
   needsAuth: true,
-  run: cli.command({preauth: true}, co.wrap(listConsumerGroups))
+  run: cli.command({preauth: true}, listConsumerGroups)
 }

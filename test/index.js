@@ -1,11 +1,6 @@
-'use strict'
-
-const expect = require('chai').expect
-const mocha = require('mocha')
-const describe = mocha.describe
-const it = mocha.it
-
-var index = require('../commands')
+import {expect} from 'chai'
+import {describe, it} from 'mocha'
+import * as index from '../commands/index.js'
 
 describe('commands', function () {
   index.commands.forEach(function (command) {

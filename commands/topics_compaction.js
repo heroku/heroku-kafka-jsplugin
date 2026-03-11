@@ -1,28 +1,21 @@
-'use strict'
-
-let cli = require('@heroku/heroku-cli-util')
-let co = require('co')
-let parseBool = require('../lib/shared').parseBool
-let formatIntervalFromMilliseconds = require('../lib/shared').formatIntervalFromMilliseconds
-let withCluster = require('../lib/clusters').withCluster
-let request = require('../lib/clusters').request
-let topicConfig = require('../lib/clusters').topicConfig
-let fetchProvisionedInfo = require('../lib/clusters').fetchProvisionedInfo
+import cli from '@heroku/heroku-cli-util'
+import {parseBool, formatIntervalFromMilliseconds} from '../lib/shared.js'
+import {withCluster, request, topicConfig, fetchProvisionedInfo} from '../lib/clusters.js'
 
 const VERSION = 'v0'
 
-function * compaction (context, heroku) {
+async function compaction (context, heroku) {
   let enabled = parseBool(context.args.VALUE)
   if (enabled === undefined) {
     cli.exit(1, `Unknown value '${context.args.VALUE}': must be 'on' or 'enable' to enable, or 'off' or 'disable' to disable`)
   }
 
-  yield withCluster(heroku, context.app, context.args.CLUSTER, function * (addon) {
+  await withCluster(heroku, context.app, context.args.CLUSTER, async (addon) => {
     const topicName = context.args.TOPIC
-    let [ topicInfo, addonInfo ] = yield [
+    let [ topicInfo, addonInfo ] = await Promise.all([
       topicConfig(heroku, addon.id, topicName),
       fetchProvisionedInfo(heroku, addon)
-    ]
+    ])
     let retentionTime
     if (enabled) {
       retentionTime = addonInfo.capabilities.supports_mixed_cleanup_policy ? topicInfo.retention_time_ms : null
@@ -42,20 +35,20 @@ function * compaction (context, heroku) {
     }
     msg += ` for topic ${context.args.TOPIC} on ${addon.name}`
 
-    yield cli.action(msg, co(function * () {
-      return yield request(heroku, {
+    await cli.action(msg, (async () => {
+      return await request(heroku, {
         method: 'PUT',
         body: {
           topic: Object.assign({ name: topicName }, cleanupPolicy)
         },
         path: `/data/kafka/${VERSION}/clusters/${addon.id}/topics/${topicName}`
       })
-    }))
+    })())
     cli.log(`Use \`heroku kafka:topics:info ${context.args.TOPIC}\` to monitor your topic.`)
   })
 }
 
-module.exports = {
+export default {
   topic: 'kafka',
   command: 'topics:compaction',
   description: 'configures topic compaction in Kafka',
@@ -77,5 +70,5 @@ module.exports = {
     { name: 'VALUE' },
     { name: 'CLUSTER', optional: true }
   ],
-  run: cli.command({preauth: true}, co.wrap(compaction))
+  run: cli.command({preauth: true}, compaction)
 }

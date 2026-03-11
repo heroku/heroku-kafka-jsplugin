@@ -1,28 +1,23 @@
-'use strict'
-
-let cli = require('@heroku/heroku-cli-util')
-let co = require('co')
-let deprecated = require('../lib/shared').deprecated
-let withCluster = require('../lib/clusters').withCluster
-let request = require('../lib/clusters').request
+import cli from '@heroku/heroku-cli-util'
+import {withCluster, request} from '../lib/clusters.js'
 
 const VERSION = 'v0'
 
-function * destroyTopic (context, heroku) {
-  yield withCluster(heroku, context.app, context.args.CLUSTER, function * (addon) {
-    yield cli.confirmApp(context.app, context.flags.confirm,
+async function destroyTopic (context, heroku) {
+  await withCluster(heroku, context.app, context.args.CLUSTER, async (addon) => {
+    await cli.confirmApp(context.app, context.flags.confirm,
       `This command will affect the cluster: ${addon.name}, which is on ${context.app}`)
 
-    yield cli.action(`Deleting topic ${context.args.TOPIC}`, co(function * () {
+    await cli.action(`Deleting topic ${context.args.TOPIC}`, (async () => {
       const topicName = context.args.TOPIC
-      return yield request(heroku, {
+      return await request(heroku, {
         method: 'DELETE',
         body: {
           topic_name: topicName
         },
         path: `/data/kafka/${VERSION}/clusters/${addon.id}/topics/${topicName}`
       })
-    }))
+    })())
 
     cli.log('Your topic has been marked for deletion, and will be removed from the cluster shortly')
   })
@@ -53,12 +48,7 @@ let cmd = {
       description: 'pass the app name to skip the manual confirmation prompt',
       hasValue: true }
   ],
-  run: cli.command({preauth: true}, co.wrap(destroyTopic))
+  run: cli.command({preauth: true}, destroyTopic)
 }
 
-module.exports = {
-  cmd,
-  deprecated: Object.assign({}, cmd, { command: 'delete',
-    hidden: true,
-    run: cli.command(co.wrap(deprecated(destroyTopic, cmd.command))) })
-}
+export {cmd}

@@ -1,19 +1,15 @@
-'use strict'
-
-let cli = require('@heroku/heroku-cli-util')
-let co = require('co')
-let withCluster = require('../lib/clusters').withCluster
-let request = require('../lib/clusters').request
+import cli from '@heroku/heroku-cli-util'
+import {withCluster, request} from '../lib/clusters.js'
 
 const VERSION = 'v0'
 
-function * fail (context, heroku) {
-  yield withCluster(heroku, context.app, context.args.CLUSTER, function * (addon) {
-    yield cli.confirmApp(context.app, context.flags.confirm,
+async function fail (context, heroku) {
+  await withCluster(heroku, context.app, context.args.CLUSTER, async (addon) => {
+    await cli.confirmApp(context.app, context.flags.confirm,
       `This command will affect the cluster: ${addon.name}, which is on ${context.app}\n\nThis command will forcibly terminate nodes in your cluster at random.\nYou should only run this command in controlled testing scenarios.`)
 
-    let response = yield cli.action('Triggering failure', co(function * () {
-      return yield request(heroku, {
+    let response = await cli.action('Triggering failure', (async () => {
+      return await request(heroku, {
         method: 'POST',
         body: {
           catastrophic: context.flags.catastrophic,
@@ -21,13 +17,13 @@ function * fail (context, heroku) {
         },
         path: `/data/kafka/${VERSION}/clusters/${addon.id}/induce-failure`
       })
-    }))
+    })())
 
     cli.log(response.message)
   })
 }
 
-module.exports = {
+export default {
   topic: 'kafka',
   command: 'fail',
   description: 'triggers failure on one node in the cluster',
@@ -57,5 +53,5 @@ module.exports = {
       hasValue: true,
       required: false }
   ],
-  run: cli.command({preauth: true}, co.wrap(fail))
+  run: cli.command({preauth: true}, fail)
 }

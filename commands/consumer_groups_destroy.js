@@ -1,19 +1,15 @@
-'use strict'
-
-let cli = require('@heroku/heroku-cli-util')
-let co = require('co')
-let withCluster = require('../lib/clusters').withCluster
-let request = require('../lib/clusters').request
+import cli from '@heroku/heroku-cli-util'
+import {withCluster, request} from '../lib/clusters.js'
 
 const VERSION = 'v0'
 
-function * destroyConsumerGroup (context, heroku) {
-  yield withCluster(heroku, context.app, context.args.CLUSTER, function * (addon) {
-    yield cli.confirmApp(context.app, context.flags.confirm,
+async function destroyConsumerGroup (context, heroku) {
+  await withCluster(heroku, context.app, context.args.CLUSTER, async (addon) => {
+    await cli.confirmApp(context.app, context.flags.confirm,
       `This command will affect the cluster: ${addon.name}, which is on ${context.app}`)
 
-    yield cli.action(`Deleting consumer group ${context.args.CONSUMER_GROUP}`, co(function * () {
-      return yield request(heroku, {
+    await cli.action(`Deleting consumer group ${context.args.CONSUMER_GROUP}`, (async () => {
+      return await request(heroku, {
         method: 'delete',
         body: {
           consumer_group: {
@@ -22,13 +18,13 @@ function * destroyConsumerGroup (context, heroku) {
         },
         path: `/data/kafka/${VERSION}/clusters/${addon.id}/consumer_groups`
       })
-    }))
+    })())
 
     cli.log('Your consumer group has been deleted')
   })
 }
 
-module.exports = {
+export default {
   topic: 'kafka',
   command: 'consumer-groups:destroy',
   description: 'destroys a consumer group in Kafka',
@@ -51,5 +47,5 @@ module.exports = {
     { name: 'CONSUMER_GROUP' },
     { name: 'CLUSTER', optional: true }
   ],
-  run: cli.command({preauth: true}, co.wrap(destroyConsumerGroup))
+  run: cli.command({preauth: true}, destroyConsumerGroup)
 }

@@ -1,17 +1,12 @@
-'use strict'
-
-let cli = require('@heroku/heroku-cli-util')
-let co = require('co')
-let humanize = require('humanize-plus')
-let deprecated = require('../lib/shared').deprecated
-let withCluster = require('../lib/clusters').withCluster
-let request = require('../lib/clusters').request
+import cli from '@heroku/heroku-cli-util'
+import humanize from 'humanize-plus'
+import {withCluster, request} from '../lib/clusters.js'
 
 const VERSION = 'v0'
 
-function * listTopics (context, heroku) {
-  yield withCluster(heroku, context.app, context.args.CLUSTER, function * (addon) {
-    let topics = yield request(heroku, {
+async function listTopics (context, heroku) {
+  await withCluster(heroku, context.app, context.args.CLUSTER, async (addon) => {
+    let topics = await request(heroku, {
       path: `/data/kafka/${VERSION}/clusters/${addon.id}/topics`
     })
     cli.styledHeader('Kafka Topics on ' + (topics.attachment_name || 'HEROKU_KAFKA'))
@@ -60,7 +55,7 @@ function * listTopics (context, heroku) {
   })
 }
 
-let cmd = {
+const cmd = {
   topic: 'kafka',
   command: 'topics',
   description: 'lists available Kafka topics',
@@ -81,12 +76,7 @@ let cmd = {
   ],
   needsApp: true,
   needsAuth: true,
-  run: cli.command({preauth: true}, co.wrap(listTopics))
+  run: cli.command({preauth: true}, listTopics)
 }
 
-module.exports = {
-  cmd,
-  deprecated: Object.assign({}, cmd, { command: 'list',
-    hidden: true,
-    run: cli.command(co.wrap(deprecated(listTopics, cmd.command))) })
-}
+export {cmd}

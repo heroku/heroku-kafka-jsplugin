@@ -1,15 +1,11 @@
-'use strict'
-
-let cli = require('@heroku/heroku-cli-util')
-let co = require('co')
-let withCluster = require('../lib/clusters').withCluster
-let request = require('../lib/clusters').request
+import cli from '@heroku/heroku-cli-util'
+import {withCluster, request} from '../lib/clusters.js'
 
 const VERSION = 'v0'
 
-function * upgradeCluster (context, heroku) {
-  yield withCluster(heroku, context.app, context.args.CLUSTER, function * (addon) {
-    yield cli.confirmApp(context.app, context.flags.confirm,
+async function upgradeCluster (context, heroku) {
+  await withCluster(heroku, context.app, context.args.CLUSTER, async (addon) => {
+    await cli.confirmApp(context.app, context.flags.confirm,
       `This command will upgrade the brokers of the cluster to version ${context.flags.version}.
                           Upgrading the cluster involves rolling restarts of brokers, and takes some time, depending on the
                           size of the cluster.`)
@@ -22,7 +18,7 @@ function * upgradeCluster (context, heroku) {
 
     cli.action.start(msg)
 
-    yield request(heroku, {
+    await request(heroku, {
       method: 'PUT',
       body: {
         version: context.flags.version
@@ -36,7 +32,7 @@ function * upgradeCluster (context, heroku) {
   })
 }
 
-module.exports = {
+export default {
   topic: 'kafka',
   command: 'upgrade',
   description: 'upgrades kafka broker version',
@@ -56,5 +52,5 @@ module.exports = {
     { name: 'version', description: 'requested kafka version for upgrade', hasValue: true, required: true },
     { name: 'confirm', description: 'pass the app name to skip the manual confirmation prompt', hasValue: true }
   ],
-  run: cli.command({preauth: true}, co.wrap(upgradeCluster))
+  run: cli.command({preauth: true}, upgradeCluster)
 }

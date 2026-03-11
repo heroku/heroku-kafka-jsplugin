@@ -1,11 +1,6 @@
-'use strict'
-
-let cli = require('@heroku/heroku-cli-util')
-let co = require('co')
-let humanize = require('humanize-plus')
-let deprecated = require('../lib/shared').deprecated
-let withCluster = require('../lib/clusters').withCluster
-let topicConfig = require('../lib/clusters').topicConfig
+import cli from '@heroku/heroku-cli-util'
+import humanize from 'humanize-plus'
+import {withCluster, topicConfig} from '../lib/clusters.js'
 
 const ONE_HOUR_IN_MS = 60 * 60 * 1000
 const TWENTY_FOUR_HOURS_IN_MS = ONE_HOUR_IN_MS * 24
@@ -69,10 +64,10 @@ function topicInfo (topic) {
   return lines
 }
 
-function * kafkaTopic (context, heroku) {
-  yield withCluster(heroku, context.app, context.args.CLUSTER, function * (addon) {
+async function kafkaTopic (context, heroku) {
+  await withCluster(heroku, context.app, context.args.CLUSTER, async (addon) => {
     let topicName = context.args.TOPIC
-    let topic = yield topicConfig(heroku, addon.id, topicName)
+    let topic = await topicConfig(heroku, addon.id, topicName)
     if (topic.partitions < 1) {
       cli.exit(1, `topic ${topicName} is not available yet`)
     } else {
@@ -104,12 +99,7 @@ let cmd = {
 `,
   needsApp: true,
   needsAuth: true,
-  run: cli.command({preauth: true}, co.wrap(kafkaTopic))
+  run: cli.command({preauth: true}, kafkaTopic)
 }
 
-module.exports = {
-  cmd,
-  deprecated: Object.assign({}, cmd, { command: 'topic',
-    hidden: true,
-    run: cli.command(co.wrap(deprecated(kafkaTopic, cmd.command))) })
-}
+export {cmd}

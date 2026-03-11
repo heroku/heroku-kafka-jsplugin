@@ -1,15 +1,10 @@
-'use strict'
-
-let cli = require('@heroku/heroku-cli-util')
-let co = require('co')
-let parseBool = require('../lib/shared').parseBool
-let isZookeeperAllowed = require('../lib/shared').isZookeeperAllowed
-let withCluster = require('../lib/clusters').withCluster
-let request = require('../lib/clusters').request
+import cli from '@heroku/heroku-cli-util'
+import {parseBool, isZookeeperAllowed} from '../lib/shared.js'
+import {withCluster, request} from '../lib/clusters.js'
 
 const VERSION = 'v0'
 
-function * zookeeper (context, heroku) {
+async function zookeeper (context, heroku) {
   let enabled = parseBool(context.args.VALUE)
   if (enabled === undefined) {
     cli.exit(1, `Unknown value '${context.args.VALUE}': must be 'on' or 'enable' to enable, or 'off' or 'disable' to disable`)
@@ -20,24 +15,24 @@ function * zookeeper (context, heroku) {
     msg += ` on ${context.args.CLUSTER}`
   }
 
-  yield withCluster(heroku, context.app, context.args.CLUSTER, function * (addon) {
+  await withCluster(heroku, context.app, context.args.CLUSTER, async (addon) => {
     if (!isZookeeperAllowed(addon)) {
       cli.exit(1, '`kafka:zookeeper` is only available in Heroku Private Spaces')
     }
 
-    yield cli.action(msg, co(function * () {
-      return yield request(heroku, {
+    await cli.action(msg, (async () => {
+      return await request(heroku, {
         method: 'POST',
         body: {
           enabled: enabled
         },
         path: `/data/kafka/${VERSION}/clusters/${addon.id}/zookeeper`
       })
-    }))
+    })())
   })
 }
 
-module.exports = {
+export default {
   topic: 'kafka',
   command: 'zookeeper',
   description: '(Private Spaces only) control direct access to Zookeeper of your Kafka cluster',
@@ -60,5 +55,5 @@ module.exports = {
 `,
   needsApp: true,
   needsAuth: true,
-  run: cli.command({preauth: true}, co.wrap(zookeeper))
+  run: cli.command({preauth: true}, zookeeper)
 }

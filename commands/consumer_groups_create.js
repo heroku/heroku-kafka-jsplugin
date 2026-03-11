@@ -1,22 +1,18 @@
-'use strict'
-
-let cli = require('@heroku/heroku-cli-util')
-let co = require('co')
-let withCluster = require('../lib/clusters').withCluster
-let request = require('../lib/clusters').request
+import cli from '@heroku/heroku-cli-util'
+import {withCluster, request} from '../lib/clusters.js'
 
 const VERSION = 'v0'
 
-function * createConsumerGroup (context, heroku) {
-  yield withCluster(heroku, context.app, context.args.CLUSTER, function * (addon) {
+async function createConsumerGroup (context, heroku) {
+  await withCluster(heroku, context.app, context.args.CLUSTER, async (addon) => {
     let msg = `Creating consumer group ${context.args.CONSUMER_GROUP}`
     if (context.args.CLUSTER) {
       msg += ` on ${context.args.CLUSTER}`
     }
     var created = true
 
-    yield cli.action(msg, co(function * () {
-      return yield request(heroku, {
+    await cli.action(msg, (async () => {
+      return await request(heroku, {
         method: 'POST',
         body: {
           consumer_group: {
@@ -25,7 +21,7 @@ function * createConsumerGroup (context, heroku) {
         },
         path: `/data/kafka/${VERSION}/clusters/${addon.id}/consumer_groups`
       })
-    })).catch(err => {
+    })()).catch(err => {
       if (err.statusCode === 400 && err.body.message === 'this command is not required or enabled on dedicated clusters') {
         created = false
         cli.warn(`${cli.color.addon(addon.name)} does not need consumer groups managed explicitly, so this command does nothing`)
@@ -40,7 +36,7 @@ function * createConsumerGroup (context, heroku) {
   })
 }
 
-module.exports = {
+export default {
   topic: 'kafka',
   command: 'consumer-groups:create',
   description: 'creates a consumer group in Kafka',
@@ -58,5 +54,5 @@ module.exports = {
     { name: 'CONSUMER_GROUP' },
     { name: 'CLUSTER', optional: true }
   ],
-  run: cli.command({preauth: true}, co.wrap(createConsumerGroup))
+  run: cli.command({preauth: true}, createConsumerGroup)
 }

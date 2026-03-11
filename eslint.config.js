@@ -1,7 +1,7 @@
-const js = require('@eslint/js')
-const globals = require('globals')
+import js from '@eslint/js'
+import globals from 'globals'
 
-module.exports = [
+export default [
   {
     ignores: ['node_modules/**', '.nyc_output/**']
   },
@@ -10,7 +10,7 @@ module.exports = [
     ...js.configs.recommended,
     languageOptions: {
       ecmaVersion: 2022,
-      sourceType: 'commonjs',
+      sourceType: 'module',
       globals: {
         ...globals.node,
         ...globals.mocha

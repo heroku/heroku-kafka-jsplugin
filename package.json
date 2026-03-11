@@ -45,6 +45,7 @@
     "node": ">=20.0.0"
   },
   "main": "commands/index.js",
+  "type": "module",
   "repository": "heroku/heroku-kafka-jsplugin",
   "scripts": {
     "coverage": "nyc --reporter=html --reporter=text --reporter=lcov yarn test",

@@ -1,16 +1,10 @@
-'use strict'
-
-let cli = require('@heroku/heroku-cli-util')
-let co = require('co')
-let parseDuration = require('../lib/shared').parseDuration
-let withCluster = require('../lib/clusters').withCluster
-let request = require('../lib/clusters').request
-let topicConfig = require('../lib/clusters').topicConfig
-let fetchProvisionedInfo = require('../lib/clusters').fetchProvisionedInfo
+import cli from '@heroku/heroku-cli-util'
+import {parseDuration} from '../lib/shared.js'
+import {withCluster, request, topicConfig, fetchProvisionedInfo} from '../lib/clusters.js'
 
 const VERSION = 'v0'
 
-function * retentionTime (context, heroku) {
+async function retentionTime (context, heroku) {
   let parsed = null
   if (context.args.VALUE !== 'disable') {
     parsed = parseDuration(context.args.VALUE)
@@ -19,12 +13,12 @@ function * retentionTime (context, heroku) {
     }
   }
 
-  yield withCluster(heroku, context.app, context.args.CLUSTER, function * (addon) {
+  await withCluster(heroku, context.app, context.args.CLUSTER, async (addon) => {
     const topicName = context.args.TOPIC
-    let [ topicInfo, addonInfo ] = yield [
+    let [ topicInfo, addonInfo ] = await Promise.all([
       topicConfig(heroku, addon.id, topicName),
       fetchProvisionedInfo(heroku, addon)
-    ]
+    ])
     let cleanupPolicy = {
       retention_time_ms: parsed,
       compaction: (!parsed || (addonInfo.capabilities.supports_mixed_cleanup_policy && topicInfo.compaction))
@@ -44,21 +38,21 @@ function * retentionTime (context, heroku) {
     }
     msg += ` for topic ${context.args.TOPIC} on ${addon.name}`
 
-    yield cli.action(msg, co(function * () {
-      return yield request(heroku, {
+    await cli.action(msg, (async () => {
+      return await request(heroku, {
         method: 'PUT',
         body: {
           topic: Object.assign({ name: topicName }, cleanupPolicy)
         },
         path: `/data/kafka/${VERSION}/clusters/${addon.id}/topics/${topicName}`
       })
-    }))
+    })())
 
     cli.log(`Use \`heroku kafka:topics:info ${context.args.TOPIC}\` to monitor your topic.`)
   })
 }
 
-module.exports = {
+export default {
   topic: 'kafka',
   command: 'topics:retention-time',
   description: 'configures or disables topic retention time (e.g. 10d, 36h)',
@@ -81,5 +75,5 @@ module.exports = {
     { name: 'VALUE' },
     { name: 'CLUSTER', optional: true }
   ],
-  run: cli.command({preauth: true}, co.wrap(retentionTime))
+  run: cli.command({preauth: true}, retentionTime)
 }

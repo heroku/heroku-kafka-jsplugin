@@ -1,25 +1,20 @@
-'use strict'
-
-const cli = require('@heroku/heroku-cli-util')
-const co = require('co')
-
-const debug = require('../lib/debug')
-const clusterConfig = require('../lib/shared').clusterConfig
-const deprecated = require('../lib/shared').deprecated
-const withCluster = require('../lib/clusters').withCluster
+import cli from '@heroku/heroku-cli-util'
+import debug from '../lib/debug.js'
+import {clusterConfig} from '../lib/shared.js'
+import {withCluster} from '../lib/clusters.js'
 
 const CLIENT_ID = 'heroku-tail-consumer'
 const IDLE_TIMEOUT = 1000
 const MAX_LENGTH = 80
 
-function * tail (context, heroku) {
-  const kafka = require('@heroku/no-kafka')
-  yield withCluster(heroku, context.app, context.args.CLUSTER, function * (addon) {
-    let appConfig = yield heroku.get(`/apps/${context.app}/config-vars`)
-    let attachment = yield heroku.get(`/apps/${context.app}/addon-attachments/${addon.name}`,
+async function tail (context, heroku) {
+  const kafka = await import('@heroku/no-kafka')
+  await withCluster(heroku, context.app, context.args.CLUSTER, async (addon) => {
+    let appConfig = await heroku.get(`/apps/${context.app}/config-vars`)
+    let attachment = await heroku.get(`/apps/${context.app}/addon-attachments/${addon.name}`,
       { headers: { 'accept-inclusion': 'config_vars' } })
     let config = clusterConfig(attachment, appConfig)
-    let consumer = new kafka.SimpleConsumer({
+    let consumer = new kafka.default.SimpleConsumer({
       idleTimeout: IDLE_TIMEOUT,
       clientId: CLIENT_ID,
       connectionString: config.url,
@@ -32,7 +27,7 @@ function * tail (context, heroku) {
       }
     })
     try {
-      yield consumer.init()
+      await consumer.init()
     } catch (e) {
       debug(e)
       cli.exit(1, 'Could not connect to kafka')
@@ -46,7 +41,7 @@ function * tail (context, heroku) {
     return new Promise((resolve, reject) => {
       // N.B.: we never call resolve unless we see a SIGINT because
       // tail is meant to keep going indefinitely
-      module.exports.process.once('SIGINT', resolve)
+      process.once('SIGINT', resolve)
       try {
         consumer.subscribe(topicName, (messageSet, topic, partition) => {
           messageSet.forEach((m) => {
@@ -91,15 +86,7 @@ let cmd = {
 `,
   needsApp: true,
   needsAuth: true,
-  run: cli.command(co.wrap(tail))
+  run: cli.command(tail)
 }
 
-module.exports = {
-  cmd,
-  deprecated: Object.assign({}, cmd, { command: 'tail',
-    hidden: true,
-    run: cli.command(co.wrap(deprecated(tail, cmd.command))) }),
-  // N.B.: exporting this here and relying on the exported version lets
-  // us mock it out in tests
-  process
-}
+export {cmd}

@@ -1,17 +1,10 @@
-'use strict'
-
-let cli = require('@heroku/heroku-cli-util')
-let co = require('co')
-let parseDuration = require('../lib/shared').parseDuration
-let formatIntervalFromMilliseconds = require('../lib/shared').formatIntervalFromMilliseconds
-let deprecated = require('../lib/shared').deprecated
-let withCluster = require('../lib/clusters').withCluster
-let request = require('../lib/clusters').request
-let fetchProvisionedInfo = require('../lib/clusters').fetchProvisionedInfo
+import cli from '@heroku/heroku-cli-util'
+import {parseDuration, formatIntervalFromMilliseconds} from '../lib/shared.js'
+import {withCluster, request, fetchProvisionedInfo} from '../lib/clusters.js'
 
 const VERSION = 'v0'
 
-function * createTopic (context, heroku) {
+async function createTopic (context, heroku) {
   let flags = Object.assign({}, context.flags)
   let retentionTimeMillis
   if (flags['retention-time'] !== undefined) {
@@ -22,8 +15,8 @@ function * createTopic (context, heroku) {
   }
   let compaction = flags['compaction'] || false
 
-  yield withCluster(heroku, context.app, context.args.CLUSTER, function * (addon) {
-    let addonInfo = yield fetchProvisionedInfo(heroku, addon)
+  await withCluster(heroku, context.app, context.args.CLUSTER, async (addon) => {
+    let addonInfo = await fetchProvisionedInfo(heroku, addon)
 
     if ((!compaction || addonInfo.shared_cluster) && !retentionTimeMillis) {
       retentionTimeMillis = addonInfo.limits.default_retention_ms || addonInfo.limits.minimum_retention_ms
@@ -35,8 +28,8 @@ function * createTopic (context, heroku) {
     }
     msg += ` on ${addon.name}`
 
-    yield cli.action(msg, co(function * () {
-      return yield request(heroku, {
+    await cli.action(msg, (async () => {
+      return await request(heroku, {
         method: 'POST',
         body: {
           topic: {
@@ -49,7 +42,7 @@ function * createTopic (context, heroku) {
         },
         path: `/data/kafka/${VERSION}/clusters/${addon.id}/topics`
       })
-    }))
+    })())
 
     cli.log(`Use \`heroku kafka:topics:info ${context.args.TOPIC}\` to monitor your topic.`)
     if (addonInfo.topic_prefix) {
@@ -59,7 +52,7 @@ function * createTopic (context, heroku) {
   })
 }
 
-let cmd = {
+const cmd = {
   topic: 'kafka',
   command: 'topics:create',
   description: 'creates a topic in Kafka',
@@ -85,12 +78,7 @@ let cmd = {
     { name: 'retention-time', description: 'length of time messages in the topic should be retained (at least 24h)', hasValue: true },
     { name: 'compaction', description: 'whether to use compaction for this topic', hasValue: false }
   ],
-  run: cli.command({preauth: true}, co.wrap(createTopic))
+  run: cli.command({preauth: true}, createTopic)
 }
 
-module.exports = {
-  cmd,
-  deprecated: Object.assign({}, cmd, { command: 'create',
-    hidden: true,
-    run: cli.command(co.wrap(deprecated(createTopic, cmd.command))) })
-}
+export {cmd}

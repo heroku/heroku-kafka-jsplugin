@@ -1,19 +1,15 @@
-'use strict'
-
-let cli = require('@heroku/heroku-cli-util')
-let co = require('co')
-let withCluster = require('../lib/clusters').withCluster
-let request = require('../lib/clusters').request
+import cli from '@heroku/heroku-cli-util'
+import {withCluster, request} from '../lib/clusters.js'
 
 const VERSION = 'v0'
 
-function * credentialsRotate (context, heroku) {
+async function credentialsRotate (context, heroku) {
   if (!context.flags.reset) {
     throw new Error('The --reset flag is required for this command')
   }
 
-  yield withCluster(heroku, context.app, context.args.CLUSTER, function * (addon) {
-    let response = yield request(heroku, {
+  await withCluster(heroku, context.app, context.args.CLUSTER, async (addon) => {
+    let response = await request(heroku, {
       method: 'POST',
       path: `/data/kafka/${VERSION}/clusters/${addon.id}/rotate-credentials`
     })
@@ -22,7 +18,7 @@ function * credentialsRotate (context, heroku) {
   })
 }
 
-module.exports = {
+export default {
   topic: 'kafka',
   command: 'credentials',
   description: 'triggers credential rotation',
@@ -45,5 +41,5 @@ module.exports = {
       hasValue: false,
       required: true }
   ],
-  run: cli.command({preauth: true}, co.wrap(credentialsRotate))
+  run: cli.command({preauth: true}, credentialsRotate)
 }

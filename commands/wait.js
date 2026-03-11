@@ -1,19 +1,19 @@
-'use strict'
+import cli from '@heroku/heroku-cli-util'
+import {HerokuKafkaClusters} from '../lib/clusters.js'
+import fetcherFn from '../lib/fetcher.js'
 
-const cli = require('@heroku/heroku-cli-util')
-const co = require('co')
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms))
+}
 
-const HerokuKafkaClusters = require('../lib/clusters').HerokuKafkaClusters
-
-function * run (context, heroku) {
-  const fetcher = require('../lib/fetcher')(heroku)
+async function run (context, heroku) {
+  const fetcher = fetcherFn(heroku)
   const app = context.app
   const cluster = context.args.CLUSTER
 
   const shogun = new HerokuKafkaClusters(heroku, process.env, context)
 
-  let waitFor = co.wrap(function * waitFor (cluster) {
-    const wait = require('co-wait')
+  async function waitFor (cluster) {
     let interval = parseInt(context.flags['wait-interval'])
     if (!interval || interval < 0) interval = 5
 
@@ -21,7 +21,7 @@ function * run (context, heroku) {
     let waiting = false
 
     while (true) {
-      status = yield shogun.waitStatus(cluster)
+      status = await shogun.waitStatus(cluster)
 
       if (!status['waiting?']) {
         if (waiting) cli.action.done(status.message)
@@ -41,21 +41,21 @@ function * run (context, heroku) {
 
       cli.action.status(status.message)
 
-      yield wait(interval * 1000)
+      await sleep(interval * 1000)
     }
-  })
+  }
 
   let clusters = []
   if (cluster) {
-    clusters = yield [fetcher.addon(app, cluster)]
+    clusters = await Promise.all([fetcher.addon(app, cluster)])
   } else {
-    clusters = yield fetcher.all(app)
+    clusters = await fetcher.all(app)
   }
 
-  for (let cluster of clusters) yield waitFor(cluster)
+  for (let cluster of clusters) await waitFor(cluster)
 }
 
-module.exports = {
+export default {
   topic: 'kafka',
   command: 'wait',
   description: 'waits until Kafka is ready to use',
@@ -71,5 +71,5 @@ module.exports = {
 `,
   needsApp: true,
   needsAuth: true,
-  run: cli.command({preauth: true}, co.wrap(run))
+  run: cli.command({preauth: true}, run)
 }

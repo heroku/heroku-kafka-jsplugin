@@ -1,25 +1,20 @@
-'use strict'
-
-const cli = require('@heroku/heroku-cli-util')
-const co = require('co')
-
-const debug = require('../lib/debug')
-const clusterConfig = require('../lib/shared').clusterConfig
-const deprecated = require('../lib/shared').deprecated
-const withCluster = require('../lib/clusters').withCluster
+import cli from '@heroku/heroku-cli-util'
+import debug from '../lib/debug.js'
+import {clusterConfig} from '../lib/shared.js'
+import {withCluster} from '../lib/clusters.js'
 
 const CLIENT_ID = 'heroku-write-producer'
 const IDLE_TIMEOUT = 1000
 
-function * write (context, heroku) {
-  const kafka = require('@heroku/no-kafka')
-  yield withCluster(heroku, context.app, context.args.CLUSTER, function * (addon) {
-    let appConfig = yield heroku.get(`/apps/${context.app}/config-vars`)
-    let attachment = yield heroku.get(`/apps/${context.app}/addon-attachments/${addon.name}`,
+async function write (context, heroku) {
+  const kafka = await import('@heroku/no-kafka')
+  await withCluster(heroku, context.app, context.args.CLUSTER, async (addon) => {
+    let appConfig = await heroku.get(`/apps/${context.app}/config-vars`)
+    let attachment = await heroku.get(`/apps/${context.app}/addon-attachments/${addon.name}`,
       { headers: { 'accept-inclusion': 'config_vars' } })
     let config = clusterConfig(attachment, appConfig)
 
-    let producer = new kafka.Producer({
+    let producer = new kafka.default.Producer({
       idleTimeout: IDLE_TIMEOUT,
       clientId: CLIENT_ID,
       connectionString: config.url,
@@ -33,7 +28,7 @@ function * write (context, heroku) {
     })
 
     try {
-      yield producer.init()
+      await producer.init()
     } catch (e) {
       debug(e)
       cli.exit(1, 'Could not connect to kafka')
@@ -59,7 +54,7 @@ function * write (context, heroku) {
     }
 
     try {
-      yield producer.send(payload)
+      await producer.send(payload)
       producer.end()
     } catch (e) {
       debug(e)
@@ -92,12 +87,7 @@ let cmd = {
 `,
   needsApp: true,
   needsAuth: true,
-  run: cli.command(co.wrap(write))
+  run: cli.command(write)
 }
 
-module.exports = {
-  cmd,
-  deprecated: Object.assign({}, cmd, { command: 'write',
-    hidden: true,
-    run: cli.command(co.wrap(deprecated(write, cmd.command))) })
-}
+export {cmd}

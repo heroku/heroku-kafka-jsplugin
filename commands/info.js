@@ -1,9 +1,9 @@
-'use strict'
-
-const co = require('co')
-const cli = require('@heroku/heroku-cli-util')
-const humanize = require('humanize-plus')
-const utilizationBar = require('../lib/utilizationBar')
+import cli from '@heroku/heroku-cli-util'
+import humanize from 'humanize-plus'
+import sortBy from 'lodash.sortby'
+import utilizationBar from '../lib/utilizationBar.js'
+import host from '../lib/host.js'
+import fetcherFn from '../lib/fetcher.js'
 
 function configVarsFromName (attachments, name) {
   return attachments
@@ -102,31 +102,29 @@ function displayCluster (cluster) {
   cli.log()
 }
 
-function * run (context, heroku) {
-  const sortBy = require('lodash.sortby')
-  const host = require('../lib/host')
-  const fetcher = require('../lib/fetcher')(heroku)
+async function run (context, heroku) {
+  const fetcher = fetcherFn(heroku)
   const app = context.app
   const cluster = context.args.CLUSTER
 
   let addons = []
-  let attachments = heroku.get(`/apps/${app}/addon-attachments`)
+  let attachments = await heroku.get(`/apps/${app}/addon-attachments`)
 
   if (cluster) {
-    addons = yield [fetcher.addon(app, cluster)]
+    addons = await Promise.all([fetcher.addon(app, cluster)])
   } else {
-    addons = yield fetcher.all(app)
+    addons = await fetcher.all(app)
     if (addons.length === 0) {
       cli.log(`${cli.color.app(app)} has no heroku-kafka clusters.`)
       return
     }
   }
 
-  let clusters = yield addons.map(addon => {
+  let clusters = await Promise.all(addons.map(async addon => {
     return {
       addon,
       attachments,
-      cluster: heroku.request({
+      cluster: await heroku.request({
         host: host(addon),
         method: 'get',
         path: `/data/kafka/v0/clusters/${addon.id}`
@@ -135,7 +133,7 @@ function * run (context, heroku) {
         cli.warn(`${cli.color.addon(addon.name)} is not yet provisioned.\nRun ${cli.color.cmd('heroku kafka:wait')} to wait until the cluster is provisioned.`)
       })
     }
-  })
+  }))
 
   clusters = clusters.filter(cluster => cluster.cluster)
   clusters.forEach(cluster => { cluster.configVars = configVarsFromName(cluster.attachments, cluster.addon.name) })
@@ -150,9 +148,9 @@ let cmd = {
   needsApp: true,
   needsAuth: true,
   args: [{name: 'CLUSTER', optional: true}],
-  run: cli.command({preauth: true}, co.wrap(run))
+  run: cli.command({preauth: true}, run)
 }
 
-exports.displayCluster = displayCluster
-exports.root = cmd
-exports.info = Object.assign({}, cmd, {command: 'info'})
+export {displayCluster}
+export const root = cmd
+export const info = Object.assign({}, cmd, {command: 'info'})
