@@ -109,18 +109,17 @@ describe('topicConfig', () => {
   it('finds the topic when not prefixed', async () => {
     const addonId = '1234'
     const topicName = 'foo'
-    const heroku = {
-      request: td.when(td.function()({
-        host: 'api.data.heroku.com',
-        accept: 'application/json',
-        path: `/data/kafka/v0/clusters/${addonId}/topics`
-      })).thenResolve({
-        topics: [
-          { name: topicName },
-          { name: 'bar' }
-        ]
+    const mockRequest = td.func('request')
+    td.when(mockRequest(`https://api.data.heroku.com/data/kafka/v0/clusters/${addonId}/topics`, td.matchers.anything()))
+      .thenResolve({
+        body: {
+          topics: [
+            { name: topicName },
+            { name: 'bar' }
+          ]
+        }
       })
-    }
+    const heroku = { request: mockRequest }
     const result = await clusters.topicConfig(heroku, addonId, topicName)
     expect(result.name).to.equal(topicName)
   })
@@ -129,18 +128,17 @@ describe('topicConfig', () => {
     const addonId = '1234'
     const topicName = 'foo'
     const topicPrefix = 'wisła-3456.'
-    const heroku = {
-      request: td.when(td.function()({
-        host: 'api.data.heroku.com',
-        accept: 'application/json',
-        path: `/data/kafka/v0/clusters/${addonId}/topics`
-      })).thenResolve({
-        topics: [
-          { name: topicName, prefix: topicPrefix },
-          { name: 'bar', prefix: topicPrefix }
-        ]
+    const mockRequest = td.func('request')
+    td.when(mockRequest(`https://api.data.heroku.com/data/kafka/v0/clusters/${addonId}/topics`, td.matchers.anything()))
+      .thenResolve({
+        body: {
+          topics: [
+            { name: topicName, prefix: topicPrefix },
+            { name: 'bar', prefix: topicPrefix }
+          ]
+        }
       })
-    }
+    const heroku = { request: mockRequest }
     const result = await clusters.topicConfig(heroku, addonId, topicName)
     expect(result.name).to.equal(topicName)
   })
@@ -149,18 +147,17 @@ describe('topicConfig', () => {
     const addonId = '1234'
     const topicName = 'foo'
     const topicPrefix = 'wisła-3456.'
-    const heroku = {
-      request: td.when(td.function()({
-        host: 'api.data.heroku.com',
-        accept: 'application/json',
-        path: `/data/kafka/v0/clusters/${addonId}/topics`
-      })).thenResolve({
-        topics: [
-          { name: topicName, prefix: topicPrefix },
-          { name: 'bar', prefix: topicPrefix }
-        ]
+    const mockRequest = td.func('request')
+    td.when(mockRequest(`https://api.data.heroku.com/data/kafka/v0/clusters/${addonId}/topics`, td.matchers.anything()))
+      .thenResolve({
+        body: {
+          topics: [
+            { name: topicName, prefix: topicPrefix },
+            { name: 'bar', prefix: topicPrefix }
+          ]
+        }
       })
-    }
+    const heroku = { request: mockRequest }
     const result = await clusters.topicConfig(heroku, addonId, topicPrefix + topicName)
     expect(result.name).to.equal(topicName)
   })

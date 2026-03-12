@@ -72,7 +72,8 @@ class HerokuKafkaClusters {
     }
     var response = await this.request({
       path: `/data/kafka/${VERSION}/clusters/${addon.id}/wait_status`
-    }).catch(function (err: HerokuError): WaitStatus {
+    }).then((res: any) => res.body || res)
+      .catch(function (err: HerokuError): WaitStatus {
       if (err.statusCode === 410) {
         return Object.assign({ 'deprovisioned?': true }, errorResponse)
       } else if (err.statusCode === 404) {
@@ -87,11 +88,16 @@ class HerokuKafkaClusters {
   request (params: RequestParams): Promise<any> {
     const h = host()
     debug(`picked shogun host: ${h}`)
-    var defaultParams = {
-      host: h,
-      accept: 'application/json'
-    }
-    return this.heroku.request(Object.assign(defaultParams, params))
+    const {path, method, body, ...rest} = params
+    const url = `https://${h}${path}`
+    return this.heroku.request(url, {
+      method: method || 'GET',
+      body,
+      headers: {
+        'accept': params.accept || 'application/json'
+      },
+      ...rest
+    })
   }
 }
 
@@ -116,9 +122,10 @@ async function withCluster (heroku: HerokuClient, app: string, cluster: string |
 }
 
 async function topicConfig (heroku: HerokuClient, addonId: string, topic: string): Promise<any> {
-  let info = await request(heroku, {
+  const response = await request(heroku, {
     path: `/data/kafka/${VERSION}/clusters/${addonId}/topics`
-  }) as TopicInfo
+  }) as any
+  const info = (response?.body || response) as TopicInfo
   let forTopic = info.topics.find((t) => t.name === topic || ((t.prefix || '') + t.name) === topic)
   if (!forTopic) {
     cli.exit(1, `topic ${topic} not found`)
@@ -128,11 +135,10 @@ async function topicConfig (heroku: HerokuClient, addonId: string, topic: string
 
 // Fetch kafka info about a provisioned cluster or exit with failure
 function fetchProvisionedInfo (heroku: HerokuClient, addon: Addon): Promise<any> {
-  return heroku.request({
-    host: host(),
-    method: 'get',
-    path: `/data/kafka/v0/clusters/${addon.id}`
-  }).catch((err: HerokuError) => {
+  const url = `https://${host()}/data/kafka/v0/clusters/${addon.id}`
+  return heroku.request(url, {method: 'GET'})
+    .then((res: any) => res.body || res)
+    .catch((err: HerokuError) => {
     if (err.statusCode !== 404) throw err
     cli.exit(1, `${cli.color.addon(addon.name)} is not yet provisioned.\nRun ${cli.color.cmd('heroku kafka:wait')} to wait until the cluster is provisioned.`)
   })
@@ -141,11 +147,16 @@ function fetchProvisionedInfo (heroku: HerokuClient, addon: Addon): Promise<any>
 function request (heroku: HerokuClient, params: RequestParams): Promise<any> {
   const h = host()
   debug(`picked shogun host: ${h}`)
-  var defaultParams: RequestParams = {
-    host: h,
-    accept: 'application/json'
-  }
-  return heroku.request(Object.assign(defaultParams, params))
+  const {path, method, body, ...rest} = params
+  const url = `https://${h}${path}`
+  return heroku.request(url, {
+    method: method || 'GET',
+    body,
+    headers: {
+      'accept': params.accept || 'application/json'
+    },
+    ...rest
+  })
 }
 
 export {

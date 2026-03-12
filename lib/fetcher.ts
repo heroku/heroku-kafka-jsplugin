@@ -37,9 +37,9 @@ export default (heroku: HerokuClient) => {
   async function all (app: string): Promise<Addon[]> {
     debug(`fetching all clusters on ${app}`)
 
-    let attachments = await heroku.get(`/apps/${app}/addon-attachments`, {
+    const {body: attachments} = await heroku.get(`/apps/${app}/addon-attachments`, {
       headers: {'Accept-Inclusion': 'addon:plan'}
-    }) as AttachmentWithAddon[]
+    }) as {body: AttachmentWithAddon[]}
     let addons = attachments.map(a => a.addon)
 
     addons = addons.filter(a => isKafka(a))
