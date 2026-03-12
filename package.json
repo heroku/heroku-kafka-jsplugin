@@ -7,8 +7,11 @@
     "url": "https://github.com/heroku/heroku-kafka-jsplugin/issues"
   },
   "dependencies": {
+    "@heroku-cli/command": "^12.2.1",
+    "@heroku-cli/schema": "^2.0.1",
     "@heroku/heroku-cli-util": "^8.0.15",
     "@heroku/no-kafka": "^2.4.1",
+    "@oclif/core": "^4.8.4",
     "co": "4.6.0",
     "co-wait": "0.0.0",
     "debug": "^2.6.9",
@@ -20,9 +23,14 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.22.0",
+    "@types/chai": "^5.2.3",
     "@types/debug": "^4.1.12",
+    "@types/humanize-plus": "^1.8.2",
     "@types/lodash.memoize": "^4.1.9",
+    "@types/lodash.sortby": "^4.7.9",
+    "@types/mocha": "^10.0.10",
     "@types/node": "^25.4.0",
+    "ansis": "^4.2.0",
     "chai": "^4.3.10",
     "chai-as-promised": "^7.1.1",
     "eslint": "^9.22.0",
@@ -53,6 +61,17 @@
   "main": "commands/index.js",
   "type": "module",
   "repository": "heroku/heroku-kafka-jsplugin",
+  "oclif": {
+    "bin": "heroku",
+    "dirname": "heroku",
+    "commands": "./commands",
+    "plugins": [],
+    "topics": {
+      "kafka": {
+        "description": "manage heroku kafka clusters"
+      }
+    }
+  },
   "scripts": {
     "build": "tsc",
     "coverage": "nyc --reporter=html --reporter=text --reporter=lcov yarn test",
