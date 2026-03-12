@@ -72,6 +72,12 @@
     "topics": {
       "kafka": {
         "description": "manage heroku kafka clusters"
+      },
+      "kafka:consumer-groups": {
+        "description": "manage kafka consumer groups"
+      },
+      "kafka:topics": {
+        "description": "manage kafka topics"
       }
     }
   },
@@ -84,7 +90,7 @@
     "release": "np",
     "standardize": "standard --fix",
     "test": "NODE_OPTIONS='--import tsx' nyc mocha",
-    "version": "oclif readme && git add README.md"
+    "version": "oclif readme --readme-path README.md --output-dir docs --multi && git add README.md docs"
   },
   "overrides": {
     "serialize-javascript": "^7.0.3"
