@@ -36,8 +36,8 @@ export default class TopicsTail extends Command {
     const {args, flags} = await this.parse(TopicsTail)
 
     await withCluster(this.heroku, flags.app, args.cluster, async (addon: Addon) => {
-      const appConfig: any = await this.heroku.get(`/apps/${flags.app}/config-vars`)
-      const attachment: any = await this.heroku.get(`/apps/${flags.app}/addon-attachments/${addon.name}`,
+      const {body: appConfig}: any = await this.heroku.get(`/apps/${flags.app}/config-vars`)
+      const {body: attachment}: any = await this.heroku.get(`/apps/${flags.app}/addon-attachments/${addon.name}`,
         {headers: {'accept-inclusion': 'config_vars'}})
       const config = clusterConfig(attachment, appConfig)
       const consumer = await kafka.createSimpleConsumer({

@@ -59,7 +59,6 @@ export default class Topics extends Command {
           bytes: `${humanize.fileSize(t.bytes_in_per_second)}/sec`,
         }
       })
-      ux.stdout('\n')
       if (topicData.length === 0) {
         ux.stdout('No topics found on this Kafka cluster.\n')
 
