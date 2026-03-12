@@ -2,7 +2,7 @@ import {expect} from 'chai'
 import {describe, it, beforeEach, afterEach} from 'mocha'
 import nock from 'nock'
 import {runCommand} from '../../../helpers/run-command.js'
-import TopicsRetentionTime from '../../../../commands/kafka/topics/retention-time.js'
+import TopicsRetentionTime from '../../../../src/commands/kafka/topics/retention-time.js'
 
 const VERSION = 'v0'
 

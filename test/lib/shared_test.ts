@@ -1,6 +1,6 @@
 import {expect} from 'chai'
 import {describe, it, beforeEach} from 'mocha'
-import * as shared from '../../lib/shared.ts'
+import * as shared from '../../src/lib/shared.ts'
 import {captureOutput} from '../helpers/run-command.js'
 
 describe('parseDuration', function () {

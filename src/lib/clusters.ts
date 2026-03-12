@@ -8,7 +8,7 @@ import { Addon } from './shared.js'
 const VERSION = 'v0'
 
 interface HerokuClient {
-  request(params: any): Promise<any>
+  request(url: string, options?: any): Promise<any>
   get(path: string, options?: any): Promise<any>
   post(path: string, options?: any): Promise<any>
 }
@@ -142,7 +142,7 @@ function fetchProvisionedInfo (heroku: HerokuClient, addon: Addon): Promise<any>
     .then((res: any) => res.body || res)
     .catch((err: HerokuError) => {
     if (err.statusCode !== 404) throw err
-    ux.error( `${color.addon(addon.name)} is not yet provisioned.\nRun ${color.cmd('heroku kafka:wait')} to wait until the cluster is provisioned.`)
+    ux.error( `${color.addon(addon.name)} is not yet provisioned.\nRun ${color.command('heroku kafka:wait')} to wait until the cluster is provisioned.`)
   })
 }
 

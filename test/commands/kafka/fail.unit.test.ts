@@ -2,7 +2,7 @@ import {expect} from 'chai'
 import {describe, it, beforeEach, afterEach} from 'mocha'
 import nock from 'nock'
 import {runCommand} from '../../helpers/run-command.js'
-import Fail from '../../../commands/kafka/fail.js'
+import Fail from '../../../src/commands/kafka/fail.js'
 import {hux} from '@heroku/heroku-cli-util'
 
 const VERSION = 'v0'

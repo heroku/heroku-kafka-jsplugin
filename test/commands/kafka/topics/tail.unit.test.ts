@@ -2,7 +2,7 @@ import {expect} from 'chai'
 import {describe, it, beforeEach, afterEach} from 'mocha'
 import esmock from 'esmock'
 import nock from 'nock'
-import {Addon} from '../../../../lib/shared.js'
+import {Addon} from '../../../../src/lib/shared.js'
 import {runEsmockedCommand} from '../../../helpers/run-esmocked-command.js'
 
 let planName: string
@@ -22,11 +22,11 @@ const createSimpleConsumer = async (opts: any) => {
   return consumer
 }
 
-const TopicsTail = (await esmock('../../../../commands/kafka/topics/tail.js', {
-  '../../../../lib/clusters.js': {
+const TopicsTail = (await esmock('../../../../src/commands/kafka/topics/tail.js', {
+  '../../../../src/lib/clusters.js': {
     withCluster
   },
-  '../../../../lib/kafka.js': {
+  '../../../../src/lib/kafka.js': {
     createSimpleConsumer
   }
 })).default

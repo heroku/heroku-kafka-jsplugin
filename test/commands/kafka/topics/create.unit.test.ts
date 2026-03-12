@@ -2,7 +2,7 @@ import {expect} from 'chai'
 import {describe, it, beforeEach, afterEach} from 'mocha'
 import nock from 'nock'
 import {runCommand} from '../../../helpers/run-command.js'
-import TopicsCreate from '../../../../commands/kafka/topics/create.js'
+import TopicsCreate from '../../../../src/commands/kafka/topics/create.js'
 
 const VERSION = 'v0'
 

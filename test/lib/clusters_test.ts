@@ -20,8 +20,8 @@ const fetcher = (arg: any) => {
   }
 }
 
-const clusters = await esmock('../../lib/clusters.ts', {
-  '../../lib/fetcher.ts': fetcher
+const clusters = await esmock('../../src/lib/clusters.ts', {
+  '../../src/lib/fetcher.ts': fetcher
 })
 
 describe('withCluster', () => {

@@ -4,7 +4,7 @@ import {describe, it, beforeEach, afterEach} from 'mocha'
 import esmock from 'esmock'
 import cli from '@heroku/heroku-cli-util'
 import nock from 'nock'
-import { Addon } from '../../lib/shared.js'
+import { Addon } from '../../src/lib/shared.js'
 
 chai.use(chaiAsPromised)
 const {expect} = chai

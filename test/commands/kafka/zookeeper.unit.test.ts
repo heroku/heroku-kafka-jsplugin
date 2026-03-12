@@ -2,7 +2,7 @@ import {expect} from 'chai'
 import {describe, it, beforeEach, afterEach} from 'mocha'
 import nock from 'nock'
 import {runCommand} from '../../helpers/run-command.js'
-import Zookeeper from '../../../commands/kafka/zookeeper.js'
+import Zookeeper from '../../../src/commands/kafka/zookeeper.js'
 
 const VERSION = 'v0'
 

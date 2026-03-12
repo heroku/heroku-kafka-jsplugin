@@ -2,7 +2,7 @@ import {expect} from 'chai'
 import {describe, it, beforeEach, afterEach} from 'mocha'
 import esmock from 'esmock'
 import nock from 'nock'
-import {Addon} from '../../../../lib/shared.js'
+import {Addon} from '../../../../src/lib/shared.js'
 import {runEsmockedCommand} from '../../../helpers/run-esmocked-command.js'
 
 let planName: string
@@ -22,11 +22,11 @@ const createProducer = async (opts: any) => {
   return producer
 }
 
-const TopicsWrite = (await esmock('../../../../commands/kafka/topics/write.js', {
-  '../../../../lib/clusters.js': {
+const TopicsWrite = (await esmock('../../../../src/commands/kafka/topics/write.js', {
+  '../../../../src/lib/clusters.js': {
     withCluster
   },
-  '../../../../lib/kafka.js': {
+  '../../../../src/lib/kafka.js': {
     createProducer
   }
 })).default

@@ -48,8 +48,7 @@
     "typescript": "^5.9.3"
   },
   "files": [
-    "commands",
-    "lib"
+    "dist"
   ],
   "keywords": [
     "heroku-plugin"
@@ -58,13 +57,13 @@
   "engines": {
     "node": ">=20.0.0"
   },
-  "main": "commands/index.js",
+  "main": "dist/commands/index.js",
   "type": "module",
   "repository": "heroku/heroku-kafka-jsplugin",
   "oclif": {
     "bin": "heroku",
     "dirname": "heroku",
-    "commands": "./commands",
+    "commands": "./dist/commands",
     "plugins": [],
     "topics": {
       "kafka": {
@@ -75,7 +74,7 @@
   "scripts": {
     "build": "tsc",
     "coverage": "nyc --reporter=html --reporter=text --reporter=lcov npm test",
-    "lint": "eslint . commands lib test",
+    "lint": "eslint . src test",
     "qtest": "NODE_OPTIONS='--import tsx' mocha",
     "release": "np",
     "standardize": "standard --fix",

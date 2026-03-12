@@ -1,6 +1,6 @@
 import {expect} from 'chai'
 import {describe, it, beforeEach} from 'mocha'
-import utilizationBar from '../../lib/utilizationBar.js'
+import utilizationBar from '../../src/lib/utilizationBar.js'
 
 describe('utilizationBar', function () {
   beforeEach(() => {

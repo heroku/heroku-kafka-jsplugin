@@ -1,6 +1,6 @@
 import {expect} from 'chai'
 import {describe, it} from 'mocha'
-import host from '../../lib/host.js'
+import host from '../../src/lib/host.js'
 
 describe('host', () => {
   it('is the default host', () => {
