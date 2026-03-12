@@ -9,7 +9,7 @@
   "dependencies": {
     "@heroku-cli/command": "^12.2.1",
     "@heroku-cli/schema": "^2.0.1",
-    "@heroku/heroku-cli-util": "^8.0.15",
+    "@heroku/heroku-cli-util": "^10.6.0",
     "@heroku/no-kafka": "^2.4.1",
     "@oclif/core": "^4.8.4",
     "co": "4.6.0",
@@ -74,14 +74,14 @@
   },
   "scripts": {
     "build": "tsc",
-    "coverage": "nyc --reporter=html --reporter=text --reporter=lcov yarn test",
+    "coverage": "nyc --reporter=html --reporter=text --reporter=lcov npm test",
     "lint": "eslint . commands lib test",
     "qtest": "NODE_OPTIONS='--import tsx' mocha",
     "release": "np",
     "standardize": "standard --fix",
     "test": "NODE_OPTIONS='--import tsx' nyc mocha"
   },
-  "resolutions": {
+  "overrides": {
     "serialize-javascript": "^7.0.3"
   }
 }
