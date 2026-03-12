@@ -43,6 +43,7 @@
     "mocha": "^11.1.0",
     "nock": "^14.0.1",
     "nyc": "^17.1.0",
+    "oclif": "^4.22.87",
     "sinon": "^21.0.2",
     "testdouble": "^3.2.2",
     "ts-node": "^10.9.2",
@@ -50,7 +51,8 @@
     "typescript": "^5.9.3"
   },
   "files": [
-    "dist"
+    "dist",
+    "/oclif.manifest.json"
   ],
   "keywords": [
     "heroku-plugin"
@@ -74,9 +76,10 @@
     }
   },
   "scripts": {
-    "build": "tsc",
+    "build": "rm -rf dist && tsc && npm run manifest",
     "coverage": "nyc --reporter=html --reporter=text --reporter=lcov npm test",
     "lint": "eslint . src test",
+    "manifest": "oclif manifest",
     "qtest": "NODE_OPTIONS='--import tsx' mocha",
     "release": "np",
     "standardize": "standard --fix",
