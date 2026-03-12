@@ -19,53 +19,29 @@ function retention(retentionTimeMs: number): string {
   }
 }
 
-function topicInfo(topic: any): Array<{name: string, values: string[]}> {
-  const lines = [
-    {
-      name: 'Producers',
-      values: [`${humanize.intComma(topic.messages_in_per_second)} ${humanize.pluralize(topic.messages_in_per_second, 'message')}/second (${humanize.fileSize(topic.bytes_in_per_second)}/second) total`],
-    },
-    {
-      name: 'Consumers',
-      values: [`${humanize.fileSize(topic.bytes_out_per_second)}/second total`],
-    },
-    {
-      name: 'Partitions',
-      values: [`${topic.partitions} ${humanize.pluralize(topic.partitions, 'partition')}`],
-    },
-    {
-      name: 'Replication Factor',
-      values: [`${topic.replication_factor}`],
-    },
-  ]
+function topicInfo(topic: any): Record<string, string> {
+  const info: Record<string, string> = {
+    'Producers': `${humanize.intComma(topic.messages_in_per_second)} ${humanize.pluralize(topic.messages_in_per_second, 'message')}/second (${humanize.fileSize(topic.bytes_in_per_second)}/second) total`,
+    'Consumers': `${humanize.fileSize(topic.bytes_out_per_second)}/second total`,
+    'Partitions': `${topic.partitions} ${humanize.pluralize(topic.partitions, 'partition')}`,
+    'Replication Factor': `${topic.replication_factor}`,
+  }
 
   if (topic.prefix) {
-    lines.unshift({
-      name: 'Topic Prefix',
-      values: [color.green(topic.prefix)],
-    })
+    info['Topic Prefix'] = color.green(topic.prefix)
   }
 
   if (topic.compaction) {
-    lines.push({
-      name: 'Compaction',
-      values: [`Compaction is enabled for ${topic.name}`],
-    })
+    info['Compaction'] = `Compaction is enabled for ${topic.name}`
   } else {
-    lines.push({
-      name: 'Compaction',
-      values: [`Compaction is disabled for ${topic.name}`],
-    })
+    info['Compaction'] = `Compaction is disabled for ${topic.name}`
   }
 
   if (topic.retention_time_ms) {
-    lines.push({
-      name: 'Retention',
-      values: [retention(topic.retention_time_ms)],
-    })
+    info['Retention'] = retention(topic.retention_time_ms)
   }
 
-  return lines
+  return info
 }
 
 export default class TopicsInfo extends Command {
@@ -98,10 +74,7 @@ export default class TopicsInfo extends Command {
         this.error(`topic ${topicName} is not available yet`)
       } else {
         hux.styledHeader(addon.name + ' :: ' + topicName)
-        ux.stdout('\n')
-        for (const line of topicInfo(topic)) {
-          ux.stdout(`${line.name}: ${line.values.join(', ')}\n`)
-        }
+        hux.styledObject(topicInfo(topic))
       }
     })
   }

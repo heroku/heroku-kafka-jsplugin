@@ -99,14 +99,14 @@ describe('kafka:info', () => {
       kafka.done()
     })
 
-    it.skip('shows kafka info for single cluster when arg sent in', async () => {
+    it('shows kafka info for single cluster when arg sent in', async () => {
       const api = nock('https://api.heroku.com:443')
         .post('/actions/addon-attachments/resolve')
-        .reply(200, {body: [{
+        .reply(200, [{
           addon: {name: 'kafka-2', id: '00000000-0000-0000-0000-000000000001', plan},
           name: 'HEROKU_KAFKA_PURPLE',
           app: {name: 'myapp'}
-        }]})
+        }])
         .get('/apps/myapp/addon-attachments')
         .reply(200, attachments)
 
@@ -114,24 +114,19 @@ describe('kafka:info', () => {
         .get(infoUrl('00000000-0000-0000-0000-000000000001'))
         .reply(200, clusterB)
 
-      try {
-        const {stdout} = await runCommand(Info, ['kafka-2', '--app', 'myapp'])
-        expect(stdout).to.include('HEROKU_KAFKA_PURPLE_URL')
-        expect(stdout).to.include('Plan: heroku-kafka:beta-3')
-        expect(stdout).to.include('Status: available')
-        expect(stdout).to.include('1 / 10 topics')
-        expect(stdout).to.include('12 / 32 partition replicas')
-        expect(stdout).to.include('Add-on: kafka-2')
-        expect(stdout).not.to.include('kafka-1')
-        api.done()
-        kafka.done()
-      } catch (e: any) {
-        console.log('Pending mocks:', nock.pendingMocks())
-        throw e
-      }
+      const {stdout} = await runCommand(Info, ['kafka-2', '--app', 'myapp'])
+      expect(stdout).to.include('HEROKU_KAFKA_PURPLE_URL')
+      expect(stdout).to.match(/Plan:\s+heroku-kafka:beta-3/)
+      expect(stdout).to.match(/Status:\s+available/)
+      expect(stdout).to.include('1 / 10 topics')
+      expect(stdout).to.include('12 / 32 partition replicas')
+      expect(stdout).to.match(/Add-on:\s+kafka-2/)
+      expect(stdout).not.to.include('kafka-1')
+      api.done()
+      kafka.done()
     })
 
-    it.skip('shows warning for 404', async () => {
+    it('shows warning for 404', async () => {
       const api = nock('https://api.heroku.com:443')
         .get('/apps/myapp/addon-attachments')
         .reply(200, attachments)

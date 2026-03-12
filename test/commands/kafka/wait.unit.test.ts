@@ -30,7 +30,18 @@ describe('kafka:wait', () => {
           name: 'kafka-1',
           plan: {name: 'heroku-kafka:basic-0'}
         },
-        name: 'KAFKA'
+        name: 'KAFKA',
+        config_vars: ['KAFKA_URL']
+      }])
+      .post('/actions/addon-attachments/resolve')
+      .reply(200, [{
+        addon: {
+          id: '00000000-0000-0000-0000-000000000000',
+          name: 'kafka-1',
+          plan: {name: 'heroku-kafka:basic-0'}
+        },
+        name: 'KAFKA',
+        app: {name: 'myapp'}
       }])
 
     kafka
@@ -53,7 +64,8 @@ describe('kafka:wait', () => {
           addon: {
             id: '00000000-0000-0000-0000-000000000000',
             name: 'kafka-1',
-            plan: {name: 'heroku-kafka:basic-0'}
+            plan: {name: 'heroku-kafka:basic-0'},
+            addon_service: {name: 'heroku-kafka'}
           },
           name: 'KAFKA'
         },
@@ -61,7 +73,8 @@ describe('kafka:wait', () => {
           addon: {
             id: '00000000-0000-0000-0000-000000000001',
             name: 'kafka-2',
-            plan: {name: 'heroku-kafka:basic-0'}
+            plan: {name: 'heroku-kafka:basic-0'},
+            addon_service: {name: 'heroku-kafka'}
           },
           name: 'KAFKA_2'
         }
@@ -84,7 +97,8 @@ describe('kafka:wait', () => {
         addon: {
           id: '00000000-0000-0000-0000-000000000000',
           name: 'kafka-1',
-          plan: {name: 'heroku-kafka:basic-0'}
+          plan: {name: 'heroku-kafka:basic-0'},
+          addon_service: {name: 'heroku-kafka'}
         },
         name: 'KAFKA'
       }])
