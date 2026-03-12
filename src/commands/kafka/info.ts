@@ -111,13 +111,16 @@ function displayCluster(cluster: ClusterInfo): void {
   hux.styledHeader(cluster.configVars!.map(c => color.label(c)).join(', '))
 
   const clusterInfo = formatInfo(cluster)
-  ux.stdout('\n')
-  for (const line of clusterInfo) {
-    if (line.values.length > 0) {
-      ux.stdout(`${line.name}: ${line.values.join(', ')}\n`)
+  const info = clusterInfo.reduce((info: Record<string, string>, i: InfoLine) => {
+    if (i.values.length > 0) {
+      info[i.name] = i.values.join(', ')
     }
-  }
-  ux.stdout('\n')
+    return info
+  }, {})
+  const keys = clusterInfo.map(i => i.name)
+
+  hux.styledObject(info, keys)
+  console.log()
 }
 
 export default class Info extends Command {
