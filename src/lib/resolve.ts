@@ -66,6 +66,7 @@ const appAddon = function (heroku: HerokuClient, app: string, id: string, option
     'headers': headers,
     'body': {'app': app, 'addon': id, 'addon_service': options.addon_service}
   })
+    .then((res: any) => res.body || res)
     .then(singularize('addon', options.namespace))
 }
 
@@ -85,6 +86,7 @@ const addonResolver = function (heroku: HerokuClient, app: string | null, id: st
       'headers': headers,
       'body': {'app': null, 'addon': id, 'addon_service': options.addon_service}
     })
+      .then((res: any) => res.body || res)
       .then(singularize('addon', options.namespace))
   }
 
@@ -145,12 +147,15 @@ const attachment = function (heroku: HerokuClient, app: string | null, id: strin
   function getAttachment (id: string): Promise<any> {
     return heroku.post('/actions/addon-attachments/resolve', {
       'headers': headers, 'body': {'app': null, 'addon_attachment': id, 'addon_service': options.addon_service}
-    }).then(singularize('addon_attachment', options.namespace))
+    })
+      .then((res: any) => res.body || res)
+      .then(singularize('addon_attachment', options.namespace))
       .catch(function (err: HerokuError) { handleNotFound(err, 'add_on attachment') })
   }
 
   function getAppAddonAttachment (addon: Addon, app: string): Promise<any> {
     return heroku.get(`/addons/${encodeURIComponent(addon.id)}/addon-attachments`, {headers})
+      .then((res: any) => res.body || res)
       .then(filter(app, options.addon_service))
       .then(singularize('addon_attachment', options.namespace))
   }
@@ -198,7 +203,9 @@ const appAttachment = function (heroku: HerokuClient, app: string, id: string, o
   const headers = attachmentHeaders()
   return heroku.post('/actions/addon-attachments/resolve', {
     'headers': headers, 'body': {'app': app, 'addon_attachment': id, 'addon_service': options.addon_service}
-  }).then(singularize('addon_attachment', options.namespace))
+  })
+    .then((res: any) => res.body || res)
+    .then(singularize('addon_attachment', options.namespace))
 }
 
 const filter = function (app: string, addonService?: string): (attachments: any[]) => any[] {
