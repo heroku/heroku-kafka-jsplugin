@@ -1,6 +1,6 @@
 import {Command, flags} from '@heroku-cli/command'
-import {Args} from '@oclif/core'
-import cli from '@heroku/heroku-cli-util'
+import {Args, ux} from '@oclif/core'
+import {color, hux} from '@heroku/heroku-cli-util'
 import humanize from 'humanize-plus'
 import {withCluster, topicConfig} from '../../../lib/clusters.js'
 import {Addon} from '../../../lib/shared.js'
@@ -42,7 +42,7 @@ function topicInfo(topic: any): Array<{name: string, values: string[]}> {
   if (topic.prefix) {
     lines.unshift({
       name: 'Topic Prefix',
-      values: [cli.color.green(topic.prefix)],
+      values: [color.green(topic.prefix)],
     })
   }
 
@@ -97,9 +97,11 @@ export default class TopicsInfo extends Command {
       if (topic.partitions < 1) {
         this.error(`topic ${topicName} is not available yet`)
       } else {
-        cli.styledHeader(addon.name + ' :: ' + topicName)
-        cli.log()
-        ;(cli as any).styledNameValues(topicInfo(topic))
+        hux.styledHeader(addon.name + ' :: ' + topicName)
+        ux.stdout('\n')
+        for (const line of topicInfo(topic)) {
+          ux.stdout(`${line.name}: ${line.values.join(', ')}\n`)
+        }
       }
     })
   }

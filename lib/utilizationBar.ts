@@ -1,4 +1,4 @@
-import cli from '@heroku/heroku-cli-util'
+import {color} from '@heroku/heroku-cli-util'
 
 export default function (current: number, total: number, width: number = 10): string {
   let percentage = current / total
@@ -6,7 +6,7 @@ export default function (current: number, total: number, width: number = 10): st
   if (percentage < 0) percentage = 0
   const filled = Math.floor(percentage * width)
   const empty = width - filled
-  let output = cli.color.blue('█'.repeat(filled))
+  let output = color.blue('█'.repeat(filled))
   output += '·'.repeat(empty)
   return `[${output}]`
 }

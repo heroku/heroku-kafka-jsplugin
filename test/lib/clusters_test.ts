@@ -2,7 +2,6 @@ import chai from 'chai'
 import chaiAsPromised from 'chai-as-promised'
 import {describe, it, beforeEach, afterEach} from 'mocha'
 import esmock from 'esmock'
-import cli from '@heroku/heroku-cli-util'
 import * as td from 'testdouble'
 
 chai.use(chaiAsPromised)
@@ -29,8 +28,6 @@ describe('withCluster', () => {
   beforeEach(() => {
     fetchOne = () => Promise.resolve(null)
     fetchAll = () => Promise.resolve([])
-    cli.exit.mock()
-    cli.mockConsole()
   })
 
   describe('with an explicit cluster argument', () => {
@@ -69,7 +66,7 @@ describe('withCluster', () => {
         'my-app', null,
         async (arg) => { called = true })
       )
-        .to.be.rejectedWith(cli.exit.ErrorExit, /found no kafka add-ons on my-app/)
+        .to.be.rejectedWith(Error, /found no kafka add-ons on my-app/)
         .then(() => { expect(called).to.be.false })
     })
 
@@ -81,7 +78,7 @@ describe('withCluster', () => {
         'my-app', null,
         async (arg) => { called = true })
       )
-        .to.be.rejectedWith(cli.exit.ErrorExit, /found more than one kafka add-on on my-app: kafka-1, kafka-2/)
+        .to.be.rejectedWith(Error, /found more than one kafka add-on on my-app: kafka-1, kafka-2/)
         .then(() => { expect(called).to.be.false })
     })
 
@@ -102,8 +99,6 @@ describe('withCluster', () => {
 
 describe('topicConfig', () => {
   beforeEach(() => {
-    cli.exit.mock()
-    cli.mockConsole()
   })
 
   it('finds the topic when not prefixed', async () => {
@@ -178,6 +173,6 @@ describe('topicConfig', () => {
       })
     }
     expect(clusters.topicConfig(heroku, addonId, topicName))
-      .to.be.rejectedWith(cli.exit.ErrorExit, `topic ${topicName} not found`)
+      .to.be.rejectedWith(Error, `topic ${topicName} not found`)
   })
 })

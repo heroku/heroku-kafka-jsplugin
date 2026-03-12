@@ -1,6 +1,6 @@
 import {Command, flags} from '@heroku-cli/command'
-import {Args} from '@oclif/core'
-import cli from '@heroku/heroku-cli-util'
+import {Args, ux} from '@oclif/core'
+import {color, hux} from '@heroku/heroku-cli-util'
 import humanize from 'humanize-plus'
 import {withCluster, request} from '../../../lib/clusters.js'
 import {Addon} from '../../../lib/shared.js'
@@ -30,10 +30,11 @@ export default class Topics extends Command {
     const {args, flags} = await this.parse(Topics)
 
     await withCluster(this.heroku, flags.app, args.cluster, async (addon: Addon) => {
-      const topics = await request(this.heroku, {
+      const result = await request(this.heroku, {
         path: `/data/kafka/${VERSION}/clusters/${addon.id}/topics`,
       })
-      cli.styledHeader('Kafka Topics on ' + (topics.attachment_name || 'HEROKU_KAFKA'))
+      const topics = result?.body || result
+      hux.styledHeader('Kafka Topics on ' + (topics.attachment_name || 'HEROKU_KAFKA'))
 
       if (topics.topics.length !== 0) {
         const extraInfo: string[] = []
@@ -42,11 +43,11 @@ export default class Topics extends Command {
         }
 
         if (topics.prefix) {
-          extraInfo.push(`prefix: ${cli.color.green(topics.prefix)}`)
+          extraInfo.push(`prefix: ${color.green(topics.prefix)}`)
         }
 
         if (extraInfo.length > 0) {
-          cli.log(extraInfo.join('; '))
+          ux.stdout(extraInfo.join('; ') + '\n')
         }
       }
 
@@ -58,23 +59,21 @@ export default class Topics extends Command {
           bytes: `${humanize.fileSize(t.bytes_in_per_second)}/sec`,
         }
       })
-      cli.log()
+      ux.stdout('\n')
       if (topicData.length === 0) {
-        cli.log('No topics found on this Kafka cluster.')
+        ux.stdout('No topics found on this Kafka cluster.\n')
 
         if (topics.limits && topics.limits.max_topics) {
-          cli.log(`Use heroku kafka:topics:create to create a topic (limit ${topics.limits.max_topics}).`)
+          ux.stdout(`Use heroku kafka:topics:create to create a topic (limit ${topics.limits.max_topics}).\n`)
         } else {
-          cli.log('Use heroku kafka:topics:create to create a topic.')
+          ux.stdout('Use heroku kafka:topics:create to create a topic.\n')
         }
       } else {
-        cli.table(topicData,
+        hux.table(topicData,
           {
-            columns: [
-              {key: 'name', label: 'Name'},
-              {key: 'messages', label: 'Messages'},
-              {key: 'bytes', label: 'Traffic'},
-            ],
+            name: {},
+            messages: {header: 'Messages'},
+            bytes: {header: 'Traffic'},
           }
         )
       }

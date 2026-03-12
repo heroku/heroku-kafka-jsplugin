@@ -1,12 +1,14 @@
 import {Command, flags} from '@heroku-cli/command'
 import {Args, ux} from '@oclif/core'
-import cli from '@heroku/heroku-cli-util'
+import {color, hux} from '@heroku/heroku-cli-util'
 import humanize from 'humanize-plus'
 import sortBy from 'lodash.sortby'
 import utilizationBar from '../../lib/utilizationBar.js'
-import host from '../../lib/host.js'
 import fetcherFn from '../../lib/fetcher.js'
+import {request} from '../../lib/clusters.js'
 import {Addon, Attachment} from '../../lib/shared.js'
+
+const VERSION = 'v0'
 
 interface ClusterInfo {
   addon: Addon
@@ -100,26 +102,22 @@ function formatInfo(info: ClusterInfo): InfoLine[] {
     })
   }
 
-  lines.push({name: 'Add-on', values: [cli.color.addon(addon.name)]})
+  lines.push({name: 'Add-on', values: [color.addon(addon.name)]})
 
   return lines
 }
 
 function displayCluster(cluster: ClusterInfo): void {
-  cli.styledHeader(cluster.configVars!.map(c => (cli.color as any).configVar(c)).join(', '))
+  hux.styledHeader(cluster.configVars!.map(c => color.label(c)).join(', '))
 
   const clusterInfo = formatInfo(cluster)
-  const info = clusterInfo.reduce((info: any, i) => {
-    if (i.values.length > 0) {
-      info[i.name] = i.values.join(', ')
+  ux.stdout('\n')
+  for (const line of clusterInfo) {
+    if (line.values.length > 0) {
+      ux.stdout(`${line.name}: ${line.values.join(', ')}\n`)
     }
-
-    return info
-  }, {})
-  const keys = clusterInfo.map(i => i.name)
-
-  ;(cli as any).styledObject(info, keys)
-  cli.log()
+  }
+  ux.stdout('\n')
 }
 
 export default class Info extends Command {
@@ -149,32 +147,32 @@ export default class Info extends Command {
     const cluster = args.cluster
 
     let addons: Addon[] = []
-    const attachments: any[] = await this.heroku.get(`/apps/${app}/addon-attachments`) as any
+    const {body: attachments} = await this.heroku.get(`/apps/${app}/addon-attachments`) as {body: any[]}
 
     if (cluster) {
       addons = await Promise.all([fetcher.addon(app, cluster)])
     } else {
       addons = await fetcher.all(app)
       if (addons.length === 0) {
-        cli.log(`${(cli.color as any).app(app)} has no heroku-kafka clusters.`)
+        ux.stdout(`${color.app(app)} has no heroku-kafka clusters.\n`)
         return
       }
     }
 
     let clusters: ClusterInfo[] = await Promise.all(addons.map(async (addon: Addon) => {
+      const clusterData = await request(this.heroku, {
+        method: 'GET',
+        path: `/data/kafka/${VERSION}/clusters/${addon.id}`,
+      }).then((res: any) => res.body || res).catch((err: any) => {
+        if (err.statusCode !== 404) throw err
+        const warnMsg = `${color.addon(addon.name)} is not yet provisioned.\nRun ${color.code('heroku kafka:wait')} to wait until the cluster is provisioned.`
+        ux.warn(warnMsg)
+        return null
+      })
       return {
         addon,
         attachments,
-        cluster: await (this.heroku as any).request({
-          host: host(),
-          method: 'get',
-          path: `/data/kafka/v0/clusters/${addon.id}`,
-        }).catch((err: any) => {
-          if (err.statusCode !== 404) throw err
-          const warnMsg = `${cli.color.addon(addon.name)} is not yet provisioned.\nRun ${(cli.color as any).cmd('heroku kafka:wait')} to wait until the cluster is provisioned.`
-          ux.warn(warnMsg)
-          return null
-        }),
+        cluster: clusterData,
       }
     }))
 

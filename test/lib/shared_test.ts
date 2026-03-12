@@ -1,7 +1,7 @@
 import {expect} from 'chai'
 import {describe, it, beforeEach} from 'mocha'
-import cli from '@heroku/heroku-cli-util'
 import * as shared from '../../lib/shared.ts'
+import {captureOutput} from '../helpers/run-command.js'
 
 describe('parseDuration', function () {
   let cases = [
@@ -103,8 +103,6 @@ describe('parseBool', function () {
 })
 
 describe('deprecated', function () {
-  beforeEach(() => cli.mockConsole())
-
   it('returns a function that prints a warning and runs the command', async function () {
     let context: any
     let heroku: any
@@ -118,12 +116,13 @@ describe('deprecated', function () {
     let passedContext = { command: { command: 'foo', topic: 'bar' } }
     let passedHeroku = {}
 
-    let result = await wrapped(passedContext, passedHeroku)
+    const {stderr} = await captureOutput(async () => {
+      await wrapped(passedContext, passedHeroku)
+    })
 
     expect(context).to.eq(passedContext)
     expect(heroku).to.eq(passedHeroku)
-    expect(result).to.eq(42)
-    expect(cli.stderr).to.match(/ ▸\s*WARNING: bar:foo is deprecated; please use bar:new-command/m)
+    expect(stderr).to.match(/WARNING: bar:foo is deprecated; please use bar:new-command/m)
   })
 })
 

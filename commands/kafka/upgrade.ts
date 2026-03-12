@@ -1,6 +1,6 @@
 import {Command, flags} from '@heroku-cli/command'
 import {Args, ux} from '@oclif/core'
-import cli from '@heroku/heroku-cli-util'
+import {hux} from '@heroku/heroku-cli-util'
 import {withCluster, request} from '../../lib/clusters.js'
 import {Addon} from '../../lib/shared.js'
 
@@ -35,10 +35,13 @@ export default class Upgrade extends Command {
     const {args, flags} = await this.parse(Upgrade)
 
     await withCluster(this.heroku, flags.app, args.cluster, async (addon: Addon) => {
-      await cli.confirmApp(flags.app, flags.confirm,
-        `This command will upgrade the brokers of the cluster to version ${flags.version}.
+      await hux.confirmCommand({
+        comparison: flags.app,
+        confirmation: flags.confirm,
+        warningMessage: `This command will upgrade the brokers of the cluster to version ${flags.version}.
                           Upgrading the cluster involves rolling restarts of brokers, and takes some time, depending on the
-                          size of the cluster.`)
+                          size of the cluster.`,
+      })
 
       let msg = 'Upgrading '
       if (args.cluster) {

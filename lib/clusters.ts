@@ -1,4 +1,5 @@
-import cli from '@heroku/heroku-cli-util'
+import {color} from '@heroku/heroku-cli-util'
+import {ux} from '@oclif/core'
 import host from './host.js'
 import debug from './debug.js'
 import fetcher from './fetcher.js'
@@ -23,6 +24,7 @@ interface WaitStatus {
   'healthy?': boolean
   'deprovisioned?'?: boolean
   'missing?'?: boolean
+  'error?'?: boolean
 }
 
 interface RequestParams {
@@ -113,9 +115,9 @@ async function withCluster (heroku: HerokuClient, app: string, cluster: string |
     if (addons.length === 1) {
       addon = addons[0]
     } else if (addons.length === 0) {
-      cli.exit(1, `found no kafka add-ons on ${app}`)
+      ux.error( `found no kafka add-ons on ${app}`)
     } else {
-      cli.exit(1, `found more than one kafka add-on on ${app}: ${addons.map(function (addon) { return addon.name }).join(', ')}`)
+      ux.error( `found more than one kafka add-on on ${app}: ${addons.map(function (addon) { return addon.name }).join(', ')}`)
     }
   }
   return await fn(addon)
@@ -128,7 +130,7 @@ async function topicConfig (heroku: HerokuClient, addonId: string, topic: string
   const info = (response?.body || response) as TopicInfo
   let forTopic = info.topics.find((t) => t.name === topic || ((t.prefix || '') + t.name) === topic)
   if (!forTopic) {
-    cli.exit(1, `topic ${topic} not found`)
+    ux.error( `topic ${topic} not found`)
   }
   return forTopic
 }
@@ -140,7 +142,7 @@ function fetchProvisionedInfo (heroku: HerokuClient, addon: Addon): Promise<any>
     .then((res: any) => res.body || res)
     .catch((err: HerokuError) => {
     if (err.statusCode !== 404) throw err
-    cli.exit(1, `${cli.color.addon(addon.name)} is not yet provisioned.\nRun ${cli.color.cmd('heroku kafka:wait')} to wait until the cluster is provisioned.`)
+    ux.error( `${color.addon(addon.name)} is not yet provisioned.\nRun ${color.cmd('heroku kafka:wait')} to wait until the cluster is provisioned.`)
   })
 }
 

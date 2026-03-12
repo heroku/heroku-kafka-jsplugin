@@ -1,6 +1,5 @@
 import {Command, flags} from '@heroku-cli/command'
 import {Args, ux} from '@oclif/core'
-import cli from '@heroku/heroku-cli-util'
 import debug from '../../../lib/debug.js'
 import {clusterConfig} from '../../../lib/shared.js'
 import {withCluster} from '../../../lib/clusters.js'

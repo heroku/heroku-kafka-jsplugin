@@ -1,4 +1,4 @@
-import cli from '@heroku/heroku-cli-util'
+import {ux} from '@oclif/core'
 
 export interface Attachment {
   name: string
@@ -27,7 +27,7 @@ export interface ClusterConfig {
 function deprecated (cmd: any, newCmd: string, newTopic?: string): any {
   return async function (context: any, heroku: any): Promise<any> {
     const newName = `${newTopic || context.command.topic}:${newCmd}`
-    cli.warn(`\nWARNING: ${context.command.topic}:${context.command.command} is deprecated; please use ${newName}\n`)
+    ux.warn(`\nWARNING: ${context.command.topic}:${context.command.command} is deprecated; please use ${newName}\n`)
     return await cmd(context, heroku)
   }
 }

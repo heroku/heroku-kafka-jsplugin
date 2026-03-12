@@ -1,6 +1,5 @@
 import {Command, flags} from '@heroku-cli/command'
-import {Args} from '@oclif/core'
-import cli from '@heroku/heroku-cli-util'
+import {Args, ux} from '@oclif/core'
 import {parseDuration} from '../../../lib/shared.js'
 import {withCluster, request, topicConfig, fetchProvisionedInfo} from '../../../lib/clusters.js'
 import {Addon} from '../../../lib/shared.js'
@@ -66,17 +65,17 @@ export default class TopicsRetentionTime extends Command {
 
       msg += ` for topic ${args.topic} on ${addon.name}`
 
-      await cli.action(msg, (async () => {
-        return await request(this.heroku, {
-          method: 'PUT',
-          body: {
-            topic: Object.assign({name: topicName}, cleanupPolicy),
-          },
-          path: `/data/kafka/${VERSION}/clusters/${addon.id}/topics/${topicName}`,
-        })
-      })())
+      ux.action.start(msg)
+      await request(this.heroku, {
+        method: 'PUT',
+        body: {
+          topic: Object.assign({name: topicName}, cleanupPolicy),
+        },
+        path: `/data/kafka/${VERSION}/clusters/${addon.id}/topics/${topicName}`,
+      })
+      ux.action.stop()
 
-      cli.log(`Use \`heroku kafka:topics:info ${args.topic}\` to monitor your topic.`)
+      ux.stdout(`Use \`heroku kafka:topics:info ${args.topic}\` to monitor your topic.\n`)
     })
   }
 }

@@ -1,6 +1,6 @@
 import {Command, flags} from '@heroku-cli/command'
 import {Args, ux} from '@oclif/core'
-import cli from '@heroku/heroku-cli-util'
+import {color} from '@heroku/heroku-cli-util'
 import {HerokuKafkaClusters} from '../../lib/clusters.js'
 import fetcherFn from '../../lib/fetcher.js'
 import {Addon} from '../../lib/shared.js'
@@ -37,7 +37,7 @@ export default class Wait extends Command {
     const fetcher = fetcherFn(this.heroku)
     const shogun = new HerokuKafkaClusters(this.heroku, process.env, {app: flags.app, args: {CLUSTER: args.cluster}, flags})
 
-    async function waitFor(cluster: Addon): Promise<void> {
+    const waitFor = async (cluster: Addon): Promise<void> => {
       let interval = parseInt(flags['wait-interval'] || '5')
       if (!interval || interval < 0) interval = 5
 
@@ -47,7 +47,9 @@ export default class Wait extends Command {
       while (true) {
         status = await shogun.waitStatus(cluster)
 
-        if (status && !status['waiting?']) {
+        if (status && status['error?']) {
+          this.error(status.message)
+        } else if (status && !status['waiting?']) {
           if (waiting && status) ux.action.stop(status.message)
           return
         } else if (status && status['deprovisioned?']) {
@@ -60,7 +62,7 @@ export default class Wait extends Command {
 
         if (!waiting) {
           waiting = true
-          ux.action.start(`Waiting for cluster ${cli.color.addon(cluster.name)}`)
+          ux.action.start(`Waiting for cluster ${color.addon(cluster.name)}`)
         }
 
         if (status) ux.action.status = status.message

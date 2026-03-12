@@ -1,6 +1,6 @@
 import {Command, flags} from '@heroku-cli/command'
-import {Args} from '@oclif/core'
-import cli from '@heroku/heroku-cli-util'
+import {Args, ux} from '@oclif/core'
+import {color} from '@heroku/heroku-cli-util'
 import {parseDuration, formatIntervalFromMilliseconds} from '../../../lib/shared.js'
 import {withCluster, request, fetchProvisionedInfo} from '../../../lib/clusters.js'
 import {Addon} from '../../../lib/shared.js'
@@ -59,26 +59,26 @@ export default class TopicsCreate extends Command {
 
       msg += ` on ${addon.name}`
 
-      await cli.action(msg, (async () => {
-        return await request(this.heroku, {
-          method: 'POST',
-          body: {
-            topic: {
-              name: args.topic,
-              retention_time_ms: retentionTimeMillis,
-              replication_factor: flags['replication-factor'],
-              partition_count: flags.partitions,
-              compaction: compaction,
-            },
+      ux.action.start(msg)
+      await request(this.heroku, {
+        method: 'POST',
+        body: {
+          topic: {
+            name: args.topic,
+            retention_time_ms: retentionTimeMillis,
+            replication_factor: flags['replication-factor'],
+            partition_count: flags.partitions,
+            compaction: compaction,
           },
-          path: `/data/kafka/${VERSION}/clusters/${addon.id}/topics`,
-        })
-      })())
+        },
+        path: `/data/kafka/${VERSION}/clusters/${addon.id}/topics`,
+      })
+      ux.action.stop()
 
-      cli.log(`Use \`heroku kafka:topics:info ${args.topic}\` to monitor your topic.`)
+      ux.stdout(`Use \`heroku kafka:topics:info ${args.topic}\` to monitor your topic.\n`)
       if (addonInfo.topic_prefix) {
-        cli.log(`Your topic is using the prefix ${cli.color.green(addonInfo.topic_prefix)}. Learn more in Dev Center:`)
-        cli.log('  https://devcenter.heroku.com/articles/multi-tenant-kafka-on-heroku#connecting-kafka-prefix')
+        ux.stdout(`Your topic is using the prefix ${color.green(addonInfo.topic_prefix)}. Learn more in Dev Center:\n`)
+        ux.stdout('  https://devcenter.heroku.com/articles/multi-tenant-kafka-on-heroku#connecting-kafka-prefix\n')
       }
     })
   }

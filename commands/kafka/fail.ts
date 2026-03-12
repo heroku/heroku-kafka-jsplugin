@@ -1,6 +1,6 @@
 import {Command, flags} from '@heroku-cli/command'
 import {Args, ux} from '@oclif/core'
-import cli from '@heroku/heroku-cli-util'
+import {hux} from '@heroku/heroku-cli-util'
 import {withCluster, request} from '../../lib/clusters.js'
 import {Addon} from '../../lib/shared.js'
 
@@ -38,21 +38,25 @@ export default class Fail extends Command {
     const {args, flags} = await this.parse(Fail)
 
     await withCluster(this.heroku, flags.app, args.cluster, async (addon: Addon) => {
-      await cli.confirmApp(flags.app, flags.confirm,
-        `This command will affect the cluster: ${addon.name}, which is on ${flags.app}\n\nThis command will forcibly terminate nodes in your cluster at random.\nYou should only run this command in controlled testing scenarios.`)
+      await hux.confirmCommand({
+        comparison: flags.app,
+        confirmation: flags.confirm,
+        warningMessage: `This command will affect the cluster: ${addon.name}, which is on ${flags.app}\n\nThis command will forcibly terminate nodes in your cluster at random.\nYou should only run this command in controlled testing scenarios.`,
+      })
 
-      const response = await cli.action('Triggering failure', (async () => {
-        return await request(this.heroku, {
-          method: 'POST',
-          body: {
-            catastrophic: flags.catastrophic,
-            zookeeper: flags.zookeeper,
-          },
-          path: `/data/kafka/${VERSION}/clusters/${addon.id}/induce-failure`,
-        })
-      })())
+      ux.action.start('Triggering failure')
+      const result = await request(this.heroku, {
+        method: 'POST',
+        body: {
+          catastrophic: flags.catastrophic,
+          zookeeper: flags.zookeeper,
+        },
+        path: `/data/kafka/${VERSION}/clusters/${addon.id}/induce-failure`,
+      })
+      const response = result?.body || result
+      ux.action.stop()
 
-      cli.log(response.message)
+      ux.stdout(`${response.message}\n`)
     })
   }
 }

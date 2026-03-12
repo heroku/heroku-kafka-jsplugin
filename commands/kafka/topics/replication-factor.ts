@@ -1,6 +1,5 @@
 import {Command, flags} from '@heroku-cli/command'
-import {Args} from '@oclif/core'
-import cli from '@heroku/heroku-cli-util'
+import {Args, ux} from '@oclif/core'
 import {withCluster, request, topicConfig} from '../../../lib/clusters.js'
 import {Addon} from '../../../lib/shared.js'
 
@@ -40,21 +39,21 @@ export default class TopicsReplicationFactor extends Command {
 
       const topicInfo = await topicConfig(this.heroku, addon.id, topicName)
 
-      await cli.action(msg, (async () => {
-        return await request(this.heroku, {
-          method: 'PUT',
-          body: {
-            topic: {
-              name: topicName,
-              replication_factor: args.value,
-              retention_time_ms: topicInfo.retention_time_ms,
-              compaction: topicInfo.compaction,
-            },
+      ux.action.start(msg)
+      await request(this.heroku, {
+        method: 'PUT',
+        body: {
+          topic: {
+            name: topicName,
+            replication_factor: args.value,
+            retention_time_ms: topicInfo.retention_time_ms,
+            compaction: topicInfo.compaction,
           },
-          path: `/data/kafka/${VERSION}/clusters/${addon.id}/topics/${topicName}`,
-        })
-      })())
-      cli.log(`Use \`heroku kafka:topics:info ${args.topic}\` to monitor your topic.`)
+        },
+        path: `/data/kafka/${VERSION}/clusters/${addon.id}/topics/${topicName}`,
+      })
+      ux.action.stop()
+      ux.stdout(`Use \`heroku kafka:topics:info ${args.topic}\` to monitor your topic.\n`)
     })
   }
 }

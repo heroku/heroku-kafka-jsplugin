@@ -1,6 +1,6 @@
 import {Command, flags} from '@heroku-cli/command'
-import {Args} from '@oclif/core'
-import cli from '@heroku/heroku-cli-util'
+import {Args, ux} from '@oclif/core'
+import {hux} from '@heroku/heroku-cli-util'
 import {withCluster, request} from '../../../lib/clusters.js'
 import {Addon} from '../../../lib/shared.js'
 
@@ -33,21 +33,24 @@ export default class TopicsDestroy extends Command {
     const {args, flags} = await this.parse(TopicsDestroy)
 
     await withCluster(this.heroku, flags.app, args.cluster, async (addon: Addon) => {
-      await cli.confirmApp(flags.app, flags.confirm,
-        `This command will affect the cluster: ${addon.name}, which is on ${flags.app}`)
+      await hux.confirmCommand({
+        comparison: flags.app,
+        confirmation: flags.confirm,
+        warningMessage: `This command will affect the cluster: ${addon.name}, which is on ${flags.app}`,
+      })
 
-      await cli.action(`Deleting topic ${args.topic}`, (async () => {
-        const topicName = args.topic
-        return await request(this.heroku, {
-          method: 'DELETE',
-          body: {
-            topic_name: topicName,
-          },
-          path: `/data/kafka/${VERSION}/clusters/${addon.id}/topics/${topicName}`,
-        })
-      })())
+      const topicName = args.topic
+      ux.action.start(`Deleting topic ${args.topic}`)
+      await request(this.heroku, {
+        method: 'DELETE',
+        body: {
+          topic_name: topicName,
+        },
+        path: `/data/kafka/${VERSION}/clusters/${addon.id}/topics/${topicName}`,
+      })
+      ux.action.stop()
 
-      cli.log('Your topic has been marked for deletion, and will be removed from the cluster shortly')
+      ux.stdout('Your topic has been marked for deletion, and will be removed from the cluster shortly\n')
     })
   }
 }

@@ -1,6 +1,6 @@
 import {Command, flags} from '@heroku-cli/command'
-import {Args} from '@oclif/core'
-import cli from '@heroku/heroku-cli-util'
+import {Args, ux} from '@oclif/core'
+import {hux} from '@heroku/heroku-cli-util'
 import {withCluster, request} from '../../../lib/clusters.js'
 import {Addon} from '../../../lib/shared.js'
 
@@ -29,27 +29,25 @@ export default class ConsumerGroups extends Command {
     const {args, flags} = await this.parse(ConsumerGroups)
 
     await withCluster(this.heroku, flags.app, args.cluster, async (addon: Addon) => {
-      const consumerGroups = await request(this.heroku, {
+      const {body: consumerGroups} = await request(this.heroku, {
         path: `/data/kafka/${VERSION}/clusters/${addon.id}/consumer_groups`,
-      })
-      cli.styledHeader('Kafka Consumer Groups on ' + (args.cluster || 'HEROKU_KAFKA'))
+      }) as {body: any}
+
+      hux.styledHeader('Kafka Consumer Groups on ' + (args.cluster || 'HEROKU_KAFKA'))
       const consumerGroupData = consumerGroups.consumer_groups.map((g: any) => {
         return {
           name: g.name,
         }
       })
-      cli.log()
+
+      ux.stdout('\n')
       if (consumerGroupData.length === 0) {
-        cli.log('No consumer groups found on this Kafka cluster.')
-        cli.log('Use heroku kafka:consumer-groups:create to create a consumer group.')
+        ux.stdout('No consumer groups found on this Kafka cluster.\n')
+        ux.stdout('Use heroku kafka:consumer-groups:create to create a consumer group.\n')
       } else {
-        cli.table(consumerGroupData,
-          {
-            columns: [
-              {key: 'name', label: 'Name'},
-            ],
-          }
-        )
+        hux.table(consumerGroupData, {
+          name: {header: 'Name'},
+        })
       }
     })
   }

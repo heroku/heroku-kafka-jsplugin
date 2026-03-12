@@ -1,6 +1,6 @@
 import {Command, flags} from '@heroku-cli/command'
 import {Args, ux} from '@oclif/core'
-import cli from '@heroku/heroku-cli-util'
+import {color} from '@heroku/heroku-cli-util'
 import {withCluster, request} from '../../../lib/clusters.js'
 import {Addon} from '../../../lib/shared.js'
 
@@ -54,7 +54,7 @@ export default class ConsumerGroupsCreate extends Command {
         if (statusCode === 400 && err.body?.message === 'this command is not required or enabled on dedicated clusters') {
           created = false
           ux.action.stop()
-          ux.warn(`${cli.color.addon(addon.name)} does not need consumer groups managed explicitly, so this command does nothing`)
+          ux.warn(`${color.addon(addon.name)} does not need consumer groups managed explicitly, so this command does nothing`)
         } else {
           ux.action.stop('failed')
           throw err

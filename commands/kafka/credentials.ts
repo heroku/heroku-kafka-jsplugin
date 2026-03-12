@@ -36,7 +36,7 @@ export default class Credentials extends Command {
     }
 
     await withCluster(this.heroku, flags.app, args.cluster, async (addon: Addon) => {
-      const response = await request(this.heroku, {
+      const {body: response} = await request(this.heroku, {
         method: 'POST',
         path: `/data/kafka/${VERSION}/clusters/${addon.id}/rotate-credentials`,
       })

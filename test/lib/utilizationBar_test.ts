@@ -1,12 +1,10 @@
 import {expect} from 'chai'
 import {describe, it, beforeEach} from 'mocha'
-import cli from '@heroku/heroku-cli-util'
 import utilizationBar from '../../lib/utilizationBar.js'
 
 describe('utilizationBar', function () {
   beforeEach(() => {
-    cli.mockConsole()
-    cli.color.enabled = true
+    // color is always enabled in tests
   })
 
   const cases = [

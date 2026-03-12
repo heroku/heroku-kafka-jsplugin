@@ -1,6 +1,6 @@
 import {Command, flags} from '@heroku-cli/command'
-import {Args} from '@oclif/core'
-import cli from '@heroku/heroku-cli-util'
+import {Args, ux} from '@oclif/core'
+import {hux} from '@heroku/heroku-cli-util'
 import {withCluster, request} from '../../../lib/clusters.js'
 import {Addon} from '../../../lib/shared.js'
 
@@ -33,22 +33,25 @@ export default class ConsumerGroupsDestroy extends Command {
     const {args, flags} = await this.parse(ConsumerGroupsDestroy)
 
     await withCluster(this.heroku, flags.app, args.cluster, async (addon: Addon) => {
-      await cli.confirmApp(flags.app, flags.confirm,
-        `This command will affect the cluster: ${addon.name}, which is on ${flags.app}`)
+      await hux.confirmCommand({
+        comparison: flags.app,
+        confirmation: flags.confirm,
+        warningMessage: `This command will affect the cluster: ${addon.name}, which is on ${flags.app}`,
+      })
 
-      await cli.action(`Deleting consumer group ${args.consumer_group}`, (async () => {
-        return await request(this.heroku, {
-          method: 'delete',
-          body: {
-            consumer_group: {
-              name: args.consumer_group,
-            },
+      ux.action.start(`Deleting consumer group ${args.consumer_group}`)
+      await request(this.heroku, {
+        method: 'delete',
+        body: {
+          consumer_group: {
+            name: args.consumer_group,
           },
-          path: `/data/kafka/${VERSION}/clusters/${addon.id}/consumer_groups`,
-        })
-      })())
+        },
+        path: `/data/kafka/${VERSION}/clusters/${addon.id}/consumer_groups`,
+      })
+      ux.action.stop()
 
-      cli.log('Your consumer group has been deleted')
+      ux.stdout('Your consumer group has been deleted\n')
     })
   }
 }

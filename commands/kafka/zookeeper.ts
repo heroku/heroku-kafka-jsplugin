@@ -1,6 +1,5 @@
 import {Command, flags} from '@heroku-cli/command'
-import {Args} from '@oclif/core'
-import cli from '@heroku/heroku-cli-util'
+import {Args, ux} from '@oclif/core'
 import {parseBool, isZookeeperAllowed} from '../../lib/shared.js'
 import {withCluster, request} from '../../lib/clusters.js'
 import {Addon} from '../../lib/shared.js'
@@ -42,18 +41,18 @@ export default class Zookeeper extends Command {
 
     await withCluster(this.heroku, flags.app, args.cluster, async (addon: Addon) => {
       if (!isZookeeperAllowed(addon)) {
-        cli.exit(1, '`kafka:zookeeper` is only available in Heroku Private Spaces')
+        ux.error('`kafka:zookeeper` is only available in Heroku Private Spaces')
       }
 
-      await cli.action(msg, (async () => {
-        return await request(this.heroku, {
-          method: 'POST',
-          body: {
-            enabled: enabled,
-          },
-          path: `/data/kafka/${VERSION}/clusters/${addon.id}/zookeeper`,
-        })
-      })())
+      ux.action.start(msg)
+      await request(this.heroku, {
+        method: 'POST',
+        body: {
+          enabled: enabled,
+        },
+        path: `/data/kafka/${VERSION}/clusters/${addon.id}/zookeeper`,
+      })
+      ux.action.stop()
     })
   }
 }
