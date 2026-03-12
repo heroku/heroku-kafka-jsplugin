@@ -80,10 +80,11 @@
     "coverage": "nyc --reporter=html --reporter=text --reporter=lcov npm test",
     "lint": "eslint . src test",
     "manifest": "oclif manifest",
-    "qtest": "NODE_OPTIONS='--import tsx' mocha",
+    "prepack": "npm run build",
     "release": "np",
     "standardize": "standard --fix",
-    "test": "NODE_OPTIONS='--import tsx' nyc mocha"
+    "test": "NODE_OPTIONS='--import tsx' nyc mocha",
+    "version": "oclif readme && git add README.md"
   },
   "overrides": {
     "serialize-javascript": "^7.0.3"
