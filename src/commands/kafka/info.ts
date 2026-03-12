@@ -124,6 +124,8 @@ function displayCluster(cluster: ClusterInfo): void {
 }
 
 export default class Info extends Command {
+  static aliases = ['kafka']
+
   static args = {
     cluster: Args.string({description: 'cluster to operate on', required: false}),
   }
@@ -131,6 +133,7 @@ export default class Info extends Command {
   static description = 'display cluster information'
 
   static examples = [
+    '$ heroku kafka',
     '$ heroku kafka:info',
     '$ heroku kafka:info HEROKU_KAFKA_BROWN_URL',
   ]
