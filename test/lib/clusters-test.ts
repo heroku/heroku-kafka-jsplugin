@@ -40,7 +40,7 @@ describe('withCluster', () => {
           },
         )
         expect.fail('Should have thrown an error')
-      } catch (error) {
+      } catch {
         expect(called).to.be.false
       }
     })
