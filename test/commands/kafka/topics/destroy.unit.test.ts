@@ -14,9 +14,7 @@ describe('kafka:topics:destroy', () => {
   let kafka: nock.Scope
   let originalConfirmCommand: any
 
-  const topicUrl = (cluster: string, topic: string): string => {
-    return `/data/kafka/${VERSION}/clusters/${cluster}/topics/${topic}`
-  }
+  const topicUrl = (cluster: string, topic: string): string => `/data/kafka/${VERSION}/clusters/${cluster}/topics/${topic}`
 
   beforeEach(() => {
     kafka = nock('https://api.data.heroku.com:443')

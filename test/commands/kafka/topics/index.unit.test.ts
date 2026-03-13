@@ -12,9 +12,7 @@ const VERSION = 'v0'
 describe('kafka:topics', () => {
   let kafka: nock.Scope
 
-  const topicsUrl = (cluster: string): string => {
-    return `/data/kafka/${VERSION}/clusters/${cluster}/topics`
-  }
+  const topicsUrl = (cluster: string): string => `/data/kafka/${VERSION}/clusters/${cluster}/topics`
 
   beforeEach(() => {
     kafka = nock('https://api.data.heroku.com:443')

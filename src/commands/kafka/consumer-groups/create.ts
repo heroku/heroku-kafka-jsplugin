@@ -46,15 +46,15 @@ export default class ConsumerGroupsCreate extends Command {
           path: `/data/kafka/${VERSION}/clusters/${addon.id}/consumer_groups`,
         })
         ux.action.stop()
-      } catch (err: any) {
-        const statusCode = err.statusCode || err.http?.statusCode
-        if (statusCode === 400 && err.body?.message === 'this command is not required or enabled on dedicated clusters') {
+      } catch (error: any) {
+        const statusCode = error.statusCode || error.http?.statusCode
+        if (statusCode === 400 && error.body?.message === 'this command is not required or enabled on dedicated clusters') {
           created = false
           ux.action.stop()
           ux.warn(`${color.addon(addon.name)} does not need consumer groups managed explicitly, so this command does nothing`)
         } else {
           ux.action.stop('failed')
-          throw err
+          throw error
         }
       }
 

@@ -65,7 +65,7 @@ export default class TopicsWrite extends Command {
       }
 
       const partition = parseInt(flags.partition) || 0
-      const key = flags.key
+      const {key} = flags
 
       const message: any = {value: args.message}
       if (key) {

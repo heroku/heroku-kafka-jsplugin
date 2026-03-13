@@ -33,7 +33,7 @@ export default class Topics extends Command {
       const topics = result?.body || result
       hux.styledHeader('Kafka Topics on ' + (topics.attachment_name || 'HEROKU_KAFKA'))
 
-      if (topics.topics.length !== 0) {
+      if (topics.topics.length > 0) {
         const extraInfo: string[] = []
         if (topics.limits && topics.limits.max_topics) {
           extraInfo.push(`${topics.topics.length} / ${topics.limits.max_topics} topics`)

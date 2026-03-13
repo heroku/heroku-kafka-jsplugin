@@ -12,9 +12,7 @@ const VERSION = 'v0'
 describe('kafka:consumer-groups', () => {
   let kafka: nock.Scope
 
-  const consumerGroupsUrl = (cluster: string): string => {
-    return `/data/kafka/${VERSION}/clusters/${cluster}/consumer_groups`
-  }
+  const consumerGroupsUrl = (cluster: string): string => `/data/kafka/${VERSION}/clusters/${cluster}/consumer_groups`
 
   beforeEach(() => {
     kafka = nock('https://api.data.heroku.com:443')

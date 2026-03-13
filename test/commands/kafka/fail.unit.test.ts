@@ -14,9 +14,7 @@ describe('kafka:fail', () => {
   let kafka: nock.Scope
   let originalConfirmCommand: any
 
-  const failUrl = (cluster: string): string => {
-    return `/data/kafka/${VERSION}/clusters/${cluster}/induce-failure`
-  }
+  const failUrl = (cluster: string): string => `/data/kafka/${VERSION}/clusters/${cluster}/induce-failure`
 
   beforeEach(() => {
     kafka = nock('https://api.data.heroku.com:443')

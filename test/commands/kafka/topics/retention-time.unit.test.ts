@@ -12,17 +12,11 @@ const VERSION = 'v0'
 describe('kafka:topics:retention-time', () => {
   let kafka: nock.Scope
 
-  const topicsUrl = (cluster: string): string => {
-    return `/data/kafka/${VERSION}/clusters/${cluster}/topics`
-  }
+  const topicsUrl = (cluster: string): string => `/data/kafka/${VERSION}/clusters/${cluster}/topics`
 
-  const topicUrl = (cluster: string, topic: string): string => {
-    return `/data/kafka/${VERSION}/clusters/${cluster}/topics/${topic}`
-  }
+  const topicUrl = (cluster: string, topic: string): string => `/data/kafka/${VERSION}/clusters/${cluster}/topics/${topic}`
 
-  const infoUrl = (cluster: string): string => {
-    return `/data/kafka/${VERSION}/clusters/${cluster}`
-  }
+  const infoUrl = (cluster: string): string => `/data/kafka/${VERSION}/clusters/${cluster}`
 
   beforeEach(() => {
     kafka = nock('https://api.data.heroku.com:443')

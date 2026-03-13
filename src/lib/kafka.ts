@@ -23,8 +23,8 @@ export async function createSimpleConsumer(options: any): Promise<any> {
   return kafkaClient.createSimpleConsumer(options)
 }
 
-export const COMPRESSION_GZIP = kafka.COMPRESSION_GZIP
-export const COMPRESSION_NONE = kafka.COMPRESSION_NONE
-export const COMPRESSION_SNAPPY = kafka.COMPRESSION_SNAPPY
-export const EARLIEST_OFFSET = kafka.EARLIEST_OFFSET
-export const LATEST_OFFSET = kafka.LATEST_OFFSET
+export const {COMPRESSION_GZIP} = kafka
+export const {COMPRESSION_NONE} = kafka
+export const {COMPRESSION_SNAPPY} = kafka
+export const {EARLIEST_OFFSET} = kafka
+export const {LATEST_OFFSET} = kafka

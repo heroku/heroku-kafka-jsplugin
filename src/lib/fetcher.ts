@@ -27,8 +27,7 @@ function isKafka(addon: Addon): boolean {
 }
 
 export default (heroku: HerokuClient) => {
-  async function addon(app: string, cluster?: string): Promise<Addon> {
-    cluster = cluster || 'KAFKA_URL'
+  async function addon(app: string, cluster: string = 'KAFKA_URL'): Promise<Addon> {
     debug(`fetching ${cluster} on ${app}`)
     const attachment = await attachmentResolver(heroku, app, cluster, {}) as AttachmentWithAddon
     return attachment.addon

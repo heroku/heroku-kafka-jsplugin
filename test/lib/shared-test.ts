@@ -34,7 +34,7 @@ describe('parseDuration', function () {
 
     ['1 fortnight', null],
   ]
-  cases.forEach(function (testcase) {
+  for (const testcase of cases) {
     const duration = testcase[0]
     const expected = testcase[1]
 
@@ -42,7 +42,7 @@ describe('parseDuration', function () {
       const actual = shared.parseDuration(duration)
       expect(actual).to.equal(expected)
     })
-  })
+  }
 })
 
 describe('isZookeeperAllowed', function () {
@@ -66,7 +66,7 @@ describe('isZookeeperAllowed', function () {
     [{plan: {name: 'shield-extended-1'}}, false],
     [{plan: {name: 'shield-extended-2'}}, false],
   ]
-  cases.forEach(function (testcase) {
+  for (const testcase of cases) {
     const addon = testcase[0]
     const expected = testcase[1]
 
@@ -74,7 +74,7 @@ describe('isZookeeperAllowed', function () {
       const actual = shared.isZookeeperAllowed(addon)
       expect(actual).to.equal(expected)
     })
-  })
+  }
 })
 
 describe('parseBool', function () {
@@ -92,7 +92,7 @@ describe('parseBool', function () {
     ['nope', undefined],
     ['yep', undefined],
   ]
-  cases.forEach(function (testcase) {
+  for (const testcase of cases) {
     const str = testcase[0]
     const expected = testcase[1]
 
@@ -100,7 +100,7 @@ describe('parseBool', function () {
       const actual = shared.parseBool(str)
       expect(actual).to.equal(expected)
     })
-  })
+  }
 })
 
 describe('deprecated', function () {
@@ -143,7 +143,7 @@ describe('formatIntervalFromMilliseconds', function () {
     [((1 * 24 * 60 * 60 * 1000) + 1), '1 day 1 millisecond'],
   ]
 
-  cases.forEach(function (testcase) {
+  for (const testcase of cases) {
     const duration = testcase[0]
     const expected = testcase[1]
 
@@ -151,7 +151,7 @@ describe('formatIntervalFromMilliseconds', function () {
       const actual = shared.formatIntervalFromMilliseconds(duration)
       expect(actual).to.equal(expected)
     })
-  })
+  }
 })
 
 describe('clusterConfig', () => {

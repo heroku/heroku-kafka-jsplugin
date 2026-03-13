@@ -12,9 +12,7 @@ const VERSION = 'v0'
 describe('kafka:zookeeper', () => {
   let kafka: nock.Scope
 
-  const zookeeperUrl = (cluster: string): string => {
-    return `/data/kafka/${VERSION}/clusters/${cluster}/zookeeper`
-  }
+  const zookeeperUrl = (cluster: string): string => `/data/kafka/${VERSION}/clusters/${cluster}/zookeeper`
 
   beforeEach(() => {
     kafka = nock('https://api.data.heroku.com:443')
@@ -47,7 +45,7 @@ describe('kafka:zookeeper', () => {
   })
 
   const validEnable = ['enable', 'on']
-  validEnable.forEach(value => {
+  for (const value of validEnable) {
     it(`turns zookeeper on with argument ${value}`, async () => {
       const api = nock('https://api.heroku.com:443')
       .get('/apps/myapp/addon-attachments')
@@ -67,10 +65,10 @@ describe('kafka:zookeeper', () => {
       api.done()
       kafka.done()
     })
-  })
+  }
 
   const validDisable = ['disable', 'off']
-  validDisable.forEach(value => {
+  for (const value of validDisable) {
     it(`turns zookeeper off with argument ${value}`, async () => {
       const api = nock('https://api.heroku.com:443')
       .get('/apps/myapp/addon-attachments')
@@ -90,5 +88,5 @@ describe('kafka:zookeeper', () => {
       api.done()
       kafka.done()
     })
-  })
+  }
 })

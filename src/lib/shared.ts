@@ -65,7 +65,7 @@ function clusterConfig(attachment: Attachment, config: Record<string, string>): 
 }
 
 function isZookeeperAllowed(addon: Addon): boolean {
-  return addon.plan.name.indexOf('private-') !== -1
+  return addon.plan.name.includes('private-')
 }
 
 function parseBool(boolStr: string): boolean | undefined {
@@ -73,54 +73,68 @@ function parseBool(boolStr: string): boolean | undefined {
   case 'yes':
   case 'true':
   case 'on':
-  case 'enable':
+  case 'enable': {
     return true
+  }
+
   case 'no':
   case 'false':
   case 'off':
-  case 'disable':
+  case 'disable': {
     return false
+  }
   }
 }
 
 function parseDuration(durationStr: string): number | null {
   if (/^\d+$/.test(durationStr)) {
-    return parseInt(durationStr, 10)
+    return Number.parseInt(durationStr, 10)
   }
 
   const result = durationStr.match(/^(\d+) ?(ms|[smhd]|milliseconds?|seconds?|minutes?|hours?|days?)$/)
   if (result) {
-    const magnitude = parseInt(result[1])
+    const magnitude = Number.parseInt(result[1])
     const unit = result[2]
     let multiplier = 1
     switch (unit) {
     case 'ms':
     case 'millisecond':
-    case 'milliseconds':
+    case 'milliseconds': {
       multiplier = 1
       break
+    }
+
     case 's':
     case 'second':
-    case 'seconds':
+    case 'seconds': {
       multiplier = 1000
       break
+    }
+
     case 'm':
     case 'minute':
-    case 'minutes':
+    case 'minutes': {
       multiplier = 1000 * 60
       break
+    }
+
     case 'h':
     case 'hour':
-    case 'hours':
+    case 'hours': {
       multiplier = 1000 * 60 * 60
       break
+    }
+
     case 'd':
     case 'day':
-    case 'days':
+    case 'days': {
       multiplier = 1000 * 60 * 60 * 24
       break
-    default:
+    }
+
+    default: {
       return null
+    }
     }
 
     return magnitude * multiplier

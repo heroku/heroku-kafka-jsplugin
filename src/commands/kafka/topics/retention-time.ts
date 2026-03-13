@@ -67,7 +67,7 @@ export default class TopicsRetentionTime extends Command {
       await request(this.heroku, {
         method: 'PUT',
         body: {
-          topic: Object.assign({name: topicName}, cleanupPolicy),
+          topic: {name: topicName, ...cleanupPolicy},
         },
         path: `/data/kafka/${VERSION}/clusters/${addon.id}/topics/${topicName}`,
       })

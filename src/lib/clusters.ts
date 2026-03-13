@@ -92,13 +92,13 @@ class HerokuKafkaClusters {
     const response = await this.request({
       path: `/data/kafka/${VERSION}/clusters/${addon.id}/wait_status`,
     }).then((res: any) => res.body || res)
-    .catch(function (err: HerokuError): WaitStatus {
-      if (err.statusCode === 410) {
-        return Object.assign({'deprovisioned?': true}, errorResponse)
+    .catch((error: HerokuError): WaitStatus => {
+      if (error.statusCode === 410) {
+        return {'deprovisioned?': true, ...errorResponse}
       }
 
-      if (err.statusCode === 404) {
-        return Object.assign({'missing?': true}, errorResponse)
+      if (error.statusCode === 404) {
+        return {'missing?': true, ...errorResponse}
       }
 
       return errorResponse
@@ -121,9 +121,7 @@ async function withCluster(heroku: HerokuClient, app: string, cluster: string | 
     } else if (addons.length === 0) {
       ux.error(`found no kafka add-ons on ${app}`)
     } else {
-      ux.error(`found more than one kafka add-on on ${app}: ${addons.map(function (addon) {
-        return addon.name
-      }).join(', ')}`)
+      ux.error(`found more than one kafka add-on on ${app}: ${addons.map(addon => addon.name).join(', ')}`)
     }
   }
 
@@ -148,8 +146,8 @@ function fetchProvisionedInfo(heroku: HerokuClient, addon: Addon): Promise<any> 
   const url = `https://${host()}/data/kafka/v0/clusters/${addon.id}`
   return heroku.request(url, {method: 'GET'})
   .then((res: any) => res.body || res)
-  .catch((err: HerokuError) => {
-    if (err.statusCode !== 404) throw err
+  .catch((error: HerokuError) => {
+    if (error.statusCode !== 404) throw error
     ux.error(`${color.addon(addon.name)} is not yet provisioned.\nRun ${color.command('heroku kafka:wait')} to wait until the cluster is provisioned.`)
   })
 }

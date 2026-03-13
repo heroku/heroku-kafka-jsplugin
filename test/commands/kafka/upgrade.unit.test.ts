@@ -14,9 +14,7 @@ describe('kafka:upgrade', () => {
   let kafka: nock.Scope
   let originalConfirmCommand: any
 
-  const upgradeUrl = (cluster: string): string => {
-    return `/data/kafka/${VERSION}/clusters/${cluster}/upgrade`
-  }
+  const upgradeUrl = (cluster: string): string => `/data/kafka/${VERSION}/clusters/${cluster}/upgrade`
 
   beforeEach(() => {
     kafka = nock('https://api.data.heroku.com:443')

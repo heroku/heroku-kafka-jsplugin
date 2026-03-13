@@ -7,7 +7,7 @@ import sortBy from 'lodash.sortby'
 import {request} from '../../lib/clusters.js'
 import fetcherFn from '../../lib/fetcher.js'
 import {Addon} from '../../lib/shared.js'
-import utilizationBar from '../../lib/utilizationBar.js'
+import utilizationBar from '../../lib/utilization-bar.js'
 
 const VERSION = 'v0'
 
@@ -35,8 +35,8 @@ function configVarsFromName(attachments: any[], name: string): string[] {
 }
 
 function formatInfo(info: ClusterInfo): InfoLine[] {
-  const cluster = info.cluster
-  const addon = info.addon
+  const {cluster} = info
+  const {addon} = info
 
   const lines = [
     {name: 'Plan', values: [addon.plan.name]},
@@ -46,11 +46,10 @@ function formatInfo(info: ClusterInfo): InfoLine[] {
   ]
 
   if (cluster.robot.is_robot) {
-    lines.push({name: 'Robot', values: ['True']})
-    lines.push({name: 'Robot TTL', values: [cluster.robot.robot_ttl]})
+    lines.push({name: 'Robot', values: ['True']}, {name: 'Robot TTL', values: [cluster.robot.robot_ttl]})
   }
 
-  const limits = cluster.limits
+  const {limits} = cluster
   // we hide __consumer_offsets in topic listing; don't count it
   const topicCount = cluster.topics.filter((topic: string) => topic !== '__consumer_offsets').length
   if (limits.max_topics) {
@@ -146,8 +145,8 @@ export default class Info extends Command {
     const {args, flags} = await this.parse(Info)
 
     const fetcher = fetcherFn(this.heroku)
-    const app = flags.app
-    const cluster = args.cluster
+    const {app} = flags
+    const {cluster} = args
 
     let addons: Addon[] = []
     const {body: attachments} = await this.heroku.get(`/apps/${app}/addon-attachments`) as {body: any[]}
@@ -166,8 +165,8 @@ export default class Info extends Command {
       const clusterData = await request(this.heroku, {
         method: 'GET',
         path: `/data/kafka/${VERSION}/clusters/${addon.id}`,
-      }).then((res: any) => res.body || res).catch((err: any) => {
-        if (err.statusCode !== 404) throw err
+      }).then((res: any) => res.body || res).catch((error: any) => {
+        if (error.statusCode !== 404) throw error
         const warnMsg = `${color.addon(addon.name)} is not yet provisioned.\nRun ${color.code('heroku kafka:wait')} to wait until the cluster is provisioned.`
         ux.warn(warnMsg)
         return null

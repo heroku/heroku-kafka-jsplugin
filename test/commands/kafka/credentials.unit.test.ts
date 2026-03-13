@@ -12,9 +12,7 @@ const VERSION = 'v0'
 describe('kafka:credentials', () => {
   let kafka: nock.Scope
 
-  const credentialsUrl = (cluster: string): string => {
-    return `/data/kafka/${VERSION}/clusters/${cluster}/rotate-credentials`
-  }
+  const credentialsUrl = (cluster: string): string => `/data/kafka/${VERSION}/clusters/${cluster}/rotate-credentials`
 
   beforeEach(() => {
     kafka = nock('https://api.data.heroku.com:443')

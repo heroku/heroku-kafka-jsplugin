@@ -12,17 +12,11 @@ const VERSION = 'v0'
 describe('kafka:topics:compaction', () => {
   let kafka: nock.Scope
 
-  const topicUrl = (cluster: string, topic: string): string => {
-    return `/data/kafka/${VERSION}/clusters/${cluster}/topics/${topic}`
-  }
+  const topicUrl = (cluster: string, topic: string): string => `/data/kafka/${VERSION}/clusters/${cluster}/topics/${topic}`
 
-  const topicsUrl = (cluster: string): string => {
-    return `/data/kafka/${VERSION}/clusters/${cluster}/topics`
-  }
+  const topicsUrl = (cluster: string): string => `/data/kafka/${VERSION}/clusters/${cluster}/topics`
 
-  const infoUrl = (cluster: string): string => {
-    return `/data/kafka/${VERSION}/clusters/${cluster}`
-  }
+  const infoUrl = (cluster: string): string => `/data/kafka/${VERSION}/clusters/${cluster}`
 
   beforeEach(() => {
     kafka = nock('https://api.data.heroku.com:443')
@@ -42,7 +36,7 @@ describe('kafka:topics:compaction', () => {
     const validEnable = ['enable', 'on']
     const validDisable = ['disable', 'off']
 
-    validEnable.forEach(value => {
+    for (const value of validEnable) {
       it(`uses the original retention and turns compaction on with argument ${value}`, async () => {
         const api = nock('https://api.heroku.com:443')
         .get('/apps/myapp/addon-attachments')
@@ -69,9 +63,9 @@ describe('kafka:topics:compaction', () => {
         api.done()
         kafka.done()
       })
-    })
+    }
 
-    validDisable.forEach(value => {
+    for (const value of validDisable) {
       it(`turns compaction off and uses current retention value if set with argument ${value}`, async () => {
         const api = nock('https://api.heroku.com:443')
         .get('/apps/myapp/addon-attachments')
@@ -125,14 +119,14 @@ describe('kafka:topics:compaction', () => {
         api.done()
         kafka.done()
       })
-    })
+    }
   })
 
   describe('if the cluster does not support a mixed cleanup policy', () => {
     const validEnable = ['enable', 'on']
     const validDisable = ['disable', 'off']
 
-    validEnable.forEach(value => {
+    for (const value of validEnable) {
       it(`turns off retention and turns compaction on with argument ${value}`, async () => {
         const api = nock('https://api.heroku.com:443')
         .get('/apps/myapp/addon-attachments')
@@ -159,9 +153,9 @@ describe('kafka:topics:compaction', () => {
         api.done()
         kafka.done()
       })
-    })
+    }
 
-    validDisable.forEach(value => {
+    for (const value of validDisable) {
       it(`turns compaction off and sets retention to plan minimum with argument ${value}`, async () => {
         const api = nock('https://api.heroku.com:443')
         .get('/apps/myapp/addon-attachments')
@@ -188,6 +182,6 @@ describe('kafka:topics:compaction', () => {
         api.done()
         kafka.done()
       })
-    })
+    }
   })
 })

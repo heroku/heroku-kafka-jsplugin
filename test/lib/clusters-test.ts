@@ -123,9 +123,6 @@ describe('withCluster', () => {
 })
 
 describe('topicConfig', () => {
-  beforeEach(() => {
-  })
-
   it('finds the topic when not prefixed', async () => {
     const addonId = '1234'
     const topicName = 'foo'

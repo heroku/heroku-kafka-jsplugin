@@ -12,9 +12,7 @@ const VERSION = 'v0'
 describe('kafka:topics:info', () => {
   let kafka: nock.Scope
 
-  const topicsUrl = (cluster: string): string => {
-    return `/data/kafka/${VERSION}/clusters/${cluster}/topics`
-  }
+  const topicsUrl = (cluster: string): string => `/data/kafka/${VERSION}/clusters/${cluster}/topics`
 
   beforeEach(() => {
     kafka = nock('https://api.data.heroku.com:443')
@@ -47,7 +45,7 @@ describe('kafka:topics:info', () => {
           name: 'topic-1',
           partitions: 3,
           replication_factor: 3,
-          retention_time_ms: 86400000,
+          retention_time_ms: 86_400_000,
         },
       ],
     })
@@ -88,7 +86,7 @@ describe('kafka:topics:info', () => {
           partitions: 3,
           prefix: 'wisła-12345.',
           replication_factor: 3,
-          retention_time_ms: 86400000,
+          retention_time_ms: 86_400_000,
         },
       ],
     })
@@ -124,7 +122,7 @@ describe('kafka:topics:info', () => {
           name: 'topic-1',
           partitions: 0,
           replication_factor: 0,
-          retention_time_ms: 86400000,
+          retention_time_ms: 86_400_000,
         },
       ],
     })
@@ -158,7 +156,7 @@ describe('kafka:topics:info', () => {
           name: 'topic-2',
           partitions: 0,
           replication_factor: 0,
-          retention_time_ms: 86400000,
+          retention_time_ms: 86_400_000,
         },
       ],
     })

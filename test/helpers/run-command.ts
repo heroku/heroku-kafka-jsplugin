@@ -4,7 +4,7 @@ import type {BufferEncoding} from 'node:buffer'
 import {Interfaces} from '@oclif/core'
 import ansis from 'ansis'
 
-import {getConfig} from './testInstances.js'
+import {getConfig} from './test-instances.js'
 
 // Accept any command class (including those with protected constructors)
 // Use a broader type to bypass visibility checks while maintaining instance type safety

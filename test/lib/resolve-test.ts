@@ -19,7 +19,7 @@ function createMockClient() {
         error.statusCode = res.status
         try {
           error.body = await res.json()
-        } catch (e) {
+        } catch {
           error.body = {}
         }
 
@@ -39,7 +39,7 @@ function createMockClient() {
         error.statusCode = res.status
         try {
           error.body = await res.json()
-        } catch (e) {
+        } catch {
           error.body = {}
         }
 
@@ -86,7 +86,7 @@ describe('resolve', () => {
       .then(() => {
         throw new Error('unreachable')
       })
-      .catch(err => expect(err, 'to satisfy', {statusCode: 404}))
+      .catch(error => expect(error, 'to satisfy', {statusCode: 404}))
     })
 
     it('fails if no addon found with addon-service', () => {
@@ -98,7 +98,7 @@ describe('resolve', () => {
       .then(() => {
         throw new Error('unreachable')
       })
-      .catch(err => expect(err, 'to satisfy', {statusCode: 404}))
+      .catch(error => expect(error, 'to satisfy', {statusCode: 404}))
       .then(() => api.done())
     })
 
@@ -110,7 +110,7 @@ describe('resolve', () => {
       .then(() => {
         throw new Error('unreachable')
       })
-      .catch(err => expect(err, 'to satisfy', {statusCode: 401}))
+      .catch(error => expect(error, 'to satisfy', {statusCode: 401}))
     })
 
     it('fails if ambiguous', () => {
@@ -122,9 +122,9 @@ describe('resolve', () => {
       .then(() => {
         throw new Error('unreachable')
       })
-      .catch(function (err) {
+      .catch(function (error) {
         api.done()
-        expect(err, 'to satisfy', {message: 'Ambiguous identifier; multiple matching add-ons found: myaddon-5, myaddon-6.', type: 'addon'})
+        expect(error, 'to satisfy', {message: 'Ambiguous identifier; multiple matching add-ons found: myaddon-5, myaddon-6.', type: 'addon'})
       })
     })
 
@@ -137,7 +137,7 @@ describe('resolve', () => {
       .then(() => {
         throw new Error('unreachable')
       })
-      .catch(err => expect(err, 'to satisfy', {statusCode: 404}))
+      .catch(error => expect(error, 'to satisfy', {statusCode: 404}))
       .then(() => {
         api.done()
       })
@@ -151,7 +151,7 @@ describe('resolve', () => {
       .then(() => {
         throw new Error('unreachable')
       })
-      .catch(err => expect(err, 'to satisfy', {body: {resource: 'app'}, statusCode: 404}))
+      .catch(error => expect(error, 'to satisfy', {body: {resource: 'app'}, statusCode: 404}))
       .then(() => {
         api.done()
       })
@@ -206,7 +206,7 @@ describe('resolve', () => {
       .then(() => {
         throw new Error('unreachable')
       })
-      .catch(err => expect(err, 'to satisfy', {statusCode: 404}))
+      .catch(error => expect(error, 'to satisfy', {statusCode: 404}))
       .then(() => {
         api.done()
       })
@@ -280,7 +280,7 @@ describe('resolve', () => {
         .then(() => {
           throw new Error('unreachable')
         })
-        .catch(err => expect(err.body, 'to satisfy', {id: 'two_factor'}))
+        .catch(error => expect(error.body, 'to satisfy', {id: 'two_factor'}))
         .then(() => api.done())
         .then(function () {
           nock.cleanAll()
@@ -329,7 +329,7 @@ describe('resolve', () => {
       .then(() => {
         throw new Error('unreachable')
       })
-      .catch(err => expect(err, 'to satisfy', {statusCode: 401}))
+      .catch(error => expect(error, 'to satisfy', {statusCode: 401}))
       .then(() => api.done())
     })
 
@@ -341,7 +341,7 @@ describe('resolve', () => {
       .then(() => {
         throw new Error('unreachable')
       })
-      .catch(err => expect(err, 'to satisfy', {statusCode: 401}))
+      .catch(error => expect(error, 'to satisfy', {statusCode: 401}))
       .then(() => api.done())
     })
 
@@ -425,11 +425,11 @@ describe('resolve', () => {
       .then(() => {
         throw new Error('unreachable')
       })
-      .catch(function (err) {
+      .catch(function (error) {
         api.done()
         appAddon.done()
         appAttachment.done()
-        expect(err, 'to satisfy', {message: 'Ambiguous identifier; multiple matching add-ons found: some-random-name-1, some-random-name-2.', type: 'addon_attachment'})
+        expect(error, 'to satisfy', {message: 'Ambiguous identifier; multiple matching add-ons found: some-random-name-1, some-random-name-2.', type: 'addon_attachment'})
       })
     })
 
@@ -464,7 +464,7 @@ describe('resolve', () => {
       .then(() => {
         throw new Error('unreachable')
       })
-      .catch(err => expect(err, 'to satisfy', {message: 'Couldn\'t find that addon.'}))
+      .catch(error => expect(error, 'to satisfy', {message: 'Couldn\'t find that addon.'}))
       .then(() => api.done())
       .then(() => appAddon.done())
       .then(() => appAttachment.done())
@@ -481,7 +481,7 @@ describe('resolve', () => {
       .then(() => {
         throw new Error('unreachable')
       })
-      .catch(err => expect(err, 'to satisfy', {body: {resource: 'app'}}))
+      .catch(error => expect(error, 'to satisfy', {body: {resource: 'app'}}))
       .then(() => api.done())
       .then(() => appAddon.done())
     })
@@ -500,7 +500,7 @@ describe('resolve', () => {
       .then(() => {
         throw new Error('unreachable')
       })
-      .catch(err => expect(err, 'to satisfy', {message: 'Couldn\'t find that addon.'}))
+      .catch(error => expect(error, 'to satisfy', {message: 'Couldn\'t find that addon.'}))
       .then(() => api.done())
       .then(() => appAddon.done())
       .then(() => appAttachment.done())
@@ -514,7 +514,7 @@ describe('resolve', () => {
       .then(() => {
         throw new Error('unreachable')
       })
-      .catch(err => expect(err, 'to satisfy', {message: 'Couldn\'t find that addon.'}))
+      .catch(error => expect(error, 'to satisfy', {message: 'Couldn\'t find that addon.'}))
       .then(() => api.done())
     })
 
@@ -537,7 +537,7 @@ describe('resolve', () => {
       .then(() => {
         throw new Error('unreachable')
       })
-      .catch(err => expect(err, 'to satisfy', {message: 'Ambiguous identifier; multiple matching add-ons found: some-random-name-1, some-random-name-2.', type: 'addon_attachment'}))
+      .catch(error => expect(error, 'to satisfy', {message: 'Ambiguous identifier; multiple matching add-ons found: some-random-name-1, some-random-name-2.', type: 'addon_attachment'}))
       .then(() => api.done())
       .then(() => appAddon.done())
       .then(() => appAttachment.done())
@@ -562,7 +562,7 @@ describe('resolve', () => {
       .then(() => {
         throw new Error('unreachable')
       })
-      .catch(err => expect(err, 'to satisfy', {statusCode: 404}))
+      .catch(error => expect(error, 'to satisfy', {statusCode: 404}))
     })
 
     it('fails if ambiguous', () => {
@@ -574,9 +574,9 @@ describe('resolve', () => {
       .then(() => {
         throw new Error('unreachable')
       })
-      .catch(function (err) {
+      .catch(function (error) {
         api.done()
-        expect(err, 'to satisfy', {message: 'Ambiguous identifier; multiple matching add-ons found: myaddon-5, myaddon-6.', type: 'addon'})
+        expect(error, 'to satisfy', {message: 'Ambiguous identifier; multiple matching add-ons found: myaddon-5, myaddon-6.', type: 'addon'})
       })
     })
   })
@@ -599,7 +599,7 @@ describe('resolve', () => {
       .then(() => {
         throw new Error('unreachable')
       })
-      .catch(err => expect(err, 'to satisfy', {statusCode: 404}))
+      .catch(error => expect(error, 'to satisfy', {statusCode: 404}))
       .then(() => api.done())
     })
 
@@ -612,8 +612,8 @@ describe('resolve', () => {
       .then(() => {
         throw new Error('unreachable')
       })
-      .catch(function (err) {
-        expect(err, 'to satisfy', {message: 'Ambiguous identifier; multiple matching add-ons found: myaddon-5, myaddon-6.', type: 'addon_attachment'})
+      .catch(function (error) {
+        expect(error, 'to satisfy', {message: 'Ambiguous identifier; multiple matching add-ons found: myaddon-5, myaddon-6.', type: 'addon_attachment'})
         api.done()
       })
     })

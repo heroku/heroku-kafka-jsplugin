@@ -14,9 +14,7 @@ describe('kafka:consumer-groups:destroy', () => {
   let kafka: nock.Scope
   let originalConfirmCommand: any
 
-  const consumerGroupsUrl = (cluster: string): string => {
-    return `/data/kafka/${VERSION}/clusters/${cluster}/consumer_groups`
-  }
+  const consumerGroupsUrl = (cluster: string): string => `/data/kafka/${VERSION}/clusters/${cluster}/consumer_groups`
 
   beforeEach(() => {
     kafka = nock('https://api.data.heroku.com:443')

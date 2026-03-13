@@ -12,9 +12,7 @@ const VERSION = 'v0'
 describe('kafka:wait', () => {
   let kafka: nock.Scope
 
-  const waitUrl = (cluster: string): string => {
-    return `/data/kafka/${VERSION}/clusters/${cluster}/wait_status`
-  }
+  const waitUrl = (cluster: string): string => `/data/kafka/${VERSION}/clusters/${cluster}/wait_status`
 
   beforeEach(() => {
     kafka = nock('https://api.data.heroku.com')

@@ -94,8 +94,8 @@ const addonResolver = function (heroku: HerokuClient, app: string | null, id: st
   if (!app || id.includes('::')) return getAddon(id)
 
   return appAddon(heroku, app, id, options)
-  .catch(function (err: HerokuError) {
-    if (handleNotFound(err, 'add_on')) return getAddon(id)
+  .catch((error: HerokuError) => {
+    if (handleNotFound(error, 'add_on')) return getAddon(id)
   })
 }
 
@@ -106,7 +106,7 @@ const addonResolver = function (heroku: HerokuClient, app: string | null, id: st
 const memoizePromise = function (func: Function, resolver: Function): any {
   const memoized: any = function (this: any, ...args: any[]) {
     const key = resolver.apply(this, args)
-    const cache = memoized.cache
+    const {cache} = memoized
 
     if (cache.has(key)) {
       return cache.get(key)
@@ -114,6 +114,7 @@ const memoizePromise = function (func: Function, resolver: Function): any {
 
     const result = func.apply(this, args)
 
+    // eslint-disable-next-line prefer-arrow-callback
     return result.then(function (this: any) {
       memoized.cache = cache.set(key, result) || cache
       return result
@@ -136,12 +137,17 @@ const singularize = function (type: string, namespace?: string): (matches: any[]
     }
 
     switch (matches.length) {
-    case 0:
+    case 0: {
       throw new NotFoundError()
-    case 1:
+    }
+
+    case 1: {
       return matches[0]
-    default:
+    }
+
+    default: {
       throw new AmbiguousError(matches, type)
+    }
     }
   }
 }
@@ -155,8 +161,8 @@ const attachment = function (heroku: HerokuClient, app: string | null, id: strin
     })
     .then((res: any) => res.body || res)
     .then(singularize('addon_attachment', options.namespace))
-    .catch(function (err: HerokuError) {
-      handleNotFound(err, 'add_on attachment')
+    .catch((error: HerokuError) => {
+      handleNotFound(error, 'add_on attachment')
     })
   }
 
@@ -172,19 +178,15 @@ const attachment = function (heroku: HerokuClient, app: string | null, id: strin
     promise = getAttachment(id)
   } else {
     promise = appAttachment(heroku, app, id, options)
-    .catch(function (err: HerokuError) {
-      handleNotFound(err, 'add_on attachment')
+    .catch((error: HerokuError) => {
+      handleNotFound(error, 'add_on attachment')
     })
   }
 
   // first check to see if there is an attachment matching this app/id combo
   return promise
-  .then(function (attachment: any) {
-    return {attachment}
-  })
-  .catch(function (error: any) {
-    return {error}
-  })
+  .then((attachment: any) => ({attachment}))
+  .catch((error: any) => ({error}))
   // if no attachment, look up an add-on that matches the id
   .then((attachOrError: {attachment?: any, error?: any}) => {
     const {attachment, error} = attachOrError
