@@ -15,21 +15,17 @@ export default class TopicsTail extends Command {
     topic: Args.string({description: 'topic name', required: true}),
     cluster: Args.string({description: 'cluster to operate on', required: false}),
   }
-
   static description = 'tails a topic in Kafka'
-
   static examples = [
     '$ heroku kafka:topics:tail page-visits',
     '$ heroku kafka:topics:tail page-visits kafka-aerodynamic-32763',
     '$ heroku kafka:topics:tail page-visits --max-length 200',
   ]
-
   static flags = {
     app: flags.app({required: true}),
     remote: flags.remote(),
     'max-length': flags.string({description: 'number of characters per message to output'}),
   }
-
   static topic = 'kafka'
 
   async run() {
@@ -37,8 +33,10 @@ export default class TopicsTail extends Command {
 
     await withCluster(this.heroku, flags.app, args.cluster, async (addon: Addon) => {
       const {body: appConfig}: any = await this.heroku.get(`/apps/${flags.app}/config-vars`)
-      const {body: attachment}: any = await this.heroku.get(`/apps/${flags.app}/addon-attachments/${addon.name}`,
-        {headers: {'accept-inclusion': 'config_vars'}})
+      const {body: attachment}: any = await this.heroku.get(
+        `/apps/${flags.app}/addon-attachments/${addon.name}`,
+        {headers: {'accept-inclusion': 'config_vars'}},
+      )
       const config = clusterConfig(attachment, appConfig)
       const consumer = await kafka.createSimpleConsumer({
         idleTimeout: IDLE_TIMEOUT,
@@ -64,7 +62,7 @@ export default class TopicsTail extends Command {
         topicName = config.prefix + topicName
       }
 
-      return new Promise<void>((resolve, reject) => {
+      return new Promise<void>(resolve => {
         // N.B.: we never call resolve unless we see a SIGINT because
         // tail is meant to keep going indefinitely
         process.once('SIGINT', resolve)

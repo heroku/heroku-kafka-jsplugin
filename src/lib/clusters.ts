@@ -3,46 +3,46 @@ import {ux} from '@oclif/core'
 import host from './host.js'
 import debug from './debug.js'
 import fetcher from './fetcher.js'
-import { Addon } from './shared.js'
+import {Addon} from './shared.js'
 
 const VERSION = 'v0'
 
 interface HerokuClient {
-  request(url: string, options?: any): Promise<any>
   get(path: string, options?: any): Promise<any>
   post(path: string, options?: any): Promise<any>
+  request(url: string, options?: any): Promise<any>
 }
 
 interface Context {
-  app: string
   [key: string]: any
+  app: string
 }
 
 interface WaitStatus {
-  message: string
-  'waiting?': boolean
-  'healthy?': boolean
   'deprovisioned?'?: boolean
-  'missing?'?: boolean
   'error?'?: boolean
+  'healthy?': boolean
+  message: string
+  'missing?'?: boolean
+  'waiting?': boolean
 }
 
 interface RequestParams {
-  path?: string
-  method?: string
+  [key: string]: any
+  accept?: string
   body?: any
   host?: string
-  accept?: string
-  [key: string]: any
+  method?: string
+  path?: string
 }
 
 interface TopicInfo {
+  [key: string]: any
   topics: Array<{
+    [key: string]: any
     name: string
     prefix?: string
-    [key: string]: any
   }>
-  [key: string]: any
 }
 
 interface HerokuError extends Error {
@@ -50,44 +50,19 @@ interface HerokuError extends Error {
 }
 
 class HerokuKafkaClusters {
-  heroku: HerokuClient
-  env: any
-  context: Context
   app: string
+  context: Context
+  env: any
+  heroku: HerokuClient
 
-  constructor (heroku: HerokuClient, env: any, context: Context) {
+  constructor(heroku: HerokuClient, env: any, context: Context) {
     this.heroku = heroku
     this.env = env
     this.context = context
     this.app = context.app
   }
 
-  async waitStatus (addon: Addon | null): Promise<WaitStatus | null> {
-    let errorResponse: WaitStatus = {
-      message: 'unknown',
-      'waiting?': true,
-      'healthy?': false
-    }
-
-    if (!addon) {
-      return null
-    }
-    var response = await this.request({
-      path: `/data/kafka/${VERSION}/clusters/${addon.id}/wait_status`
-    }).then((res: any) => res.body || res)
-      .catch(function (err: HerokuError): WaitStatus {
-      if (err.statusCode === 410) {
-        return Object.assign({ 'deprovisioned?': true }, errorResponse)
-      } else if (err.statusCode === 404) {
-        return Object.assign({ 'missing?': true }, errorResponse)
-      } else {
-        return errorResponse
-      }
-    })
-    return response
-  }
-
-  request (params: RequestParams): Promise<any> {
+  request(params: RequestParams): Promise<any> {
     const h = host()
     debug(`picked shogun host: ${h}`)
     const {path, method, body, ...rest} = params
@@ -96,16 +71,42 @@ class HerokuKafkaClusters {
       method: method || 'GET',
       body,
       headers: {
-        'accept': params.accept || 'application/json'
+        accept: params.accept || 'application/json',
       },
-      ...rest
+      ...rest,
     })
+  }
+
+  async waitStatus(addon: Addon | null): Promise<WaitStatus | null> {
+    let errorResponse: WaitStatus = {
+      message: 'unknown',
+      'waiting?': true,
+      'healthy?': false,
+    }
+
+    if (!addon) {
+      return null
+    }
+
+    let response = await this.request({
+      path: `/data/kafka/${VERSION}/clusters/${addon.id}/wait_status`,
+    }).then((res: any) => res.body || res)
+    .catch(function (err: HerokuError): WaitStatus {
+      if (err.statusCode === 410) {
+        return Object.assign({'deprovisioned?': true}, errorResponse)
+      } else if (err.statusCode === 404) {
+        return Object.assign({'missing?': true}, errorResponse)
+      } else {
+        return errorResponse
+      }
+    })
+    return response
   }
 }
 
 // Looks up cluster by name. Name is optional, but only one cluster
 // must exit on the app if it is omitted.
-async function withCluster (heroku: HerokuClient, app: string, cluster: string | undefined, fn: (addon: Addon) => Promise<any>): Promise<any> {
+async function withCluster(heroku: HerokuClient, app: string, cluster: string | undefined, fn: (addon: Addon) => Promise<any>): Promise<any> {
   const fetch = fetcher(heroku)
   let addon: Addon
   if (cluster) {
@@ -115,38 +116,42 @@ async function withCluster (heroku: HerokuClient, app: string, cluster: string |
     if (addons.length === 1) {
       addon = addons[0]
     } else if (addons.length === 0) {
-      ux.error( `found no kafka add-ons on ${app}`)
+      ux.error(`found no kafka add-ons on ${app}`)
     } else {
-      ux.error( `found more than one kafka add-on on ${app}: ${addons.map(function (addon) { return addon.name }).join(', ')}`)
+      ux.error(`found more than one kafka add-on on ${app}: ${addons.map(function (addon) {
+        return addon.name
+      }).join(', ')}`)
     }
   }
+
   return await fn(addon)
 }
 
-async function topicConfig (heroku: HerokuClient, addonId: string, topic: string): Promise<any> {
+async function topicConfig(heroku: HerokuClient, addonId: string, topic: string): Promise<any> {
   const response = await request(heroku, {
-    path: `/data/kafka/${VERSION}/clusters/${addonId}/topics`
+    path: `/data/kafka/${VERSION}/clusters/${addonId}/topics`,
   }) as any
   const info = (response?.body || response) as TopicInfo
-  let forTopic = info.topics.find((t) => t.name === topic || ((t.prefix || '') + t.name) === topic)
+  let forTopic = info.topics.find(t => t.name === topic || ((t.prefix || '') + t.name) === topic)
   if (!forTopic) {
-    ux.error( `topic ${topic} not found`)
+    ux.error(`topic ${topic} not found`)
   }
+
   return forTopic
 }
 
 // Fetch kafka info about a provisioned cluster or exit with failure
-function fetchProvisionedInfo (heroku: HerokuClient, addon: Addon): Promise<any> {
+function fetchProvisionedInfo(heroku: HerokuClient, addon: Addon): Promise<any> {
   const url = `https://${host()}/data/kafka/v0/clusters/${addon.id}`
   return heroku.request(url, {method: 'GET'})
-    .then((res: any) => res.body || res)
-    .catch((err: HerokuError) => {
+  .then((res: any) => res.body || res)
+  .catch((err: HerokuError) => {
     if (err.statusCode !== 404) throw err
-    ux.error( `${color.addon(addon.name)} is not yet provisioned.\nRun ${color.command('heroku kafka:wait')} to wait until the cluster is provisioned.`)
+    ux.error(`${color.addon(addon.name)} is not yet provisioned.\nRun ${color.command('heroku kafka:wait')} to wait until the cluster is provisioned.`)
   })
 }
 
-function request (heroku: HerokuClient, params: RequestParams): Promise<any> {
+function request(heroku: HerokuClient, params: RequestParams): Promise<any> {
   const h = host()
   debug(`picked shogun host: ${h}`)
   const {path, method, body, ...rest} = params
@@ -155,16 +160,16 @@ function request (heroku: HerokuClient, params: RequestParams): Promise<any> {
     method: method || 'GET',
     body,
     headers: {
-      'accept': params.accept || 'application/json'
+      accept: params.accept || 'application/json',
     },
-    ...rest
+    ...rest,
   })
 }
 
 export {
+  fetchProvisionedInfo,
   HerokuKafkaClusters,
-  withCluster,
   request,
   topicConfig,
-  fetchProvisionedInfo
+  withCluster,
 }

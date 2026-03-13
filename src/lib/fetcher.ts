@@ -1,6 +1,6 @@
 import debug from './debug.js'
-import { attachment as attachmentResolver } from './resolve.js'
-import { Addon } from './shared.js'
+import {attachment as attachmentResolver} from './resolve.js'
+import {Addon} from './shared.js'
 
 const DEFAULT_ADDON_NAME = 'heroku-kafka'
 
@@ -13,7 +13,7 @@ interface AttachmentWithAddon {
   addon: Addon
 }
 
-function addonName (): string {
+function addonName(): string {
   if (process.env.HEROKU_KAFKA_ADDON_NAME) {
     return process.env.HEROKU_KAFKA_ADDON_NAME
   } else {
@@ -21,24 +21,24 @@ function addonName (): string {
   }
 }
 
-function isKafka (addon: Addon): boolean {
+function isKafka(addon: Addon): boolean {
   const slug = addon.plan.name.split(':')[0]
   return slug === addonName()
 }
 
 export default (heroku: HerokuClient) => {
-  async function addon (app: string, cluster?: string): Promise<Addon> {
+  async function addon(app: string, cluster?: string): Promise<Addon> {
     cluster = cluster || 'KAFKA_URL'
     debug(`fetching ${cluster} on ${app}`)
     let attachment = await attachmentResolver(heroku, app, cluster, {}) as AttachmentWithAddon
     return attachment.addon
   }
 
-  async function all (app: string): Promise<Addon[]> {
+  async function all(app: string): Promise<Addon[]> {
     debug(`fetching all clusters on ${app}`)
 
     const {body: attachments} = await heroku.get(`/apps/${app}/addon-attachments`, {
-      headers: {'Accept-Inclusion': 'addon:plan'}
+      headers: {'Accept-Inclusion': 'addon:plan'},
     }) as {body: AttachmentWithAddon[]}
     let addons = attachments.map(a => a.addon)
 
@@ -50,11 +50,11 @@ export default (heroku: HerokuClient) => {
 
   return {
     addon,
-    all
+    all,
   }
 }
 
-function uniqueByProperty<T> (array: T[], property: keyof T): T[] {
+function uniqueByProperty<T>(array: T[], property: keyof T): T[] {
   const seen = new Map()
   return array.filter(item => {
     const value = item[property]
@@ -62,6 +62,7 @@ function uniqueByProperty<T> (array: T[], property: keyof T): T[] {
       seen.set(value, true)
       return true
     }
+
     return false
   })
 }

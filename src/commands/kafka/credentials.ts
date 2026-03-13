@@ -9,14 +9,11 @@ export default class Credentials extends Command {
   static args = {
     cluster: Args.string({description: 'cluster to operate on', required: false}),
   }
-
   static description = 'triggers credential rotation'
-
   static examples = [
     '$ heroku kafka:credentials --reset',
     '$ heroku kafka:credentials KAFKA_RED_URL --reset',
   ]
-
   static flags = {
     app: flags.app({required: true}),
     remote: flags.remote(),
@@ -25,7 +22,6 @@ export default class Credentials extends Command {
       required: true,
     }),
   }
-
   static topic = 'kafka'
 
   async run() {

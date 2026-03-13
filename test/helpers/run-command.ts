@@ -14,9 +14,9 @@ interface CommandInstance {
   run(): Promise<any>
 }
 
-export type GenericCmd =
-  | {new(argv: string[], config: Interfaces.Config): CommandInstance}
-  | {prototype: CommandInstance}
+export type GenericCmd
+  = | {new(argv: string[], config: Interfaces.Config): CommandInstance}
+    | {prototype: CommandInstance}
 
 type CaptureOptions = {
   print?: boolean
@@ -75,22 +75,22 @@ function withCapturedOutput<T>(
   process.stderr.write = mock('stderr') as typeof process.stderr.write
 
   return fn()
-    .then(result => ({
-      error: undefined,
-      result,
-      stderr: getStderr(),
-      stdout: getStdout(),
-    }))
-    .catch(error => ({
-      error,
-      result: undefined as T,
-      stderr: getStderr(),
-      stdout: getStdout(),
-    }))
-    .finally(() => {
-      process.stdout.write = originals.stdout
-      process.stderr.write = originals.stderr
-    })
+  .then(result => ({
+    error: undefined,
+    result,
+    stderr: getStderr(),
+    stdout: getStdout(),
+  }))
+  .catch(error => ({
+    error,
+    result: undefined as T,
+    stderr: getStderr(),
+    stdout: getStdout(),
+  }))
+  .finally(() => {
+    process.stdout.write = originals.stdout
+    process.stderr.write = originals.stderr
+  })
 }
 
 /**

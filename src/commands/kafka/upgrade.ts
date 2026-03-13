@@ -10,13 +10,10 @@ export default class Upgrade extends Command {
   static args = {
     cluster: Args.string({description: 'cluster to operate on', required: false}),
   }
-
   static description = 'upgrades kafka broker version'
-
   static examples = [
     '$ heroku kafka:upgrade --version 0.9',
   ]
-
   static flags = {
     app: flags.app({required: true}),
     remote: flags.remote(),
@@ -28,7 +25,6 @@ export default class Upgrade extends Command {
       description: 'pass the app name to skip the manual confirmation prompt',
     }),
   }
-
   static topic = 'kafka'
 
   async run() {

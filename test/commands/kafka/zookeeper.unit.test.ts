@@ -1,5 +1,7 @@
 import {expect} from 'chai'
-import {describe, it, beforeEach, afterEach} from 'mocha'
+import {
+  describe, it, beforeEach, afterEach,
+} from 'mocha'
 import nock from 'nock'
 import {runCommand} from '../../helpers/run-command.js'
 import Zookeeper from '../../../src/commands/kafka/zookeeper.js'
@@ -28,15 +30,15 @@ describe('kafka:zookeeper', () => {
 
   it('warns and exits with an error if used with a non-Private Spaces cluster', async () => {
     const api = nock('https://api.heroku.com:443')
-      .get('/apps/myapp/addon-attachments')
-      .reply(200, [{
-        addon: {
-          id: '00000000-0000-0000-0000-000000000000',
-          name: 'kafka-1',
-          plan: {name: 'heroku-kafka:standard-2'}
-        },
-        name: 'KAFKA'
-      }])
+    .get('/apps/myapp/addon-attachments')
+    .reply(200, [{
+      addon: {
+        id: '00000000-0000-0000-0000-000000000000',
+        name: 'kafka-1',
+        plan: {name: 'heroku-kafka:standard-2'},
+      },
+      name: 'KAFKA',
+    }])
 
     const {error} = await runCommand(Zookeeper, ['enable', '--app', 'myapp'])
     expect(error?.message).to.include('`kafka:zookeeper` is only available in Heroku Private Spaces')
@@ -44,18 +46,18 @@ describe('kafka:zookeeper', () => {
   })
 
   const validEnable = ['enable', 'on']
-  validEnable.forEach((value) => {
+  validEnable.forEach(value => {
     it(`turns zookeeper on with argument ${value}`, async () => {
       const api = nock('https://api.heroku.com:443')
-        .get('/apps/myapp/addon-attachments')
-        .reply(200, [{
-          addon: {
-            id: '00000000-0000-0000-0000-000000000000',
-            name: 'kafka-1',
-            plan: {name: 'heroku-kafka:private-standard-2'}
-          },
-          name: 'KAFKA'
-        }])
+      .get('/apps/myapp/addon-attachments')
+      .reply(200, [{
+        addon: {
+          id: '00000000-0000-0000-0000-000000000000',
+          name: 'kafka-1',
+          plan: {name: 'heroku-kafka:private-standard-2'},
+        },
+        name: 'KAFKA',
+      }])
 
       kafka.post(zookeeperUrl('00000000-0000-0000-0000-000000000000')).reply(200)
 
@@ -67,18 +69,18 @@ describe('kafka:zookeeper', () => {
   })
 
   const validDisable = ['disable', 'off']
-  validDisable.forEach((value) => {
+  validDisable.forEach(value => {
     it(`turns zookeeper off with argument ${value}`, async () => {
       const api = nock('https://api.heroku.com:443')
-        .get('/apps/myapp/addon-attachments')
-        .reply(200, [{
-          addon: {
-            id: '00000000-0000-0000-0000-000000000000',
-            name: 'kafka-1',
-            plan: {name: 'heroku-kafka:private-standard-2'}
-          },
-          name: 'KAFKA'
-        }])
+      .get('/apps/myapp/addon-attachments')
+      .reply(200, [{
+        addon: {
+          id: '00000000-0000-0000-0000-000000000000',
+          name: 'kafka-1',
+          plan: {name: 'heroku-kafka:private-standard-2'},
+        },
+        name: 'KAFKA',
+      }])
 
       kafka.post(zookeeperUrl('00000000-0000-0000-0000-000000000000')).reply(200)
 

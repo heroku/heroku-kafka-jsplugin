@@ -1,8 +1,8 @@
 import chai from 'chai'
 import chaiAsPromised from 'chai-as-promised'
-import {describe, it, beforeEach, afterEach} from 'mocha'
+import {describe, it, beforeEach} from 'mocha'
 import esmock from 'esmock'
-import * as td from 'testdouble'
+import sinon from 'sinon'
 
 chai.use(chaiAsPromised)
 const {expect} = chai
@@ -16,12 +16,12 @@ const fetcher = (arg: any) => {
   expect(arg).to.equal(heroku)
   return {
     all: fetchAll,
-    addon: fetchOne
+    addon: fetchOne,
   }
 }
 
 const clusters = await esmock('../../src/lib/clusters.ts', {
-  '../../src/lib/fetcher.ts': fetcher
+  '../../src/lib/fetcher.ts': fetcher,
 })
 
 describe('withCluster', () => {
@@ -36,24 +36,34 @@ describe('withCluster', () => {
       let called = false
       return expect(clusters.withCluster(
         heroku,
-        'my-app', 'kafka-1',
-        async (arg) => { called = true })
-      )
-        .to.be.rejected
-        .then(() => { expect(called).to.be.false })
+        'my-app',
+        'kafka-1',
+        async arg => {
+          called = true
+        },
+      ))
+      .to.be.rejected
+      .then(() => {
+        expect(called).to.be.false
+      })
     })
 
     it('invokes the callback with the returned add-on', () => {
-      let addon = { name: 'kafka-1' }
+      let addon = {name: 'kafka-1'}
       fetchOne = () => Promise.resolve(addon)
       let calledWith = addon
       return expect(clusters.withCluster(
         heroku,
-        'my-app', 'kafka-1',
-        async (arg) => { calledWith = arg })
-      )
-        .to.be.fulfilled
-        .then(() => { expect(calledWith).to.equal(addon) })
+        'my-app',
+        'kafka-1',
+        async arg => {
+          calledWith = arg
+        },
+      ))
+      .to.be.fulfilled
+      .then(() => {
+        expect(calledWith).to.equal(addon)
+      })
     })
   })
 
@@ -63,36 +73,51 @@ describe('withCluster', () => {
       let called = false
       return expect(clusters.withCluster(
         heroku,
-        'my-app', null,
-        async (arg) => { called = true })
-      )
-        .to.be.rejectedWith(Error, /found no kafka add-ons on my-app/)
-        .then(() => { expect(called).to.be.false })
+        'my-app',
+        null,
+        async arg => {
+          called = true
+        },
+      ))
+      .to.be.rejectedWith(Error, /found no kafka add-ons on my-app/)
+      .then(() => {
+        expect(called).to.be.false
+      })
     })
 
     it('warns and exits if multiple add-ons are found', () => {
-      fetchAll = () => Promise.resolve([ { name: 'kafka-1' }, { name: 'kafka-2' } ])
+      fetchAll = () => Promise.resolve([{name: 'kafka-1'}, {name: 'kafka-2'}])
       let called = false
       return expect(clusters.withCluster(
         heroku,
-        'my-app', null,
-        async (arg) => { called = true })
-      )
-        .to.be.rejectedWith(Error, /found more than one kafka add-on on my-app: kafka-1, kafka-2/)
-        .then(() => { expect(called).to.be.false })
+        'my-app',
+        null,
+        async arg => {
+          called = true
+        },
+      ))
+      .to.be.rejectedWith(Error, /found more than one kafka add-on on my-app: kafka-1, kafka-2/)
+      .then(() => {
+        expect(called).to.be.false
+      })
     })
 
     it('invokes the callback with the returned add-on', () => {
-      let addon = { name: 'kafka-1' }
-      fetchAll = () => Promise.resolve([ addon ])
+      let addon = {name: 'kafka-1'}
+      fetchAll = () => Promise.resolve([addon])
       let calledWith = addon
       return expect(clusters.withCluster(
         heroku,
-        'my-app', null,
-        async (arg) => { calledWith = arg })
-      )
-        .to.be.fulfilled
-        .then(() => { expect(calledWith).to.equal(addon) })
+        'my-app',
+        null,
+        async arg => {
+          calledWith = arg
+        },
+      ))
+      .to.be.fulfilled
+      .then(() => {
+        expect(calledWith).to.equal(addon)
+      })
     })
   })
 })
@@ -104,17 +129,18 @@ describe('topicConfig', () => {
   it('finds the topic when not prefixed', async () => {
     const addonId = '1234'
     const topicName = 'foo'
-    const mockRequest = td.func('request')
-    td.when(mockRequest(`https://api.data.heroku.com/data/kafka/v0/clusters/${addonId}/topics`, td.matchers.anything()))
-      .thenResolve({
-        body: {
-          topics: [
-            { name: topicName },
-            { name: 'bar' }
-          ]
-        }
-      })
-    const heroku = { request: mockRequest }
+    const mockRequest = sinon.stub()
+    mockRequest
+    .withArgs(`https://api.data.heroku.com/data/kafka/v0/clusters/${addonId}/topics`, sinon.match.any)
+    .resolves({
+      body: {
+        topics: [
+          {name: topicName},
+          {name: 'bar'},
+        ],
+      },
+    })
+    const heroku = {request: mockRequest}
     const result = await clusters.topicConfig(heroku, addonId, topicName)
     expect(result.name).to.equal(topicName)
   })
@@ -123,17 +149,18 @@ describe('topicConfig', () => {
     const addonId = '1234'
     const topicName = 'foo'
     const topicPrefix = 'wisła-3456.'
-    const mockRequest = td.func('request')
-    td.when(mockRequest(`https://api.data.heroku.com/data/kafka/v0/clusters/${addonId}/topics`, td.matchers.anything()))
-      .thenResolve({
-        body: {
-          topics: [
-            { name: topicName, prefix: topicPrefix },
-            { name: 'bar', prefix: topicPrefix }
-          ]
-        }
-      })
-    const heroku = { request: mockRequest }
+    const mockRequest = sinon.stub()
+    mockRequest
+    .withArgs(`https://api.data.heroku.com/data/kafka/v0/clusters/${addonId}/topics`, sinon.match.any)
+    .resolves({
+      body: {
+        topics: [
+          {name: topicName, prefix: topicPrefix},
+          {name: 'bar', prefix: topicPrefix},
+        ],
+      },
+    })
+    const heroku = {request: mockRequest}
     const result = await clusters.topicConfig(heroku, addonId, topicName)
     expect(result.name).to.equal(topicName)
   })
@@ -142,17 +169,18 @@ describe('topicConfig', () => {
     const addonId = '1234'
     const topicName = 'foo'
     const topicPrefix = 'wisła-3456.'
-    const mockRequest = td.func('request')
-    td.when(mockRequest(`https://api.data.heroku.com/data/kafka/v0/clusters/${addonId}/topics`, td.matchers.anything()))
-      .thenResolve({
-        body: {
-          topics: [
-            { name: topicName, prefix: topicPrefix },
-            { name: 'bar', prefix: topicPrefix }
-          ]
-        }
-      })
-    const heroku = { request: mockRequest }
+    const mockRequest = sinon.stub()
+    mockRequest
+    .withArgs(`https://api.data.heroku.com/data/kafka/v0/clusters/${addonId}/topics`, sinon.match.any)
+    .resolves({
+      body: {
+        topics: [
+          {name: topicName, prefix: topicPrefix},
+          {name: 'bar', prefix: topicPrefix},
+        ],
+      },
+    })
+    const heroku = {request: mockRequest}
     const result = await clusters.topicConfig(heroku, addonId, topicPrefix + topicName)
     expect(result.name).to.equal(topicName)
   })
@@ -160,19 +188,19 @@ describe('topicConfig', () => {
   it('exits if it cannot find the topic', () => {
     const addonId = '1234'
     const topicName = 'foo'
-    const heroku = {
-      request: td.when(td.function()({
-        host: 'api.data.heroku.com',
-        accept: 'application/json',
-        path: `/data/kafka/v0/clusters/${addonId}/topics`
-      })).thenResolve({
+    const mockRequest = sinon.stub()
+    mockRequest
+    .withArgs(`https://api.data.heroku.com/data/kafka/v0/clusters/${addonId}/topics`, sinon.match.any)
+    .resolves({
+      body: {
         topics: [
-          { name: 'bar' },
-          { name: 'baz' }
-        ]
-      })
-    }
+          {name: 'bar'},
+          {name: 'baz'},
+        ],
+      },
+    })
+    const heroku = {request: mockRequest}
     expect(clusters.topicConfig(heroku, addonId, topicName))
-      .to.be.rejectedWith(Error, `topic ${topicName} not found`)
+    .to.be.rejectedWith(Error, `topic ${topicName} not found`)
   })
 })

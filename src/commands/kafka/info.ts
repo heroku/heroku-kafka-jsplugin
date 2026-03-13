@@ -6,7 +6,7 @@ import sortBy from 'lodash.sortby'
 import utilizationBar from '../../lib/utilizationBar.js'
 import fetcherFn from '../../lib/fetcher.js'
 import {request} from '../../lib/clusters.js'
-import {Addon, Attachment} from '../../lib/shared.js'
+import {Addon} from '../../lib/shared.js'
 
 const VERSION = 'v0'
 
@@ -24,13 +24,13 @@ interface InfoLine {
 
 function configVarsFromName(attachments: any[], name: string): string[] {
   return attachments
-    .filter((att: any) => att.addon.name === name)
-    .map((att: any) => att.name + '_URL')
-    .sort((a: string, b: string) => {
-      if (a === 'KAFKA_URL') return -1
-      if (b === 'KAFKA_URL') return 1
-      return a.localeCompare(b)
-    })
+  .filter((att: any) => att.addon.name === name)
+  .map((att: any) => att.name + '_URL')
+  .sort((a: string, b: string) => {
+    if (a === 'KAFKA_URL') return -1
+    if (b === 'KAFKA_URL') return 1
+    return a.localeCompare(b)
+  })
 }
 
 function formatInfo(info: ClusterInfo): InfoLine[] {
@@ -115,6 +115,7 @@ function displayCluster(cluster: ClusterInfo): void {
     if (i.values.length > 0) {
       info[i.name] = i.values.join(', ')
     }
+
     return info
   }, {})
   const keys = clusterInfo.map(i => i.name)
@@ -125,24 +126,19 @@ function displayCluster(cluster: ClusterInfo): void {
 
 export default class Info extends Command {
   static aliases = ['kafka']
-
   static args = {
     cluster: Args.string({description: 'cluster to operate on', required: false}),
   }
-
   static description = 'display cluster information'
-
   static examples = [
     '$ heroku kafka',
     '$ heroku kafka:info',
     '$ heroku kafka:info HEROKU_KAFKA_BROWN_URL',
   ]
-
   static flags = {
     app: flags.app({required: true}),
     remote: flags.remote(),
   }
-
   static topic = 'kafka'
 
   async run() {

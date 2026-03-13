@@ -11,19 +11,15 @@ export default class ConsumerGroupsCreate extends Command {
     consumer_group: Args.string({description: 'consumer group name', required: true}),
     cluster: Args.string({description: 'cluster to operate on', required: false}),
   }
-
   static description = 'creates a consumer group in Kafka'
-
   static examples = [
     '$ heroku kafka:consumer-groups:create word-counters',
     '$ heroku kafka:consumer-groups:create word-counters kafka-aerodynamic-32763',
   ]
-
   static flags = {
     app: flags.app({required: true}),
     remote: flags.remote(),
   }
-
   static topic = 'kafka'
 
   async run() {

@@ -10,14 +10,11 @@ export default class Fail extends Command {
   static args = {
     cluster: Args.string({description: 'cluster to operate on', required: false}),
   }
-
   static description = 'triggers failure on one node in the cluster'
-
   static examples = [
     '$ heroku kafka:fail',
     '$ heroku kafka:fail kafka-aerodynamic-32763',
   ]
-
   static flags = {
     app: flags.app({required: true}),
     remote: flags.remote(),
@@ -31,7 +28,6 @@ export default class Fail extends Command {
       description: 'pass the app name to skip the manual confirmation prompt',
     }),
   }
-
   static topic = 'kafka'
 
   async run() {

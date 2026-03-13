@@ -1,5 +1,7 @@
 import {expect} from 'chai'
-import {describe, it, beforeEach, afterEach} from 'mocha'
+import {
+  describe, it, beforeEach, afterEach,
+} from 'mocha'
 import nock from 'nock'
 import {runCommand} from '../../../helpers/run-command.js'
 import TopicsRetentionTime from '../../../../src/commands/kafka/topics/retention-time.js'
@@ -37,23 +39,23 @@ describe('kafka:topics:retention-time', () => {
 
   it('sets the retention time when the cleanup policy is mixed', async () => {
     const api = nock('https://api.heroku.com:443')
-      .get('/apps/myapp/addon-attachments')
-      .reply(200, [{
-        addon: {
-          id: '00000000-0000-0000-0000-000000000000',
-          name: 'kafka-1',
-          plan: {name: 'heroku-kafka:basic-0'}
-        },
-        name: 'KAFKA'
-      }])
+    .get('/apps/myapp/addon-attachments')
+    .reply(200, [{
+      addon: {
+        id: '00000000-0000-0000-0000-000000000000',
+        name: 'kafka-1',
+        plan: {name: 'heroku-kafka:basic-0'},
+      },
+      name: 'KAFKA',
+    }])
 
     kafka.get(topicsUrl('00000000-0000-0000-0000-000000000000'))
-      .reply(200, {topics: [{name: 'topic-1', retention_time_ms: 123, compaction: true}]})
+    .reply(200, {topics: [{name: 'topic-1', retention_time_ms: 123, compaction: true}]})
     kafka.get(infoUrl('00000000-0000-0000-0000-000000000000'))
-      .reply(200, {
-        capabilities: {supports_mixed_cleanup_policy: true},
-        limits: {minimum_retention_ms: 100}
-      })
+    .reply(200, {
+      capabilities: {supports_mixed_cleanup_policy: true},
+      limits: {minimum_retention_ms: 100},
+    })
     kafka.put(topicUrl('00000000-0000-0000-0000-000000000000', 'topic-1')).reply(200)
 
     const {stdout} = await runCommand(TopicsRetentionTime, ['topic-1', '10d', '--app', 'myapp'])
@@ -64,20 +66,20 @@ describe('kafka:topics:retention-time', () => {
 
   it('sets retention time to infinite when disabling with a mixed cleanup policy', async () => {
     const api = nock('https://api.heroku.com:443')
-      .get('/apps/myapp/addon-attachments')
-      .reply(200, [{
-        addon: {
-          id: '00000000-0000-0000-0000-000000000000',
-          name: 'kafka-1',
-          plan: {name: 'heroku-kafka:basic-0'}
-        },
-        name: 'KAFKA'
-      }])
+    .get('/apps/myapp/addon-attachments')
+    .reply(200, [{
+      addon: {
+        id: '00000000-0000-0000-0000-000000000000',
+        name: 'kafka-1',
+        plan: {name: 'heroku-kafka:basic-0'},
+      },
+      name: 'KAFKA',
+    }])
 
     kafka.get(topicsUrl('00000000-0000-0000-0000-000000000000'))
-      .reply(200, {topics: [{name: 'topic-1', retention_time_ms: 123, compaction: true}]})
+    .reply(200, {topics: [{name: 'topic-1', retention_time_ms: 123, compaction: true}]})
     kafka.get(infoUrl('00000000-0000-0000-0000-000000000000'))
-      .reply(200, {capabilities: {supports_mixed_cleanup_policy: true}})
+    .reply(200, {capabilities: {supports_mixed_cleanup_policy: true}})
     kafka.put(topicUrl('00000000-0000-0000-0000-000000000000', 'topic-1')).reply(200)
 
     const {stdout} = await runCommand(TopicsRetentionTime, ['topic-1', 'disable', '--app', 'myapp'])
@@ -88,23 +90,23 @@ describe('kafka:topics:retention-time', () => {
 
   it('sets the retention time and disables compaction when the cleanup policy is not mixed', async () => {
     const api = nock('https://api.heroku.com:443')
-      .get('/apps/myapp/addon-attachments')
-      .reply(200, [{
-        addon: {
-          id: '00000000-0000-0000-0000-000000000000',
-          name: 'kafka-1',
-          plan: {name: 'heroku-kafka:basic-0'}
-        },
-        name: 'KAFKA'
-      }])
+    .get('/apps/myapp/addon-attachments')
+    .reply(200, [{
+      addon: {
+        id: '00000000-0000-0000-0000-000000000000',
+        name: 'kafka-1',
+        plan: {name: 'heroku-kafka:basic-0'},
+      },
+      name: 'KAFKA',
+    }])
 
     kafka.get(topicsUrl('00000000-0000-0000-0000-000000000000'))
-      .reply(200, {topics: [{name: 'topic-1', retention_time_ms: 123, compaction: false}]})
+    .reply(200, {topics: [{name: 'topic-1', retention_time_ms: 123, compaction: false}]})
     kafka.get(infoUrl('00000000-0000-0000-0000-000000000000'))
-      .reply(200, {
-        capabilities: {supports_mixed_cleanup_policy: false},
-        limits: {minimum_retention_ms: 100}
-      })
+    .reply(200, {
+      capabilities: {supports_mixed_cleanup_policy: false},
+      limits: {minimum_retention_ms: 100},
+    })
     kafka.put(topicUrl('00000000-0000-0000-0000-000000000000', 'topic-1')).reply(200)
 
     const {stdout} = await runCommand(TopicsRetentionTime, ['topic-1', '10d', '--app', 'myapp'])
@@ -115,20 +117,20 @@ describe('kafka:topics:retention-time', () => {
 
   it('enables compaction when disabling retention time with a non-mixed cleanup policy', async () => {
     const api = nock('https://api.heroku.com:443')
-      .get('/apps/myapp/addon-attachments')
-      .reply(200, [{
-        addon: {
-          id: '00000000-0000-0000-0000-000000000000',
-          name: 'kafka-1',
-          plan: {name: 'heroku-kafka:basic-0'}
-        },
-        name: 'KAFKA'
-      }])
+    .get('/apps/myapp/addon-attachments')
+    .reply(200, [{
+      addon: {
+        id: '00000000-0000-0000-0000-000000000000',
+        name: 'kafka-1',
+        plan: {name: 'heroku-kafka:basic-0'},
+      },
+      name: 'KAFKA',
+    }])
 
     kafka.get(topicsUrl('00000000-0000-0000-0000-000000000000'))
-      .reply(200, {topics: [{name: 'topic-1', retention_time_ms: 123, compaction: false}]})
+    .reply(200, {topics: [{name: 'topic-1', retention_time_ms: 123, compaction: false}]})
     kafka.get(infoUrl('00000000-0000-0000-0000-000000000000'))
-      .reply(200, {capabilities: {supports_mixed_cleanup_policy: false}})
+    .reply(200, {capabilities: {supports_mixed_cleanup_policy: false}})
     kafka.put(topicUrl('00000000-0000-0000-0000-000000000000', 'topic-1')).reply(200)
 
     const {stdout} = await runCommand(TopicsRetentionTime, ['topic-1', 'disable', '--app', 'myapp'])

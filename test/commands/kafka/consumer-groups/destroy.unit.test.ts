@@ -1,5 +1,7 @@
 import {expect} from 'chai'
-import {describe, it, beforeEach, afterEach} from 'mocha'
+import {
+  describe, it, beforeEach, afterEach,
+} from 'mocha'
 import nock from 'nock'
 import {runCommand} from '../../../helpers/run-command.js'
 import ConsumerGroupsDestroy from '../../../../src/commands/kafka/consumer-groups/destroy.js'
@@ -30,20 +32,20 @@ describe('kafka:consumer-groups:destroy', () => {
 
   it('destroys a consumer group on the cluster', async () => {
     const api = nock('https://api.heroku.com:443')
-      .get('/apps/myapp/addon-attachments')
-      .reply(200, [{
-        addon: {
-          id: '00000000-0000-0000-0000-000000000000',
-          name: 'kafka-1',
-          plan: {name: 'heroku-kafka:basic-0'}
-        },
-        name: 'KAFKA'
-      }])
+    .get('/apps/myapp/addon-attachments')
+    .reply(200, [{
+      addon: {
+        id: '00000000-0000-0000-0000-000000000000',
+        name: 'kafka-1',
+        plan: {name: 'heroku-kafka:basic-0'},
+      },
+      name: 'KAFKA',
+    }])
 
     kafka.delete(consumerGroupsUrl('00000000-0000-0000-0000-000000000000'), {
       consumer_group: {
-        name: 'consumer-group-1'
-      }
+        name: 'consumer-group-1',
+      },
     }).reply(200)
 
     const {stdout} = await runCommand(ConsumerGroupsDestroy, ['consumer-group-1', '--app', 'myapp', '--confirm', 'myapp'])
@@ -65,20 +67,20 @@ describe('kafka:consumer-groups:destroy', () => {
     }
 
     const api = nock('https://api.heroku.com:443')
-      .get('/apps/myapp/addon-attachments')
-      .reply(200, [{
-        addon: {
-          id: '00000000-0000-0000-0000-000000000000',
-          name: 'kafka-1',
-          plan: {name: 'heroku-kafka:basic-0'}
-        },
-        name: 'KAFKA'
-      }])
+    .get('/apps/myapp/addon-attachments')
+    .reply(200, [{
+      addon: {
+        id: '00000000-0000-0000-0000-000000000000',
+        name: 'kafka-1',
+        plan: {name: 'heroku-kafka:basic-0'},
+      },
+      name: 'KAFKA',
+    }])
 
     kafka.delete(consumerGroupsUrl('00000000-0000-0000-0000-000000000000'), {
       consumer_group: {
-        name: 'consumer-group-1'
-      }
+        name: 'consumer-group-1',
+      },
     }).reply(200)
 
     await runCommand(ConsumerGroupsDestroy, ['consumer-group-1', '--app', 'myapp', '--confirm', 'myapp'])

@@ -1,5 +1,7 @@
 import {expect} from 'chai'
-import {describe, it, beforeEach, afterEach} from 'mocha'
+import {
+  describe, it, beforeEach, afterEach,
+} from 'mocha'
 import nock from 'nock'
 import {runCommand} from '../../helpers/run-command.js'
 import Upgrade from '../../../src/commands/kafka/upgrade.js'
@@ -41,15 +43,15 @@ describe('kafka:upgrade', () => {
     }
 
     const api = nock('https://api.heroku.com:443')
-      .get('/apps/myapp/addon-attachments')
-      .reply(200, [{
-        addon: {
-          id: '00000000-0000-0000-0000-000000000000',
-          name: 'kafka-1',
-          plan: {name: 'heroku-kafka:basic-0'}
-        },
-        name: 'KAFKA'
-      }])
+    .get('/apps/myapp/addon-attachments')
+    .reply(200, [{
+      addon: {
+        id: '00000000-0000-0000-0000-000000000000',
+        name: 'kafka-1',
+        plan: {name: 'heroku-kafka:basic-0'},
+      },
+      name: 'KAFKA',
+    }])
 
     kafka.put(upgradeUrl('00000000-0000-0000-0000-000000000000')).reply(200)
 
@@ -66,15 +68,15 @@ describe('kafka:upgrade', () => {
 
   it('triggers an upgrade to the desired version', async () => {
     const api = nock('https://api.heroku.com:443')
-      .get('/apps/myapp/addon-attachments')
-      .reply(200, [{
-        addon: {
-          id: '00000000-0000-0000-0000-000000000000',
-          name: 'kafka-1',
-          plan: {name: 'heroku-kafka:basic-0'}
-        },
-        name: 'KAFKA'
-      }])
+    .get('/apps/myapp/addon-attachments')
+    .reply(200, [{
+      addon: {
+        id: '00000000-0000-0000-0000-000000000000',
+        name: 'kafka-1',
+        plan: {name: 'heroku-kafka:basic-0'},
+      },
+      name: 'KAFKA',
+    }])
 
     kafka.put(upgradeUrl('00000000-0000-0000-0000-000000000000')).reply(200)
 

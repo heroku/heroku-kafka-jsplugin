@@ -13,14 +13,11 @@ export default class Wait extends Command {
   static args = {
     cluster: Args.string({description: 'cluster to operate on', required: false}),
   }
-
   static description = 'waits until Kafka is ready to use'
-
   static examples = [
     '$ heroku kafka:wait',
     '$ heroku kafka:wait HEROKU_KAFKA_BROWN',
   ]
-
   static flags = {
     app: flags.app({required: true}),
     remote: flags.remote(),
@@ -28,7 +25,6 @@ export default class Wait extends Command {
       description: 'how frequently to poll in seconds (to avoid rate limiting)',
     }),
   }
-
   static topic = 'kafka'
 
   async run() {

@@ -15,21 +15,17 @@ export default class TopicsWrite extends Command {
     message: Args.string({description: 'message to write', required: true}),
     cluster: Args.string({description: 'cluster to operate on', required: false}),
   }
-
   static description = 'writes a message to a Kafka topic'
-
   static examples = [
     '$ heroku kafka:topics:write page_visits "1441025138,www.example.com,192.168.2.13"',
     '$ heroku kafka:topics:write page_visits "1441025138,www.example.com,192.168.2.13" kafka-aerodynamic-32763',
   ]
-
   static flags = {
     app: flags.app({required: true}),
     remote: flags.remote(),
     key: flags.string({description: 'the key for this message'}),
     partition: flags.string({description: 'the partition to write to'}),
   }
-
   static topic = 'kafka'
 
   async run() {
@@ -37,8 +33,10 @@ export default class TopicsWrite extends Command {
 
     await withCluster(this.heroku, flags.app, args.cluster, async (addon: Addon) => {
       const {body: appConfig}: any = await this.heroku.get(`/apps/${flags.app}/config-vars`)
-      const {body: attachment}: any = await this.heroku.get(`/apps/${flags.app}/addon-attachments/${addon.name}`,
-        {headers: {'accept-inclusion': 'config_vars'}})
+      const {body: attachment}: any = await this.heroku.get(
+        `/apps/${flags.app}/addon-attachments/${addon.name}`,
+        {headers: {'accept-inclusion': 'config_vars'}},
+      )
       const config = clusterConfig(attachment, appConfig)
 
       const producer = await kafka.createProducer({

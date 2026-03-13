@@ -1,7 +1,9 @@
 import {Command, flags} from '@heroku-cli/command'
 import {Args, ux} from '@oclif/core'
 import {parseBool, formatIntervalFromMilliseconds} from '../../../lib/shared.js'
-import {withCluster, request, topicConfig, fetchProvisionedInfo} from '../../../lib/clusters.js'
+import {
+  withCluster, request, topicConfig, fetchProvisionedInfo,
+} from '../../../lib/clusters.js'
 import {Addon} from '../../../lib/shared.js'
 
 const VERSION = 'v0'
@@ -12,19 +14,15 @@ export default class TopicsCompaction extends Command {
     value: Args.string({description: 'enable or disable', required: true}),
     cluster: Args.string({description: 'cluster to operate on', required: false}),
   }
-
   static description = 'configures topic compaction in Kafka'
-
   static examples = [
     '$ heroku kafka:topics:compaction page-visits enable',
     '$ heroku kafka:topics:compaction page-visits disable kafka-shiny-2345',
   ]
-
   static flags = {
     app: flags.app({required: true}),
     remote: flags.remote(),
   }
-
   static topic = 'kafka'
 
   async run() {

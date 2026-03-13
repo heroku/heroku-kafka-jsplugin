@@ -10,19 +10,15 @@ export default class ConsumerGroups extends Command {
   static args = {
     cluster: Args.string({description: 'cluster to operate on', required: false}),
   }
-
   static description = 'lists available Kafka consumer groups'
-
   static examples = [
     '$ heroku kafka:consumer-groups',
     '$ heroku kafka:consumer-groups kafka-aerodynamic-32763',
   ]
-
   static flags = {
     app: flags.app({required: true}),
     remote: flags.remote(),
   }
-
   static topic = 'kafka'
 
   async run() {

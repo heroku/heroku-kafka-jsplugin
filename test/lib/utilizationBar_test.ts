@@ -1,19 +1,15 @@
 import {expect} from 'chai'
-import {describe, it, beforeEach} from 'mocha'
+import {describe, it} from 'mocha'
 import utilizationBar from '../../src/lib/utilizationBar.js'
 
 describe('utilizationBar', function () {
-  beforeEach(() => {
-    // color is always enabled in tests
-  })
-
   const cases = [
     [0, 100, '[··········]', '[···············]'],
     [100, 100, '[██████████]', '[███████████████]'],
     [99, 100, '[█████████·]', '[██████████████·]'],
     [50, 100, '[█████·····]', '[███████········]'],
     [110, 100, '[██████████]', '[███████████████]'],
-    [-50, 100, '[··········]', '[···············]']
+    [-50, 100, '[··········]', '[···············]'],
   ]
   cases.forEach(function (testcase) {
     const current = testcase[0]
@@ -22,10 +18,10 @@ describe('utilizationBar', function () {
     const expected15 = testcase[3]
     it(`Renders a ${current}/${total} bar correctly`, function () {
       const resultWithANSI = utilizationBar(current, total)
-       
+
       const resultWithoutANSI = resultWithANSI.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '')
       const result2WithANSI = utilizationBar(current, total, 15)
-       
+
       const result2WithoutANSI = result2WithANSI.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '')
 
       expect(resultWithoutANSI).to.equal(expected10)

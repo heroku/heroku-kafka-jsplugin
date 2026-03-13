@@ -4,5 +4,5 @@ export const mochaHooks = {
   afterEach(done: () => void) {
     nock.cleanAll()
     done()
-  }
+  },
 }

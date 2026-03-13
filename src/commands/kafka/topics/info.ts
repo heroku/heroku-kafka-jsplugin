@@ -1,5 +1,5 @@
 import {Command, flags} from '@heroku-cli/command'
-import {Args, ux} from '@oclif/core'
+import {Args} from '@oclif/core'
 import {color, hux} from '@heroku/heroku-cli-util'
 import humanize from 'humanize-plus'
 import {withCluster, topicConfig} from '../../../lib/clusters.js'
@@ -21,9 +21,9 @@ function retention(retentionTimeMs: number): string {
 
 function topicInfo(topic: any): Record<string, string> {
   const info: Record<string, string> = {
-    'Producers': `${humanize.intComma(topic.messages_in_per_second)} ${humanize.pluralize(topic.messages_in_per_second, 'message')}/second (${humanize.fileSize(topic.bytes_in_per_second)}/second) total`,
-    'Consumers': `${humanize.fileSize(topic.bytes_out_per_second)}/second total`,
-    'Partitions': `${topic.partitions} ${humanize.pluralize(topic.partitions, 'partition')}`,
+    Producers: `${humanize.intComma(topic.messages_in_per_second)} ${humanize.pluralize(topic.messages_in_per_second, 'message')}/second (${humanize.fileSize(topic.bytes_in_per_second)}/second) total`,
+    Consumers: `${humanize.fileSize(topic.bytes_out_per_second)}/second total`,
+    Partitions: `${topic.partitions} ${humanize.pluralize(topic.partitions, 'partition')}`,
     'Replication Factor': `${topic.replication_factor}`,
   }
 
@@ -49,19 +49,15 @@ export default class TopicsInfo extends Command {
     topic: Args.string({description: 'topic name', required: true}),
     cluster: Args.string({description: 'cluster to operate on', required: false}),
   }
-
   static description = 'shows information about a topic in Kafka'
-
   static examples = [
     '$ heroku kafka:topics:info page-visits',
     '$ heroku kafka:topics:info page-visits HEROKU_KAFKA_BROWN_URL',
   ]
-
   static flags = {
     app: flags.app({required: true}),
     remote: flags.remote(),
   }
-
   static topic = 'kafka'
 
   async run() {

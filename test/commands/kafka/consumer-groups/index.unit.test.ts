@@ -1,5 +1,7 @@
 import {expect} from 'chai'
-import {describe, it, beforeEach, afterEach} from 'mocha'
+import {
+  describe, it, beforeEach, afterEach,
+} from 'mocha'
 import nock from 'nock'
 import {runCommand} from '../../../helpers/run-command.js'
 import ConsumerGroups from '../../../../src/commands/kafka/consumer-groups/index.js'
@@ -24,22 +26,22 @@ describe('kafka:consumer-groups', () => {
 
   it('displays a list of consumer groups', async () => {
     const api = nock('https://api.heroku.com:443')
-      .get('/apps/myapp/addon-attachments')
-      .reply(200, [{
-        addon: {
-          id: '00000000-0000-0000-0000-000000000000',
-          name: 'kafka-1',
-          plan: {name: 'heroku-kafka:basic-0'}
-        },
-        name: 'KAFKA'
-      }])
+    .get('/apps/myapp/addon-attachments')
+    .reply(200, [{
+      addon: {
+        id: '00000000-0000-0000-0000-000000000000',
+        name: 'kafka-1',
+        plan: {name: 'heroku-kafka:basic-0'},
+      },
+      name: 'KAFKA',
+    }])
 
     kafka.get(consumerGroupsUrl('00000000-0000-0000-0000-000000000000')).reply(200, {
       attachment_name: 'HEROKU_KAFKA',
       consumer_groups: [
-        { name: 'consumer-group-1' },
-        { name: 'consumer-group-2' }
-      ]
+        {name: 'consumer-group-1'},
+        {name: 'consumer-group-2'},
+      ],
     })
 
     const {stdout} = await runCommand(ConsumerGroups, ['--app', 'myapp'])
@@ -52,19 +54,19 @@ describe('kafka:consumer-groups', () => {
 
   it('displays message when no consumer groups exist', async () => {
     const api = nock('https://api.heroku.com:443')
-      .get('/apps/myapp/addon-attachments')
-      .reply(200, [{
-        addon: {
-          id: '00000000-0000-0000-0000-000000000000',
-          name: 'kafka-1',
-          plan: {name: 'heroku-kafka:basic-0'}
-        },
-        name: 'KAFKA'
-      }])
+    .get('/apps/myapp/addon-attachments')
+    .reply(200, [{
+      addon: {
+        id: '00000000-0000-0000-0000-000000000000',
+        name: 'kafka-1',
+        plan: {name: 'heroku-kafka:basic-0'},
+      },
+      name: 'KAFKA',
+    }])
 
     kafka.get(consumerGroupsUrl('00000000-0000-0000-0000-000000000000')).reply(200, {
       attachment_name: 'HEROKU_KAFKA',
-      consumer_groups: []
+      consumer_groups: [],
     })
 
     const {stdout} = await runCommand(ConsumerGroups, ['--app', 'myapp'])

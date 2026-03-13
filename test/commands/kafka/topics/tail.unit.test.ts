@@ -1,5 +1,7 @@
 import {expect} from 'chai'
-import {describe, it, beforeEach, afterEach} from 'mocha'
+import {
+  describe, it, beforeEach, afterEach,
+} from 'mocha'
 import nock from 'nock'
 import sinon from 'sinon'
 import {runCommand} from '../../../helpers/run-command.js'
@@ -22,7 +24,7 @@ describe('kafka:topics:tail', () => {
     consumer = {
       init: sandbox.stub().resolves(),
       subscribe: sandbox.stub(),
-      end: sandbox.stub()
+      end: sandbox.stub(),
     }
 
     // Stub kafkaClient.createSimpleConsumer to return our mock consumer
@@ -55,32 +57,32 @@ describe('kafka:topics:tail', () => {
     consumer.init.rejects(new Error('connection failed'))
 
     api.get('/apps/myapp/addon-attachments')
-      .reply(200, [{
-        addon: {
-          id: '00000000-0000-0000-0000-000000000000',
-          name: 'kafka-1',
-          plan: {name: 'heroku-kafka:basic-0'}
-        },
-        name: 'KAFKA',
-        config_vars: ['KAFKA_URL', 'KAFKA_TRUSTED_CERT', 'KAFKA_CLIENT_CERT', 'KAFKA_CLIENT_CERT_KEY']
-      }])
+    .reply(200, [{
+      addon: {
+        id: '00000000-0000-0000-0000-000000000000',
+        name: 'kafka-1',
+        plan: {name: 'heroku-kafka:basic-0'},
+      },
+      name: 'KAFKA',
+      config_vars: ['KAFKA_URL', 'KAFKA_TRUSTED_CERT', 'KAFKA_CLIENT_CERT', 'KAFKA_CLIENT_CERT_KEY'],
+    }])
     api.get('/apps/myapp/addon-attachments/kafka-1')
-      .reply(200, {
-        addon: {
-          id: '00000000-0000-0000-0000-000000000000',
-          name: 'kafka-1',
-          plan: {name: 'heroku-kafka:basic-0'}
-        },
-        name: 'KAFKA',
-        config_vars: ['KAFKA_URL', 'KAFKA_TRUSTED_CERT', 'KAFKA_CLIENT_CERT', 'KAFKA_CLIENT_CERT_KEY']
-      })
+    .reply(200, {
+      addon: {
+        id: '00000000-0000-0000-0000-000000000000',
+        name: 'kafka-1',
+        plan: {name: 'heroku-kafka:basic-0'},
+      },
+      name: 'KAFKA',
+      config_vars: ['KAFKA_URL', 'KAFKA_TRUSTED_CERT', 'KAFKA_CLIENT_CERT', 'KAFKA_CLIENT_CERT_KEY'],
+    })
     api.get('/apps/myapp/config-vars')
-      .reply(200, {
-        KAFKA_URL: 'kafka+ssl://broker:9096',
-        KAFKA_TRUSTED_CERT: 'cert',
-        KAFKA_CLIENT_CERT: 'client-cert',
-        KAFKA_CLIENT_CERT_KEY: 'client-key'
-      })
+    .reply(200, {
+      KAFKA_URL: 'kafka+ssl://broker:9096',
+      KAFKA_TRUSTED_CERT: 'cert',
+      KAFKA_CLIENT_CERT: 'client-cert',
+      KAFKA_CLIENT_CERT_KEY: 'client-key',
+    })
 
     const {error} = await runCommand(TopicsTail, ['my-topic', '--app', 'myapp'])
     expect(error?.message).to.include('Could not connect to kafka')
@@ -91,32 +93,32 @@ describe('kafka:topics:tail', () => {
     consumer.subscribe.throws(new Error('subscribe failed'))
 
     api.get('/apps/myapp/addon-attachments')
-      .reply(200, [{
-        addon: {
-          id: '00000000-0000-0000-0000-000000000000',
-          name: 'kafka-1',
-          plan: {name: 'heroku-kafka:basic-0'}
-        },
-        name: 'KAFKA',
-        config_vars: ['KAFKA_URL', 'KAFKA_TRUSTED_CERT', 'KAFKA_CLIENT_CERT', 'KAFKA_CLIENT_CERT_KEY']
-      }])
+    .reply(200, [{
+      addon: {
+        id: '00000000-0000-0000-0000-000000000000',
+        name: 'kafka-1',
+        plan: {name: 'heroku-kafka:basic-0'},
+      },
+      name: 'KAFKA',
+      config_vars: ['KAFKA_URL', 'KAFKA_TRUSTED_CERT', 'KAFKA_CLIENT_CERT', 'KAFKA_CLIENT_CERT_KEY'],
+    }])
     api.get('/apps/myapp/addon-attachments/kafka-1')
-      .reply(200, {
-        addon: {
-          id: '00000000-0000-0000-0000-000000000000',
-          name: 'kafka-1',
-          plan: {name: 'heroku-kafka:basic-0'}
-        },
-        name: 'KAFKA',
-        config_vars: ['KAFKA_URL', 'KAFKA_TRUSTED_CERT', 'KAFKA_CLIENT_CERT', 'KAFKA_CLIENT_CERT_KEY']
-      })
+    .reply(200, {
+      addon: {
+        id: '00000000-0000-0000-0000-000000000000',
+        name: 'kafka-1',
+        plan: {name: 'heroku-kafka:basic-0'},
+      },
+      name: 'KAFKA',
+      config_vars: ['KAFKA_URL', 'KAFKA_TRUSTED_CERT', 'KAFKA_CLIENT_CERT', 'KAFKA_CLIENT_CERT_KEY'],
+    })
     api.get('/apps/myapp/config-vars')
-      .reply(200, {
-        KAFKA_URL: 'kafka+ssl://broker:9096',
-        KAFKA_TRUSTED_CERT: 'cert',
-        KAFKA_CLIENT_CERT: 'client-cert',
-        KAFKA_CLIENT_CERT_KEY: 'client-key'
-      })
+    .reply(200, {
+      KAFKA_URL: 'kafka+ssl://broker:9096',
+      KAFKA_TRUSTED_CERT: 'cert',
+      KAFKA_CLIENT_CERT: 'client-cert',
+      KAFKA_CLIENT_CERT_KEY: 'client-key',
+    })
 
     const {error} = await runCommand(TopicsTail, ['my-topic', '--app', 'myapp'])
     expect(error?.message).to.include('Could not subscribe to topic')

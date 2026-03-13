@@ -12,15 +12,12 @@ export default class TopicsCreate extends Command {
     topic: Args.string({description: 'topic name', required: true}),
     cluster: Args.string({description: 'cluster to operate on', required: false}),
   }
-
   static description = 'creates a topic in Kafka'
-
   static examples = [
     '$ heroku kafka:topics:create page-visits --partitions 100',
     '$ heroku kafka:topics:create page-visits kafka-shiny-2345 --partitions 100 --replication-factor 3 --retention-time 10d',
     '$ heroku kafka:topics:create page-visits kafka-shiny-2345 --partitions 100 --compaction',
   ]
-
   static flags = {
     app: flags.app({required: true}),
     remote: flags.remote(),
@@ -29,7 +26,6 @@ export default class TopicsCreate extends Command {
     'retention-time': flags.string({description: 'length of time messages in the topic should be retained (at least 24h)'}),
     compaction: flags.boolean({description: 'whether to use compaction for this topic'}),
   }
-
   static topic = 'kafka'
 
   async run() {

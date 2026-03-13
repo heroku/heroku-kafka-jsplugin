@@ -11,19 +11,15 @@ export default class Topics extends Command {
   static args = {
     cluster: Args.string({description: 'cluster to operate on', required: false}),
   }
-
   static description = 'lists available Kafka topics'
-
   static examples = [
     '$ heroku kafka:topics',
     '$ heroku kafka:topics HEROKU_KAFKA_BROWN_URL',
   ]
-
   static flags = {
     app: flags.app({required: true}),
     remote: flags.remote(),
   }
-
   static topic = 'kafka'
 
   async run() {
@@ -68,12 +64,13 @@ export default class Topics extends Command {
           ux.stdout('Use heroku kafka:topics:create to create a topic.\n')
         }
       } else {
-        hux.table(topicData,
+        hux.table(
+          topicData,
           {
             name: {},
             messages: {header: 'Messages'},
             bytes: {header: 'Traffic'},
-          }
+          },
         )
       }
     })

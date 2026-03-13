@@ -1,7 +1,9 @@
 import {Command, flags} from '@heroku-cli/command'
 import {Args, ux} from '@oclif/core'
 import {parseDuration} from '../../../lib/shared.js'
-import {withCluster, request, topicConfig, fetchProvisionedInfo} from '../../../lib/clusters.js'
+import {
+  withCluster, request, topicConfig, fetchProvisionedInfo,
+} from '../../../lib/clusters.js'
 import {Addon} from '../../../lib/shared.js'
 
 const VERSION = 'v0'
@@ -12,20 +14,16 @@ export default class TopicsRetentionTime extends Command {
     value: Args.string({description: 'retention time (e.g. 10d, 36h) or disable', required: true}),
     cluster: Args.string({description: 'cluster to operate on', required: false}),
   }
-
   static description = 'configures or disables topic retention time (e.g. 10d, 36h)'
-
   static examples = [
     '$ heroku kafka:topics:retention-time page-visits 10d',
     '$ heroku kafka:topics:retention-time page-visits disable',
     '$ heroku kafka:topics:retention-time page-visits 36h kafka-shiny-2345',
   ]
-
   static flags = {
     app: flags.app({required: true}),
     remote: flags.remote(),
   }
-
   static topic = 'kafka'
 
   async run() {

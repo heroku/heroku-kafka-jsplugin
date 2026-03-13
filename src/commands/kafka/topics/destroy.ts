@@ -11,14 +11,11 @@ export default class TopicsDestroy extends Command {
     topic: Args.string({description: 'topic name', required: true}),
     cluster: Args.string({description: 'cluster to operate on', required: false}),
   }
-
   static description = 'deletes a topic in Kafka'
-
   static examples = [
     '$ heroku kafka:topics:destroy page-visits',
     '$ heroku kafka:topics:destroy page-visits HEROKU_KAFKA_BROWN_URL',
   ]
-
   static flags = {
     app: flags.app({required: true}),
     remote: flags.remote(),
@@ -26,7 +23,6 @@ export default class TopicsDestroy extends Command {
       description: 'pass the app name to skip the manual confirmation prompt',
     }),
   }
-
   static topic = 'kafka'
 
   async run() {

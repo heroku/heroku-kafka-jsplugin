@@ -11,19 +11,15 @@ export default class Zookeeper extends Command {
     value: Args.string({description: 'on/off, enable/disable', required: true}),
     cluster: Args.string({description: 'cluster to operate on', required: false}),
   }
-
   static description = '(Private Spaces only) control direct access to Zookeeper of your Kafka cluster'
-
   static examples = [
     '$ heroku kafka:zookeeper enable',
     '$ heroku kafka:zookeeper disable HEROKU_KAFKA_BROWN_URL',
   ]
-
   static flags = {
     app: flags.app({required: true}),
     remote: flags.remote(),
   }
-
   static topic = 'kafka'
 
   async run() {

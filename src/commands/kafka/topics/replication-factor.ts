@@ -11,19 +11,15 @@ export default class TopicsReplicationFactor extends Command {
     value: Args.string({description: 'replication factor', required: true}),
     cluster: Args.string({description: 'cluster to operate on', required: false}),
   }
-
   static description = 'configures topic replication factor in Kafka'
-
   static examples = [
     '$ heroku kafka:topics:replication-factor page-visits 3',
     '$ heroku kafka:topics:replication-factor page-visits 3 HEROKU_KAFKA_BROWN_URL',
   ]
-
   static flags = {
     app: flags.app({required: true}),
     remote: flags.remote(),
   }
-
   static topic = 'kafka'
 
   async run() {

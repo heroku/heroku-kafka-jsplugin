@@ -22,7 +22,6 @@
     "unexpected": "^13.2.1"
   },
   "devDependencies": {
-    "@eslint/js": "^9.22.0",
     "@types/chai": "^5.2.3",
     "@types/debug": "^4.1.12",
     "@types/humanize-plus": "^1.8.2",
@@ -34,10 +33,8 @@
     "ansis": "^4.2.0",
     "chai": "^4.3.10",
     "chai-as-promised": "^7.1.1",
-    "eslint": "^9.22.0",
-    "eslint-plugin-import": "^2.28.1",
-    "eslint-plugin-n": "^16.1.0",
-    "eslint-plugin-promise": "^6.1.1",
+    "eslint": "^9.39.4",
+    "eslint-config-oclif": "^6.0",
     "esmock": "^2.7.3",
     "globals": "^13.24.0",
     "mocha": "^11.1.0",
@@ -45,7 +42,6 @@
     "nyc": "^17.1.0",
     "oclif": "^4.22.87",
     "sinon": "^21.0.2",
-    "testdouble": "^3.2.2",
     "ts-node": "^10.9.2",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3"
@@ -84,7 +80,8 @@
   "scripts": {
     "build": "rm -rf dist && tsc && npm run manifest",
     "coverage": "nyc --reporter=html --reporter=text --reporter=lcov npm test",
-    "lint": "eslint . src test",
+    "lint": "eslint .",
+    "lint:fix:all": "eslint . --fix",
     "manifest": "oclif manifest",
     "prepack": "npm run build",
     "release": "np",

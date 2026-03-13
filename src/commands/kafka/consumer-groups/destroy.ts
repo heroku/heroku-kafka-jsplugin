@@ -11,14 +11,11 @@ export default class ConsumerGroupsDestroy extends Command {
     consumer_group: Args.string({description: 'consumer group name', required: true}),
     cluster: Args.string({description: 'cluster to operate on', required: false}),
   }
-
   static description = 'destroys a consumer group in Kafka'
-
   static examples = [
     '$ heroku kafka:consumer-groups:destroy word-counters',
     '$ heroku kafka:consumer-groups:destroy word-counters kafka-aerodynamic-32763',
   ]
-
   static flags = {
     app: flags.app({required: true}),
     remote: flags.remote(),
@@ -26,7 +23,6 @@ export default class ConsumerGroupsDestroy extends Command {
       description: 'pass the app name to skip the manual confirmation prompt',
     }),
   }
-
   static topic = 'kafka'
 
   async run() {

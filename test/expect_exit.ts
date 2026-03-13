@@ -1,6 +1,6 @@
 import {expect} from 'chai'
 
-function exit (code: number, gen: Promise<any>): Promise<void> {
+function exit(code: number, gen: Promise<any>): Promise<void> {
   let actual: number | undefined
   return gen.catch(function (err: any) {
     // ux.error() throws an Error with exit code property

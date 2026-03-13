@@ -1,5 +1,7 @@
 import {expect} from 'chai'
-import {describe, it, beforeEach, afterEach} from 'mocha'
+import {
+  describe, it, beforeEach, afterEach,
+} from 'mocha'
 import nock from 'nock'
 import {runCommand} from '../../../helpers/run-command.js'
 import TopicsInfo from '../../../../src/commands/kafka/topics/info.js'
@@ -23,15 +25,15 @@ describe('kafka:topics:info', () => {
 
   it('displays the topic info', async () => {
     const api = nock('https://api.heroku.com:443')
-      .get('/apps/myapp/addon-attachments')
-      .reply(200, [{
-        addon: {
-          id: '00000000-0000-0000-0000-000000000000',
-          name: 'kafka-1',
-          plan: {name: 'heroku-kafka:basic-0'}
-        },
-        name: 'KAFKA'
-      }])
+    .get('/apps/myapp/addon-attachments')
+    .reply(200, [{
+      addon: {
+        id: '00000000-0000-0000-0000-000000000000',
+        name: 'kafka-1',
+        plan: {name: 'heroku-kafka:basic-0'},
+      },
+      name: 'KAFKA',
+    }])
 
     kafka.get(topicsUrl('00000000-0000-0000-0000-000000000000')).reply(200, {
       attachment_name: 'HEROKU_KAFKA_BLUE_URL',
@@ -44,9 +46,9 @@ describe('kafka:topics:info', () => {
           replication_factor: 3,
           partitions: 3,
           compaction: false,
-          retention_time_ms: 86400000
-        }
-      ]
+          retention_time_ms: 86400000,
+        },
+      ],
     })
 
     const {stdout} = await runCommand(TopicsInfo, ['topic-1', '--app', 'myapp'])
@@ -63,15 +65,15 @@ describe('kafka:topics:info', () => {
 
   it('displays a topic prefix if one is specified', async () => {
     const api = nock('https://api.heroku.com:443')
-      .get('/apps/myapp/addon-attachments')
-      .reply(200, [{
-        addon: {
-          id: '00000000-0000-0000-0000-000000000000',
-          name: 'kafka-1',
-          plan: {name: 'heroku-kafka:basic-0'}
-        },
-        name: 'KAFKA'
-      }])
+    .get('/apps/myapp/addon-attachments')
+    .reply(200, [{
+      addon: {
+        id: '00000000-0000-0000-0000-000000000000',
+        name: 'kafka-1',
+        plan: {name: 'heroku-kafka:basic-0'},
+      },
+      name: 'KAFKA',
+    }])
 
     kafka.get(topicsUrl('00000000-0000-0000-0000-000000000000')).reply(200, {
       attachment_name: 'HEROKU_KAFKA_BLUE_URL',
@@ -85,9 +87,9 @@ describe('kafka:topics:info', () => {
           replication_factor: 3,
           partitions: 3,
           compaction: false,
-          retention_time_ms: 86400000
-        }
-      ]
+          retention_time_ms: 86400000,
+        },
+      ],
     })
 
     const {stdout} = await runCommand(TopicsInfo, ['topic-1', '--app', 'myapp'])
@@ -100,15 +102,15 @@ describe('kafka:topics:info', () => {
 
   it('tells user the topic is not ready', async () => {
     const api = nock('https://api.heroku.com:443')
-      .get('/apps/myapp/addon-attachments')
-      .reply(200, [{
-        addon: {
-          id: '00000000-0000-0000-0000-000000000000',
-          name: 'kafka-1',
-          plan: {name: 'heroku-kafka:basic-0'}
-        },
-        name: 'KAFKA'
-      }])
+    .get('/apps/myapp/addon-attachments')
+    .reply(200, [{
+      addon: {
+        id: '00000000-0000-0000-0000-000000000000',
+        name: 'kafka-1',
+        plan: {name: 'heroku-kafka:basic-0'},
+      },
+      name: 'KAFKA',
+    }])
 
     kafka.get(topicsUrl('00000000-0000-0000-0000-000000000000')).reply(200, {
       attachment_name: 'HEROKU_KAFKA_BLUE_URL',
@@ -121,9 +123,9 @@ describe('kafka:topics:info', () => {
           replication_factor: 0,
           partitions: 0,
           compaction: false,
-          retention_time_ms: 86400000
-        }
-      ]
+          retention_time_ms: 86400000,
+        },
+      ],
     })
 
     const {error} = await runCommand(TopicsInfo, ['topic-1', '--app', 'myapp'])
@@ -134,15 +136,15 @@ describe('kafka:topics:info', () => {
 
   it('tells user the topic does not exist', async () => {
     const api = nock('https://api.heroku.com:443')
-      .get('/apps/myapp/addon-attachments')
-      .reply(200, [{
-        addon: {
-          id: '00000000-0000-0000-0000-000000000000',
-          name: 'kafka-1',
-          plan: {name: 'heroku-kafka:basic-0'}
-        },
-        name: 'KAFKA'
-      }])
+    .get('/apps/myapp/addon-attachments')
+    .reply(200, [{
+      addon: {
+        id: '00000000-0000-0000-0000-000000000000',
+        name: 'kafka-1',
+        plan: {name: 'heroku-kafka:basic-0'},
+      },
+      name: 'KAFKA',
+    }])
 
     kafka.get(topicsUrl('00000000-0000-0000-0000-000000000000')).reply(200, {
       attachment_name: 'HEROKU_KAFKA_BLUE_URL',
@@ -155,9 +157,9 @@ describe('kafka:topics:info', () => {
           replication_factor: 0,
           partitions: 0,
           compaction: false,
-          retention_time_ms: 86400000
-        }
-      ]
+          retention_time_ms: 86400000,
+        },
+      ],
     })
 
     const {error} = await runCommand(TopicsInfo, ['topic-1', '--app', 'myapp'])

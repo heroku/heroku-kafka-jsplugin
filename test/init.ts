@@ -1,5 +1,3 @@
-/* eslint no-multi-spaces: off */
-
 import nock from 'nock'
 import chai from 'chai'
 
