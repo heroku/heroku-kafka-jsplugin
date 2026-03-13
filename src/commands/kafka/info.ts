@@ -2,7 +2,6 @@ import {Command, flags} from '@heroku-cli/command'
 import {color, hux} from '@heroku/heroku-cli-util'
 import {Args, ux} from '@oclif/core'
 import humanize from 'humanize-plus'
-import sortBy from 'lodash.sortby'
 
 import {request} from '../../lib/clusters.js'
 import fetcherFn from '../../lib/fetcher.js'
@@ -182,7 +181,17 @@ export default class Info extends Command {
     clusters.forEach((cluster: ClusterInfo) => {
       cluster.configVars = configVarsFromName(cluster.attachments, cluster.addon.name)
     })
-    clusters = sortBy(clusters, (cluster: ClusterInfo) => cluster.configVars![0] !== 'KAFKA_URL', 'configVars[0]')
+    clusters = clusters.sort((a, b) => {
+      // Primary sort: KAFKA_URL comes first (false < true)
+      const aIsNotKafkaUrl = a.configVars![0] !== 'KAFKA_URL'
+      const bIsNotKafkaUrl = b.configVars![0] !== 'KAFKA_URL'
+      if (aIsNotKafkaUrl !== bIsNotKafkaUrl) {
+        return aIsNotKafkaUrl ? 1 : -1
+      }
+
+      // Secondary sort: alphabetically by configVars[0]
+      return a.configVars![0].localeCompare(b.configVars![0])
+    })
 
     clusters.forEach(displayCluster)
   }

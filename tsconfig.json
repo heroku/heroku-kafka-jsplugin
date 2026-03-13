@@ -15,7 +15,4 @@
     "target": "ES2022",
   },
   "include": ["./src/**/*"],
-  "ts-node": {
-    "esm": true,
-  },
 }
