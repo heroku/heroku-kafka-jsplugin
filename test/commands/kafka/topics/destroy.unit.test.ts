@@ -1,11 +1,12 @@
+import {hux} from '@heroku/heroku-cli-util'
 import {expect} from 'chai'
 import {
-  describe, it, beforeEach, afterEach,
+  afterEach, beforeEach, describe, it,
 } from 'mocha'
 import nock from 'nock'
-import {runCommand} from '../../../helpers/run-command.js'
+
 import TopicsDestroy from '../../../../src/commands/kafka/topics/destroy.js'
-import {hux} from '@heroku/heroku-cli-util'
+import {runCommand} from '../../../helpers/run-command.js'
 
 const VERSION = 'v0'
 

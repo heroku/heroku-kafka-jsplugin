@@ -1,10 +1,11 @@
 import {expect} from 'chai'
 import {
-  describe, it, beforeEach, afterEach,
+  afterEach, beforeEach, describe, it,
 } from 'mocha'
 import nock from 'nock'
-import {runCommand} from '../../../helpers/run-command.js'
+
 import TopicsCompaction from '../../../../src/commands/kafka/topics/compaction.js'
+import {runCommand} from '../../../helpers/run-command.js'
 
 const VERSION = 'v0'
 
@@ -89,7 +90,7 @@ describe('kafka:topics:compaction', () => {
           limits: {minimum_retention_ms: 20},
         })
         kafka.get(topicsUrl('00000000-0000-0000-0000-000000000000'))
-        .reply(200, {topics: [{name: 'topic-1', retention_time_ms: 123, compaction: true}]})
+        .reply(200, {topics: [{compaction: true, name: 'topic-1', retention_time_ms: 123}]})
         kafka.put(topicUrl('00000000-0000-0000-0000-000000000000', 'topic-1')).reply(200)
 
         const {stdout} = await runCommand(TopicsCompaction, ['topic-1', value, '--app', 'myapp'])
@@ -116,7 +117,7 @@ describe('kafka:topics:compaction', () => {
           limits: {minimum_retention_ms: 20},
         })
         kafka.get(topicsUrl('00000000-0000-0000-0000-000000000000'))
-        .reply(200, {topics: [{name: 'topic-1', compaction: true}]})
+        .reply(200, {topics: [{compaction: true, name: 'topic-1'}]})
         kafka.put(topicUrl('00000000-0000-0000-0000-000000000000', 'topic-1')).reply(200)
 
         const {stdout} = await runCommand(TopicsCompaction, ['topic-1', value, '--app', 'myapp'])
@@ -145,7 +146,7 @@ describe('kafka:topics:compaction', () => {
         }])
 
         kafka.get(topicsUrl('00000000-0000-0000-0000-000000000000'))
-        .reply(200, {topics: [{name: 'topic-1', compaction: true}]})
+        .reply(200, {topics: [{compaction: true, name: 'topic-1'}]})
         kafka.get(infoUrl('00000000-0000-0000-0000-000000000000'))
         .reply(200, {
           capabilities: {supports_mixed_cleanup_policy: false},
@@ -174,7 +175,7 @@ describe('kafka:topics:compaction', () => {
         }])
 
         kafka.get(topicsUrl('00000000-0000-0000-0000-000000000000'))
-        .reply(200, {topics: [{name: 'topic-1', compaction: true}]})
+        .reply(200, {topics: [{compaction: true, name: 'topic-1'}]})
         kafka.get(infoUrl('00000000-0000-0000-0000-000000000000'))
         .reply(200, {
           capabilities: {supports_mixed_cleanup_policy: false},

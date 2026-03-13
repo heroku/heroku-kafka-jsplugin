@@ -1,7 +1,7 @@
 import chai from 'chai'
 import chaiAsPromised from 'chai-as-promised'
-import {describe, it, beforeEach} from 'mocha'
 import esmock from 'esmock'
+import {beforeEach, describe, it} from 'mocha'
 import sinon from 'sinon'
 
 chai.use(chaiAsPromised)
@@ -15,8 +15,8 @@ let fetchOne: any
 const fetcher = (arg: any) => {
   expect(arg).to.equal(heroku)
   return {
-    all: fetchAll,
     addon: fetchOne,
+    all: fetchAll,
   }
 }
 
@@ -49,7 +49,7 @@ describe('withCluster', () => {
     })
 
     it('invokes the callback with the returned add-on', () => {
-      let addon = {name: 'kafka-1'}
+      const addon = {name: 'kafka-1'}
       fetchOne = () => Promise.resolve(addon)
       let calledWith = addon
       return expect(clusters.withCluster(
@@ -103,7 +103,7 @@ describe('withCluster', () => {
     })
 
     it('invokes the callback with the returned add-on', () => {
-      let addon = {name: 'kafka-1'}
+      const addon = {name: 'kafka-1'}
       fetchAll = () => Promise.resolve([addon])
       let calledWith = addon
       return expect(clusters.withCluster(

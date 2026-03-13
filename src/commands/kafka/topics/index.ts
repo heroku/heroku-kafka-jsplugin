@@ -1,8 +1,9 @@
 import {Command, flags} from '@heroku-cli/command'
-import {Args, ux} from '@oclif/core'
 import {color, hux} from '@heroku/heroku-cli-util'
+import {Args, ux} from '@oclif/core'
 import humanize from 'humanize-plus'
-import {withCluster, request} from '../../../lib/clusters.js'
+
+import {request, withCluster} from '../../../lib/clusters.js'
 import {Addon} from '../../../lib/shared.js'
 
 const VERSION = 'v0'
@@ -48,13 +49,11 @@ export default class Topics extends Command {
       }
 
       const filtered = topics.topics.filter((t: any) => t.name !== '__consumer_offsets')
-      const topicData = filtered.map((t: any) => {
-        return {
-          name: t.name,
-          messages: `${humanize.intComma(t.messages_in_per_second)}/sec`,
-          bytes: `${humanize.fileSize(t.bytes_in_per_second)}/sec`,
-        }
-      })
+      const topicData = filtered.map((t: any) => ({
+        name: t.name,
+        messages: `${humanize.intComma(t.messages_in_per_second)}/sec`,
+        bytes: `${humanize.fileSize(t.bytes_in_per_second)}/sec`,
+      }))
       if (topicData.length === 0) {
         ux.stdout('No topics found on this Kafka cluster.\n')
 

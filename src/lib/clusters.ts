@@ -1,8 +1,9 @@
 import {color} from '@heroku/heroku-cli-util'
 import {ux} from '@oclif/core'
-import host from './host.js'
+
 import debug from './debug.js'
 import fetcher from './fetcher.js'
+import host from './host.js'
 import {Addon} from './shared.js'
 
 const VERSION = 'v0'
@@ -78,7 +79,7 @@ class HerokuKafkaClusters {
   }
 
   async waitStatus(addon: Addon | null): Promise<WaitStatus | null> {
-    let errorResponse: WaitStatus = {
+    const errorResponse: WaitStatus = {
       message: 'unknown',
       'waiting?': true,
       'healthy?': false,
@@ -88,17 +89,19 @@ class HerokuKafkaClusters {
       return null
     }
 
-    let response = await this.request({
+    const response = await this.request({
       path: `/data/kafka/${VERSION}/clusters/${addon.id}/wait_status`,
     }).then((res: any) => res.body || res)
     .catch(function (err: HerokuError): WaitStatus {
       if (err.statusCode === 410) {
         return Object.assign({'deprovisioned?': true}, errorResponse)
-      } else if (err.statusCode === 404) {
-        return Object.assign({'missing?': true}, errorResponse)
-      } else {
-        return errorResponse
       }
+
+      if (err.statusCode === 404) {
+        return Object.assign({'missing?': true}, errorResponse)
+      }
+
+      return errorResponse
     })
     return response
   }
@@ -132,7 +135,7 @@ async function topicConfig(heroku: HerokuClient, addonId: string, topic: string)
     path: `/data/kafka/${VERSION}/clusters/${addonId}/topics`,
   }) as any
   const info = (response?.body || response) as TopicInfo
-  let forTopic = info.topics.find(t => t.name === topic || ((t.prefix || '') + t.name) === topic)
+  const forTopic = info.topics.find(t => t.name === topic || ((t.prefix || '') + t.name) === topic)
   if (!forTopic) {
     ux.error(`topic ${topic} not found`)
   }

@@ -1,10 +1,10 @@
 import {Command, flags} from '@heroku-cli/command'
 import {Args, ux} from '@oclif/core'
-import {parseDuration} from '../../../lib/shared.js'
+
 import {
-  withCluster, request, topicConfig, fetchProvisionedInfo,
+  fetchProvisionedInfo, request, topicConfig, withCluster,
 } from '../../../lib/clusters.js'
-import {Addon} from '../../../lib/shared.js'
+import {Addon, parseDuration} from '../../../lib/shared.js'
 
 const VERSION = 'v0'
 

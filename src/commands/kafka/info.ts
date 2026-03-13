@@ -1,12 +1,13 @@
 import {Command, flags} from '@heroku-cli/command'
-import {Args, ux} from '@oclif/core'
 import {color, hux} from '@heroku/heroku-cli-util'
+import {Args, ux} from '@oclif/core'
 import humanize from 'humanize-plus'
 import sortBy from 'lodash.sortby'
-import utilizationBar from '../../lib/utilizationBar.js'
-import fetcherFn from '../../lib/fetcher.js'
+
 import {request} from '../../lib/clusters.js'
+import fetcherFn from '../../lib/fetcher.js'
 import {Addon} from '../../lib/shared.js'
+import utilizationBar from '../../lib/utilizationBar.js'
 
 const VERSION = 'v0'
 

@@ -1,5 +1,5 @@
-import nock from 'nock'
 import chai from 'chai'
+import nock from 'nock'
 
 nock.disableNetConnect()                       // Disable HTTP connections
 

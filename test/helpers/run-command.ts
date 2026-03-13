@@ -1,4 +1,5 @@
 import type {OclifError} from '@oclif/core/interfaces'
+import type {BufferEncoding} from 'node:buffer'
 
 import {Interfaces} from '@oclif/core'
 import ansis from 'ansis'

@@ -1,8 +1,8 @@
 import {Command, flags} from '@heroku-cli/command'
 import {Args, ux} from '@oclif/core'
-import {parseBool, isZookeeperAllowed} from '../../lib/shared.js'
-import {withCluster, request} from '../../lib/clusters.js'
-import {Addon} from '../../lib/shared.js'
+
+import {request, withCluster} from '../../lib/clusters.js'
+import {Addon, isZookeeperAllowed, parseBool} from '../../lib/shared.js'
 
 const VERSION = 'v0'
 
@@ -44,7 +44,7 @@ export default class Zookeeper extends Command {
       await request(this.heroku, {
         method: 'POST',
         body: {
-          enabled: enabled,
+          enabled,
         },
         path: `/data/kafka/${VERSION}/clusters/${addon.id}/zookeeper`,
       })

@@ -1,10 +1,11 @@
 import {expect} from 'chai'
 import {
-  describe, it, beforeEach, afterEach,
+  afterEach, beforeEach, describe, it,
 } from 'mocha'
 import nock from 'nock'
-import {runCommand} from '../../../helpers/run-command.js'
+
 import Topics from '../../../../src/commands/kafka/topics/index.js'
+import {runCommand} from '../../../helpers/run-command.js'
 
 const VERSION = 'v0'
 
@@ -67,7 +68,7 @@ describe('kafka:topics', () => {
       kafka.get(topicsUrl('00000000-0000-0000-0000-000000000000')).reply(200, {
         attachment_name: 'HEROKU_KAFKA_BLUE_URL',
         topics: [
-          {name: '__consumer_offsets', messages_in_per_second: 9.0, bytes_in_per_second: 2},
+          {bytes_in_per_second: 2, messages_in_per_second: 9.0, name: '__consumer_offsets'},
         ],
       })
 
@@ -95,13 +96,13 @@ describe('kafka:topics', () => {
 
       kafka.get(topicsUrl('00000000-0000-0000-0000-000000000000')).reply(200, {
         attachment_name: 'HEROKU_KAFKA_BLUE_URL',
-        topics: [
-          {name: 'topic-1', messages_in_per_second: 10.0, bytes_in_per_second: 0},
-          {name: 'topic-2', messages_in_per_second: 12.0, bytes_in_per_second: 3},
-        ],
         limits: {
           max_topics: 10,
         },
+        topics: [
+          {bytes_in_per_second: 0, messages_in_per_second: 10.0, name: 'topic-1'},
+          {bytes_in_per_second: 3, messages_in_per_second: 12.0, name: 'topic-2'},
+        ],
       })
 
       const {stdout} = await runCommand(Topics, ['--app', 'myapp'])
@@ -130,14 +131,14 @@ describe('kafka:topics', () => {
 
       kafka.get(topicsUrl('00000000-0000-0000-0000-000000000000')).reply(200, {
         attachment_name: 'HEROKU_KAFKA_BLUE_URL',
-        prefix,
-        topics: [
-          {name: 'topic-1', messages_in_per_second: 10.0, bytes_in_per_second: 0},
-          {name: 'topic-2', messages_in_per_second: 12.0, bytes_in_per_second: 3},
-        ],
         limits: {
           max_topics: 10,
         },
+        prefix,
+        topics: [
+          {bytes_in_per_second: 0, messages_in_per_second: 10.0, name: 'topic-1'},
+          {bytes_in_per_second: 3, messages_in_per_second: 12.0, name: 'topic-2'},
+        ],
       })
 
       const {stdout} = await runCommand(Topics, ['--app', 'myapp'])
@@ -164,9 +165,9 @@ describe('kafka:topics', () => {
       kafka.get(topicsUrl('00000000-0000-0000-0000-000000000000')).reply(200, {
         attachment_name: 'HEROKU_KAFKA_BLUE_URL',
         topics: [
-          {name: '__consumer_offsets', messages_in_per_second: 9.0, bytes_in_per_second: 2},
-          {name: 'topic-1', messages_in_per_second: 10.0, bytes_in_per_second: 0},
-          {name: 'topic-2', messages_in_per_second: 12.0, bytes_in_per_second: 3},
+          {bytes_in_per_second: 2, messages_in_per_second: 9.0, name: '__consumer_offsets'},
+          {bytes_in_per_second: 0, messages_in_per_second: 10.0, name: 'topic-1'},
+          {bytes_in_per_second: 3, messages_in_per_second: 12.0, name: 'topic-2'},
         ],
       })
 

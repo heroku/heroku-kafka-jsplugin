@@ -1,10 +1,11 @@
 import {expect} from 'chai'
 import {
-  describe, it, beforeEach, afterEach,
+  afterEach, beforeEach, describe, it,
 } from 'mocha'
 import nock from 'nock'
-import {runCommand} from '../../../helpers/run-command.js'
+
 import TopicsCreate from '../../../../src/commands/kafka/topics/create.js'
+import {runCommand} from '../../../helpers/run-command.js'
 
 const VERSION = 'v0'
 
@@ -113,7 +114,7 @@ describe('kafka:topics:create', () => {
     }])
 
     kafka.get(infoUrl('00000000-0000-0000-0000-000000000000'))
-    .reply(200, {shared_cluster: false, limits: {minimum_retention_ms: 66}})
+    .reply(200, {limits: {minimum_retention_ms: 66}, shared_cluster: false})
     kafka.post(topicsUrl('00000000-0000-0000-0000-000000000000')).reply(200)
 
     const {stdout} = await runCommand(TopicsCreate, [
@@ -144,7 +145,7 @@ describe('kafka:topics:create', () => {
       }])
 
       kafka.get(infoUrl('00000000-0000-0000-0000-000000000000'))
-      .reply(200, {shared_cluster: true, limits: {minimum_retention_ms: 66}})
+      .reply(200, {limits: {minimum_retention_ms: 66}, shared_cluster: true})
       kafka.post(topicsUrl('00000000-0000-0000-0000-000000000000')).reply(200)
 
       const {stdout} = await runCommand(TopicsCreate, [

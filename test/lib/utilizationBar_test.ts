@@ -1,5 +1,6 @@
 import {expect} from 'chai'
 import {describe, it} from 'mocha'
+
 import utilizationBar from '../../src/lib/utilizationBar.js'
 
 describe('utilizationBar', function () {

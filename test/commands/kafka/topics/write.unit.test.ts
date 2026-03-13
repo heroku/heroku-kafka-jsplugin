@@ -1,12 +1,13 @@
 import {expect} from 'chai'
 import {
-  describe, it, beforeEach, afterEach,
+  afterEach, beforeEach, describe, it,
 } from 'mocha'
 import nock from 'nock'
 import sinon from 'sinon'
-import {runCommand} from '../../../helpers/run-command.js'
+
 import TopicsWrite from '../../../../src/commands/kafka/topics/write.js'
 import {kafkaClient} from '../../../../src/lib/kafka.js'
+import {runCommand} from '../../../helpers/run-command.js'
 
 describe('kafka:topics:write', () => {
   let kafka: nock.Scope
@@ -22,9 +23,9 @@ describe('kafka:topics:write', () => {
 
     // Create a mock producer
     producer = {
+      end: sandbox.stub(),
       init: sandbox.stub().resolves(),
       send: sandbox.stub().resolves(),
-      end: sandbox.stub(),
     }
 
     // Stub kafkaClient.createProducer to return our mock producer
@@ -61,8 +62,8 @@ describe('kafka:topics:write', () => {
         name: 'kafka-1',
         plan: {name: 'heroku-kafka:basic-0'},
       },
-      name: 'KAFKA',
       config_vars: ['KAFKA_URL', 'KAFKA_TRUSTED_CERT', 'KAFKA_CLIENT_CERT', 'KAFKA_CLIENT_CERT_KEY'],
+      name: 'KAFKA',
     }])
     api.get('/apps/myapp/addon-attachments/kafka-1')
     .reply(200, {
@@ -71,15 +72,15 @@ describe('kafka:topics:write', () => {
         name: 'kafka-1',
         plan: {name: 'heroku-kafka:basic-0'},
       },
-      name: 'KAFKA',
       config_vars: ['KAFKA_URL', 'KAFKA_TRUSTED_CERT', 'KAFKA_CLIENT_CERT', 'KAFKA_CLIENT_CERT_KEY'],
+      name: 'KAFKA',
     })
     api.get('/apps/myapp/config-vars')
     .reply(200, {
-      KAFKA_URL: 'kafka+ssl://broker:9096',
-      KAFKA_TRUSTED_CERT: 'cert',
       KAFKA_CLIENT_CERT: 'client-cert',
       KAFKA_CLIENT_CERT_KEY: 'client-key',
+      KAFKA_TRUSTED_CERT: 'cert',
+      KAFKA_URL: 'kafka+ssl://broker:9096',
     })
 
     await runCommand(TopicsWrite, ['my-topic', 'hello world', '--app', 'myapp'])
@@ -104,8 +105,8 @@ describe('kafka:topics:write', () => {
         name: 'kafka-1',
         plan: {name: 'heroku-kafka:basic-0'},
       },
-      name: 'KAFKA',
       config_vars: ['KAFKA_URL', 'KAFKA_TRUSTED_CERT', 'KAFKA_CLIENT_CERT', 'KAFKA_CLIENT_CERT_KEY'],
+      name: 'KAFKA',
     }])
     api.get('/apps/myapp/addon-attachments/kafka-1')
     .reply(200, {
@@ -114,15 +115,15 @@ describe('kafka:topics:write', () => {
         name: 'kafka-1',
         plan: {name: 'heroku-kafka:basic-0'},
       },
-      name: 'KAFKA',
       config_vars: ['KAFKA_URL', 'KAFKA_TRUSTED_CERT', 'KAFKA_CLIENT_CERT', 'KAFKA_CLIENT_CERT_KEY'],
+      name: 'KAFKA',
     })
     api.get('/apps/myapp/config-vars')
     .reply(200, {
-      KAFKA_URL: 'kafka+ssl://broker:9096',
-      KAFKA_TRUSTED_CERT: 'cert',
       KAFKA_CLIENT_CERT: 'client-cert',
       KAFKA_CLIENT_CERT_KEY: 'client-key',
+      KAFKA_TRUSTED_CERT: 'cert',
+      KAFKA_URL: 'kafka+ssl://broker:9096',
     })
 
     const {error} = await runCommand(TopicsWrite, ['my-topic', 'hello world', '--app', 'myapp'])
@@ -140,8 +141,8 @@ describe('kafka:topics:write', () => {
         name: 'kafka-1',
         plan: {name: 'heroku-kafka:basic-0'},
       },
-      name: 'KAFKA',
       config_vars: ['KAFKA_URL', 'KAFKA_TRUSTED_CERT', 'KAFKA_CLIENT_CERT', 'KAFKA_CLIENT_CERT_KEY'],
+      name: 'KAFKA',
     }])
     api.get('/apps/myapp/addon-attachments/kafka-1')
     .reply(200, {
@@ -150,15 +151,15 @@ describe('kafka:topics:write', () => {
         name: 'kafka-1',
         plan: {name: 'heroku-kafka:basic-0'},
       },
-      name: 'KAFKA',
       config_vars: ['KAFKA_URL', 'KAFKA_TRUSTED_CERT', 'KAFKA_CLIENT_CERT', 'KAFKA_CLIENT_CERT_KEY'],
+      name: 'KAFKA',
     })
     api.get('/apps/myapp/config-vars')
     .reply(200, {
-      KAFKA_URL: 'kafka+ssl://broker:9096',
-      KAFKA_TRUSTED_CERT: 'cert',
       KAFKA_CLIENT_CERT: 'client-cert',
       KAFKA_CLIENT_CERT_KEY: 'client-key',
+      KAFKA_TRUSTED_CERT: 'cert',
+      KAFKA_URL: 'kafka+ssl://broker:9096',
     })
 
     const {error} = await runCommand(TopicsWrite, ['my-topic', 'hello world', '--app', 'myapp'])

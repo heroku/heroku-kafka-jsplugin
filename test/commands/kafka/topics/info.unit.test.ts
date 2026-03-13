@@ -1,10 +1,11 @@
 import {expect} from 'chai'
 import {
-  describe, it, beforeEach, afterEach,
+  afterEach, beforeEach, describe, it,
 } from 'mocha'
 import nock from 'nock'
-import {runCommand} from '../../../helpers/run-command.js'
+
 import TopicsInfo from '../../../../src/commands/kafka/topics/info.js'
+import {runCommand} from '../../../helpers/run-command.js'
 
 const VERSION = 'v0'
 
@@ -39,13 +40,13 @@ describe('kafka:topics:info', () => {
       attachment_name: 'HEROKU_KAFKA_BLUE_URL',
       topics: [
         {
-          name: 'topic-1',
-          messages_in_per_second: 0,
           bytes_in_per_second: 0,
           bytes_out_per_second: 0,
-          replication_factor: 3,
-          partitions: 3,
           compaction: false,
+          messages_in_per_second: 0,
+          name: 'topic-1',
+          partitions: 3,
+          replication_factor: 3,
           retention_time_ms: 86400000,
         },
       ],
@@ -79,14 +80,14 @@ describe('kafka:topics:info', () => {
       attachment_name: 'HEROKU_KAFKA_BLUE_URL',
       topics: [
         {
-          name: 'topic-1',
-          prefix: 'wisła-12345.',
-          messages_in_per_second: 0,
           bytes_in_per_second: 0,
           bytes_out_per_second: 0,
-          replication_factor: 3,
-          partitions: 3,
           compaction: false,
+          messages_in_per_second: 0,
+          name: 'topic-1',
+          partitions: 3,
+          prefix: 'wisła-12345.',
+          replication_factor: 3,
           retention_time_ms: 86400000,
         },
       ],
@@ -116,13 +117,13 @@ describe('kafka:topics:info', () => {
       attachment_name: 'HEROKU_KAFKA_BLUE_URL',
       topics: [
         {
-          name: 'topic-1',
-          messages_in_per_second: 0,
           bytes_in_per_second: 0,
           bytes_out_per_second: 0,
-          replication_factor: 0,
-          partitions: 0,
           compaction: false,
+          messages_in_per_second: 0,
+          name: 'topic-1',
+          partitions: 0,
+          replication_factor: 0,
           retention_time_ms: 86400000,
         },
       ],
@@ -150,13 +151,13 @@ describe('kafka:topics:info', () => {
       attachment_name: 'HEROKU_KAFKA_BLUE_URL',
       topics: [
         {
-          name: 'topic-2',
-          messages_in_per_second: 0,
           bytes_in_per_second: 0,
           bytes_out_per_second: 0,
-          replication_factor: 0,
-          partitions: 0,
           compaction: false,
+          messages_in_per_second: 0,
+          name: 'topic-2',
+          partitions: 0,
+          replication_factor: 0,
           retention_time_ms: 86400000,
         },
       ],

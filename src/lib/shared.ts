@@ -86,70 +86,68 @@ function parseBool(boolStr: string): boolean | undefined {
 function parseDuration(durationStr: string): number | null {
   if (/^\d+$/.test(durationStr)) {
     return parseInt(durationStr, 10)
-  } else {
-    let result = durationStr.match(/^(\d+) ?(ms|[smhd]|milliseconds?|seconds?|minutes?|hours?|days?)$/)
-    if (result) {
-      let magnitude = parseInt(result[1])
-      let unit = result[2]
-      let multiplier = 1
-      switch (unit) {
-      case 'ms':
-      case 'millisecond':
-      case 'milliseconds':
-        multiplier = 1
-        break
-      case 's':
-      case 'second':
-      case 'seconds':
-        multiplier = 1000
-        break
-      case 'm':
-      case 'minute':
-      case 'minutes':
-        multiplier = 1000 * 60
-        break
-      case 'h':
-      case 'hour':
-      case 'hours':
-        multiplier = 1000 * 60 * 60
-        break
-      case 'd':
-      case 'day':
-      case 'days':
-        multiplier = 1000 * 60 * 60 * 24
-        break
-      default:
-        return null
-      }
+  }
 
-      return magnitude * multiplier
-    } else {
+  const result = durationStr.match(/^(\d+) ?(ms|[smhd]|milliseconds?|seconds?|minutes?|hours?|days?)$/)
+  if (result) {
+    const magnitude = parseInt(result[1])
+    const unit = result[2]
+    let multiplier = 1
+    switch (unit) {
+    case 'ms':
+    case 'millisecond':
+    case 'milliseconds':
+      multiplier = 1
+      break
+    case 's':
+    case 'second':
+    case 'seconds':
+      multiplier = 1000
+      break
+    case 'm':
+    case 'minute':
+    case 'minutes':
+      multiplier = 1000 * 60
+      break
+    case 'h':
+    case 'hour':
+    case 'hours':
+      multiplier = 1000 * 60 * 60
+      break
+    case 'd':
+    case 'day':
+    case 'days':
+      multiplier = 1000 * 60 * 60 * 24
+      break
+    default:
       return null
     }
+
+    return magnitude * multiplier
   }
+
+  return null
 }
 
 function formatIntervalFromMilliseconds(milliseconds: number): string {
   let remaining = milliseconds
-  let multipliers: Record<string, number> = {
+  const multipliers: Record<string, number> = {
     day: (24 * 60 * 60 * 1000),
     hour: (60 * 60 * 1000),
     minute: (60 * 1000),
     second: 1000,
   }
-  let intervals = Object.keys(multipliers)
+  const intervals = Object.keys(multipliers)
   .sort((intervalA, intervalB) => multipliers[intervalB] - multipliers[intervalA])
-  let values: Record<string, number> = intervals.reduce((accum, interval) => {
+  const values: Record<string, number> = intervals.reduce((accum, interval) => {
     accum[interval] = 0
     return accum
   }, {} as Record<string, number>)
-  let smallest = multipliers[intervals[intervals.length - 1]]
+  const smallest = multipliers[intervals[intervals.length - 1]]
 
   while (remaining >= smallest) {
-    let nextInterval = intervals.find(interval => {
-      return multipliers[interval] <= remaining
-    })!
-    let nextIntervalValue = multipliers[nextInterval]
+    const nextInterval = intervals.find(interval => multipliers[interval] <= remaining)!
+    const nextIntervalValue = multipliers[nextInterval]
     let multiplier = 1
 
     while ((nextIntervalValue * (multiplier + 1)) <= remaining) {
@@ -164,7 +162,7 @@ function formatIntervalFromMilliseconds(milliseconds: number): string {
   intervals.push('millisecond')
 
   return intervals.filter(interval => values[interval] > 0).map(interval => {
-    let val = values[interval]
+    const val = values[interval]
     return `${val} ${interval}${val > 1 ? 's' : ''}`
   }).join(' ')
 }

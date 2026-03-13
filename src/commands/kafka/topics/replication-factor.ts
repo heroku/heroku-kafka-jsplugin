@@ -1,6 +1,7 @@
 import {Command, flags} from '@heroku-cli/command'
 import {Args, ux} from '@oclif/core'
-import {withCluster, request, topicConfig} from '../../../lib/clusters.js'
+
+import {request, topicConfig, withCluster} from '../../../lib/clusters.js'
 import {Addon} from '../../../lib/shared.js'
 
 const VERSION = 'v0'

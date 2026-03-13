@@ -1,4 +1,5 @@
 import memoize from 'lodash.memoize'
+
 import {Addon} from './shared.js'
 
 interface HerokuClient {
@@ -63,8 +64,8 @@ const attachmentHeaders = function (): Record<string, string> {
 const appAddon = function (heroku: HerokuClient, app: string, id: string, options: ResolveOptions = {}): Promise<any> {
   const headers = addonHeaders()
   return heroku.post('/actions/addons/resolve', {
-    headers: headers,
-    body: {app: app, addon: id, addon_service: options.addon_service},
+    headers,
+    body: {app, addon: id, addon_service: options.addon_service},
   })
   .then((res: any) => res.body || res)
   .then(singularize('addon', options.namespace))
@@ -73,17 +74,17 @@ const appAddon = function (heroku: HerokuClient, app: string, id: string, option
 const handleNotFound = function (err: HerokuError, resource: string): boolean {
   if (err.statusCode === 404 && err.body && err.body.resource === resource) {
     return true
-  } else {
-    throw err
   }
+
+  throw err
 }
 
 const addonResolver = function (heroku: HerokuClient, app: string | null, id: string, options: ResolveOptions = {}): Promise<any> {
   const headers = addonHeaders()
 
-  let getAddon = function (id: string): Promise<any> {
+  const getAddon = function (id: string): Promise<any> {
     return heroku.post('/actions/addons/resolve', {
-      headers: headers,
+      headers,
       body: {app: null, addon: id, addon_service: options.addon_service},
     })
     .then((res: any) => res.body || res)
@@ -103,8 +104,7 @@ const addonResolver = function (heroku: HerokuClient, app: string | null, id: st
  * https://github.com/lodash/lodash/blob/da329eb776a15825c04ffea9fa75ae941ea524af/lodash.js#L10534
  */
 const memoizePromise = function (func: Function, resolver: Function): any {
-  const memoized: any = function (this: any) {
-    const args = arguments
+  const memoized: any = function (this: any, ...args: any[]) {
     const key = resolver.apply(this, args)
     const cache = memoized.cache
 
@@ -151,7 +151,7 @@ const attachment = function (heroku: HerokuClient, app: string | null, id: strin
 
   function getAttachment(id: string): Promise<any> {
     return heroku.post('/actions/addon-attachments/resolve', {
-      headers: headers, body: {app: null, addon_attachment: id, addon_service: options.addon_service},
+      headers, body: {app: null, addon_attachment: id, addon_service: options.addon_service},
     })
     .then((res: any) => res.body || res)
     .then(singularize('addon_attachment', options.namespace))
@@ -187,50 +187,48 @@ const attachment = function (heroku: HerokuClient, app: string | null, id: strin
   })
   // if no attachment, look up an add-on that matches the id
   .then((attachOrError: {attachment?: any, error?: any}) => {
-    let {attachment, error} = attachOrError
+    const {attachment, error} = attachOrError
 
     if (attachment) return attachment
 
     // If we were passed an add-on slug, there still could be an attachment
     // to the context app. Try to find and use it so `context_app` is set
     // correctly in the SSO payload.
-    else if (app) {
+    if (app) {
       return addon(heroku, app, id, options)
       .then((addon: Addon) => getAppAddonAttachment(addon, app))
       .catch((addonError: any) => {
         if (error) throw error
         throw addonError
       })
-    } else {
-      if (error) throw error
-      throw new NotFoundError()
     }
+
+    if (error) throw error
+    throw new NotFoundError()
   })
 }
 
 const appAttachment = function (heroku: HerokuClient, app: string, id: string, options: ResolveOptions = {}): Promise<any> {
   const headers = attachmentHeaders()
   return heroku.post('/actions/addon-attachments/resolve', {
-    headers: headers, body: {app: app, addon_attachment: id, addon_service: options.addon_service},
+    headers, body: {app, addon_attachment: id, addon_service: options.addon_service},
   })
   .then((res: any) => res.body || res)
   .then(singularize('addon_attachment', options.namespace))
 }
 
 const filter = function (app: string, addonService?: string): (attachments: any[]) => any[] {
-  return (attachments: any[]) => {
-    return attachments.filter((attachment: any) => {
-      if (attachment.app.name !== app) {
-        return false
-      }
+  return (attachments: any[]) => attachments.filter((attachment: any) => {
+    if (attachment.app.name !== app) {
+      return false
+    }
 
-      if (addonService && attachment.addon_service.name !== addonService) {
-        return false
-      }
+    if (addonService && attachment.addon_service.name !== addonService) {
+      return false
+    }
 
-      return true
-    })
-  }
+    return true
+  })
 }
 
 export {

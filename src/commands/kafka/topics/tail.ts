@@ -1,10 +1,10 @@
 import {Command, flags} from '@heroku-cli/command'
 import {Args, ux} from '@oclif/core'
-import debug from '../../../lib/debug.js'
-import {clusterConfig} from '../../../lib/shared.js'
+
 import {withCluster} from '../../../lib/clusters.js'
-import {Addon} from '../../../lib/shared.js'
+import debug from '../../../lib/debug.js'
 import * as kafka from '../../../lib/kafka.js'
+import {Addon, clusterConfig} from '../../../lib/shared.js'
 
 const CLIENT_ID = 'heroku-tail-consumer'
 const IDLE_TIMEOUT = 1000
@@ -70,7 +70,7 @@ export default class TopicsTail extends Command {
           consumer.subscribe(topicName, (messageSet: any, topic: any, partition: any) => {
             messageSet.forEach((m: any) => {
               const buffer = m.message.value
-              if (buffer == null) {
+              if (buffer === null || buffer === undefined) {
                 ux.stdout(`${args.topic} ${partition} ${m.offset} 0 NULL\n`)
                 return
               }

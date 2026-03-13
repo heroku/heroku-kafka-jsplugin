@@ -16,9 +16,9 @@ interface AttachmentWithAddon {
 function addonName(): string {
   if (process.env.HEROKU_KAFKA_ADDON_NAME) {
     return process.env.HEROKU_KAFKA_ADDON_NAME
-  } else {
-    return DEFAULT_ADDON_NAME
   }
+
+  return DEFAULT_ADDON_NAME
 }
 
 function isKafka(addon: Addon): boolean {
@@ -30,7 +30,7 @@ export default (heroku: HerokuClient) => {
   async function addon(app: string, cluster?: string): Promise<Addon> {
     cluster = cluster || 'KAFKA_URL'
     debug(`fetching ${cluster} on ${app}`)
-    let attachment = await attachmentResolver(heroku, app, cluster, {}) as AttachmentWithAddon
+    const attachment = await attachmentResolver(heroku, app, cluster, {}) as AttachmentWithAddon
     return attachment.addon
   }
 

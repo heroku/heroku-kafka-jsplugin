@@ -1,7 +1,8 @@
 import {Command, flags} from '@heroku-cli/command'
-import {Args, ux} from '@oclif/core'
 import {hux} from '@heroku/heroku-cli-util'
-import {withCluster, request} from '../../../lib/clusters.js'
+import {Args, ux} from '@oclif/core'
+
+import {request, withCluster} from '../../../lib/clusters.js'
 import {Addon} from '../../../lib/shared.js'
 
 const VERSION = 'v0'
@@ -30,11 +31,9 @@ export default class ConsumerGroups extends Command {
       }) as {body: any}
 
       hux.styledHeader('Kafka Consumer Groups on ' + (args.cluster || 'HEROKU_KAFKA'))
-      const consumerGroupData = consumerGroups.consumer_groups.map((g: any) => {
-        return {
-          name: g.name,
-        }
-      })
+      const consumerGroupData = consumerGroups.consumer_groups.map((g: any) => ({
+        name: g.name,
+      }))
 
       ux.stdout('\n')
       if (consumerGroupData.length === 0) {

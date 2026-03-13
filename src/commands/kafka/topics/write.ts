@@ -1,10 +1,10 @@
 import {Command, flags} from '@heroku-cli/command'
 import {Args} from '@oclif/core'
-import debug from '../../../lib/debug.js'
-import {clusterConfig} from '../../../lib/shared.js'
+
 import {withCluster} from '../../../lib/clusters.js'
-import {Addon} from '../../../lib/shared.js'
+import debug from '../../../lib/debug.js'
 import * as kafka from '../../../lib/kafka.js'
+import {Addon, clusterConfig} from '../../../lib/shared.js'
 
 const CLIENT_ID = 'heroku-write-producer'
 const IDLE_TIMEOUT = 1000
@@ -74,8 +74,8 @@ export default class TopicsWrite extends Command {
 
       const payload = {
         topic: topicName,
-        partition: partition,
-        message: message,
+        partition,
+        message,
       }
 
       try {

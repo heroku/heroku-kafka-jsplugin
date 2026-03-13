@@ -1,10 +1,11 @@
 import {expect} from 'chai'
 import {
-  describe, it, beforeEach, afterEach,
+  afterEach, beforeEach, describe, it,
 } from 'mocha'
 import nock from 'nock'
-import {runCommand} from '../../helpers/run-command.js'
+
 import Wait from '../../../src/commands/kafka/wait.js'
+import {runCommand} from '../../helpers/run-command.js'
 
 const VERSION = 'v0'
 
@@ -32,8 +33,8 @@ describe('kafka:wait', () => {
         name: 'kafka-1',
         plan: {name: 'heroku-kafka:basic-0'},
       },
-      name: 'KAFKA',
       config_vars: ['KAFKA_URL'],
+      name: 'KAFKA',
     }])
     .post('/actions/addon-attachments/resolve')
     .reply(200, [{
@@ -42,13 +43,13 @@ describe('kafka:wait', () => {
         name: 'kafka-1',
         plan: {name: 'heroku-kafka:basic-0'},
       },
-      name: 'KAFKA',
       app: {name: 'myapp'},
+      name: 'KAFKA',
     }])
 
     kafka
-    .get(waitUrl('00000000-0000-0000-0000-000000000000')).reply(200, {'waiting?': true, message: 'pending'})
-    .get(waitUrl('00000000-0000-0000-0000-000000000000')).reply(200, {'waiting?': false, message: 'available'})
+    .get(waitUrl('00000000-0000-0000-0000-000000000000')).reply(200, {message: 'pending', 'waiting?': true})
+    .get(waitUrl('00000000-0000-0000-0000-000000000000')).reply(200, {message: 'available', 'waiting?': false})
 
     const {stderr} = await runCommand(Wait, ['KAFKA_URL', '--app', 'myapp', '--wait-interval', '0.1'])
     expect(stderr).to.include('Waiting for cluster kafka-1')
@@ -64,19 +65,19 @@ describe('kafka:wait', () => {
     .reply(200, [
       {
         addon: {
+          addon_service: {name: 'heroku-kafka'},
           id: '00000000-0000-0000-0000-000000000000',
           name: 'kafka-1',
           plan: {name: 'heroku-kafka:basic-0'},
-          addon_service: {name: 'heroku-kafka'},
         },
         name: 'KAFKA',
       },
       {
         addon: {
+          addon_service: {name: 'heroku-kafka'},
           id: '00000000-0000-0000-0000-000000000001',
           name: 'kafka-2',
           plan: {name: 'heroku-kafka:basic-0'},
-          addon_service: {name: 'heroku-kafka'},
         },
         name: 'KAFKA_2',
       },
@@ -97,10 +98,10 @@ describe('kafka:wait', () => {
     .get('/apps/myapp/addon-attachments')
     .reply(200, [{
       addon: {
+        addon_service: {name: 'heroku-kafka'},
         id: '00000000-0000-0000-0000-000000000000',
         name: 'kafka-1',
         plan: {name: 'heroku-kafka:basic-0'},
-        addon_service: {name: 'heroku-kafka'},
       },
       name: 'KAFKA',
     }])

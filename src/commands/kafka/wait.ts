@@ -1,6 +1,7 @@
 import {Command, flags} from '@heroku-cli/command'
-import {Args, ux} from '@oclif/core'
 import {color} from '@heroku/heroku-cli-util'
+import {Args, ux} from '@oclif/core'
+
 import {HerokuKafkaClusters} from '../../lib/clusters.js'
 import fetcherFn from '../../lib/fetcher.js'
 import {Addon} from '../../lib/shared.js'

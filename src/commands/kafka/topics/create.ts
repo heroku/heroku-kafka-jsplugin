@@ -1,9 +1,9 @@
 import {Command, flags} from '@heroku-cli/command'
-import {Args, ux} from '@oclif/core'
 import {color} from '@heroku/heroku-cli-util'
-import {parseDuration, formatIntervalFromMilliseconds} from '../../../lib/shared.js'
-import {withCluster, request, fetchProvisionedInfo} from '../../../lib/clusters.js'
-import {Addon} from '../../../lib/shared.js'
+import {Args, ux} from '@oclif/core'
+
+import {fetchProvisionedInfo, request, withCluster} from '../../../lib/clusters.js'
+import {Addon, formatIntervalFromMilliseconds, parseDuration} from '../../../lib/shared.js'
 
 const VERSION = 'v0'
 
@@ -64,7 +64,7 @@ export default class TopicsCreate extends Command {
             retention_time_ms: retentionTimeMillis,
             replication_factor: flags['replication-factor'],
             partition_count: flags.partitions,
-            compaction: compaction,
+            compaction,
           },
         },
         path: `/data/kafka/${VERSION}/clusters/${addon.id}/topics`,

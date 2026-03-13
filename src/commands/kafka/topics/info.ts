@@ -1,8 +1,9 @@
 import {Command, flags} from '@heroku-cli/command'
-import {Args} from '@oclif/core'
 import {color, hux} from '@heroku/heroku-cli-util'
+import {Args} from '@oclif/core'
 import humanize from 'humanize-plus'
-import {withCluster, topicConfig} from '../../../lib/clusters.js'
+
+import {topicConfig, withCluster} from '../../../lib/clusters.js'
 import {Addon} from '../../../lib/shared.js'
 
 const ONE_HOUR_IN_MS = 60 * 60 * 1000
@@ -12,11 +13,13 @@ const TWO_DAYS_IN_MS = TWENTY_FOUR_HOURS_IN_MS * 2
 function retention(retentionTimeMs: number): string {
   if (retentionTimeMs < ONE_HOUR_IN_MS) {
     return `${Math.round(retentionTimeMs / 1000.0)} seconds`
-  } else if (retentionTimeMs < TWO_DAYS_IN_MS) {
-    return `${Math.round(retentionTimeMs / ONE_HOUR_IN_MS)} hours`
-  } else {
-    return `${Math.round(retentionTimeMs / TWENTY_FOUR_HOURS_IN_MS)} days`
   }
+
+  if (retentionTimeMs < TWO_DAYS_IN_MS) {
+    return `${Math.round(retentionTimeMs / ONE_HOUR_IN_MS)} hours`
+  }
+
+  return `${Math.round(retentionTimeMs / TWENTY_FOUR_HOURS_IN_MS)} days`
 }
 
 function topicInfo(topic: any): Record<string, string> {
@@ -32,13 +35,13 @@ function topicInfo(topic: any): Record<string, string> {
   }
 
   if (topic.compaction) {
-    info['Compaction'] = `Compaction is enabled for ${topic.name}`
+    info.Compaction = `Compaction is enabled for ${topic.name}`
   } else {
-    info['Compaction'] = `Compaction is disabled for ${topic.name}`
+    info.Compaction = `Compaction is disabled for ${topic.name}`
   }
 
   if (topic.retention_time_ms) {
-    info['Retention'] = retention(topic.retention_time_ms)
+    info.Retention = retention(topic.retention_time_ms)
   }
 
   return info

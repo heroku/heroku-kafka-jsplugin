@@ -1,10 +1,11 @@
 import {expect} from 'chai'
 import {
-  describe, it, beforeEach, afterEach,
+  afterEach, beforeEach, describe, it,
 } from 'mocha'
 import nock from 'nock'
-import {runCommand} from '../../helpers/run-command.js'
+
 import Info from '../../../src/commands/kafka/info.js'
+import {runCommand} from '../../helpers/run-command.js'
 
 const VERSION = 'v0'
 
@@ -44,46 +45,46 @@ describe('kafka:info', () => {
     const attachments = [
       {
         addon: {
-          name: 'kafka-1', id: '00000000-0000-0000-0000-000000000000', plan, addon_service,
+          addon_service, id: '00000000-0000-0000-0000-000000000000', name: 'kafka-1', plan,
         }, name: 'KAFKA',
       },
       {
         addon: {
-          name: 'kafka-1', id: '00000000-0000-0000-0000-000000000000', plan, addon_service,
+          addon_service, id: '00000000-0000-0000-0000-000000000000', name: 'kafka-1', plan,
         }, name: 'HEROKU_KAFKA_COBALT',
       },
       {
         addon: {
-          name: 'kafka-2', id: '00000000-0000-0000-0000-000000000001', plan, addon_service,
+          addon_service, id: '00000000-0000-0000-0000-000000000001', name: 'kafka-2', plan,
         }, name: 'HEROKU_KAFKA_PURPLE',
       },
     ]
     const clusterA = {
       addon: {name: 'kafka-1'},
-      state: {message: 'available'},
-      robot: {is_robot: false},
-      topics: ['__consumer_offsets', 'messages'],
-      limits: {},
-      partition_replica_count: 132,
-      messages_in_per_sec: 0,
       bytes_in_per_sec: 0,
       bytes_out_per_sec: 0,
-      version: ['0.10.0.0'],
-      customer_encryption_key: 'arn:aws:kms:us-east-1:123456789012:key/a1b23c4d-a1b2-c3d4-e5f6-a1b2c3d4e5f6',
       created_at: '2016-11-14T14:26:20.245+00:00',
+      customer_encryption_key: 'arn:aws:kms:us-east-1:123456789012:key/a1b23c4d-a1b2-c3d4-e5f6-a1b2c3d4e5f6',
+      limits: {},
+      messages_in_per_sec: 0,
+      partition_replica_count: 132,
+      robot: {is_robot: false},
+      state: {message: 'available'},
+      topics: ['__consumer_offsets', 'messages'],
+      version: ['0.10.0.0'],
     }
     const clusterB = {
       addon: {name: 'kafka-2'},
-      state: {message: 'available'},
-      robot: {is_robot: false},
-      topics: ['__consumer_offsets', 'messages'],
-      limits: {max_topics: 10, max_partition_replica_count: 32},
-      partition_replica_count: 12,
-      messages_in_per_sec: 0,
       bytes_in_per_sec: 0,
       bytes_out_per_sec: 0,
-      version: ['0.10.0.0'],
       created_at: '2016-11-14T14:26:20.245+00:00',
+      limits: {max_partition_replica_count: 32, max_topics: 10},
+      messages_in_per_sec: 0,
+      partition_replica_count: 12,
+      robot: {is_robot: false},
+      state: {message: 'available'},
+      topics: ['__consumer_offsets', 'messages'],
+      version: ['0.10.0.0'],
     }
 
     it('shows kafka info', async () => {
@@ -117,9 +118,9 @@ describe('kafka:info', () => {
       const api = nock('https://api.heroku.com:443')
       .post('/actions/addon-attachments/resolve')
       .reply(200, [{
-        addon: {name: 'kafka-2', id: '00000000-0000-0000-0000-000000000001', plan},
-        name: 'HEROKU_KAFKA_PURPLE',
+        addon: {id: '00000000-0000-0000-0000-000000000001', name: 'kafka-2', plan},
         app: {name: 'myapp'},
+        name: 'HEROKU_KAFKA_PURPLE',
       }])
       .get('/apps/myapp/addon-attachments')
       .reply(200, attachments)
@@ -151,7 +152,7 @@ describe('kafka:info', () => {
       .get(infoUrl('00000000-0000-0000-0000-000000000000')).reply(404)
       .get(infoUrl('00000000-0000-0000-0000-000000000001')).reply(200, clusterB)
 
-      const {stdout, stderr} = await runCommand(Info, ['--app', 'myapp'])
+      const {stderr, stdout} = await runCommand(Info, ['--app', 'myapp'])
       expect(stdout).to.include('HEROKU_KAFKA_PURPLE_URL')
       expect(stdout).to.include('kafka-2')
       expect(stdout).not.to.include('kafka-1')

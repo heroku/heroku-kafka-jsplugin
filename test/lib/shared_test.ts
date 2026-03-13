@@ -1,10 +1,11 @@
 import {expect} from 'chai'
 import {describe, it} from 'mocha'
+
 import * as shared from '../../src/lib/shared.ts'
 import {captureOutput} from '../helpers/run-command.js'
 
 describe('parseDuration', function () {
-  let cases = [
+  const cases = [
     ['10', 10],
     ['10ms', 10],
     ['10 ms', 10],
@@ -34,18 +35,18 @@ describe('parseDuration', function () {
     ['1 fortnight', null],
   ]
   cases.forEach(function (testcase) {
-    let duration = testcase[0]
-    let expected = testcase[1]
+    const duration = testcase[0]
+    const expected = testcase[1]
 
     it(`parses '${duration}' as '${expected}'`, function () {
-      let actual = shared.parseDuration(duration)
+      const actual = shared.parseDuration(duration)
       expect(actual).to.equal(expected)
     })
   })
 })
 
 describe('isZookeeperAllowed', function () {
-  let cases = [
+  const cases = [
     [{plan: {name: 'standard-0'}}, false],
     [{plan: {name: 'standard-1'}}, false],
     [{plan: {name: 'standard-2'}}, false],
@@ -66,18 +67,18 @@ describe('isZookeeperAllowed', function () {
     [{plan: {name: 'shield-extended-2'}}, false],
   ]
   cases.forEach(function (testcase) {
-    let addon = testcase[0]
-    let expected = testcase[1]
+    const addon = testcase[0]
+    const expected = testcase[1]
 
     it(`considers '${addon.plan.name}' to${expected ? '' : ' not'} be allowed to enable zookeeper'`, function () {
-      let actual = shared.isZookeeperAllowed(addon)
+      const actual = shared.isZookeeperAllowed(addon)
       expect(actual).to.equal(expected)
     })
   })
 })
 
 describe('parseBool', function () {
-  let cases = [
+  const cases = [
     ['yes', true],
     ['true', true],
     ['on', true],
@@ -92,11 +93,11 @@ describe('parseBool', function () {
     ['yep', undefined],
   ]
   cases.forEach(function (testcase) {
-    let str = testcase[0]
-    let expected = testcase[1]
+    const str = testcase[0]
+    const expected = testcase[1]
 
     it(`parses '${str}' as '${expected}'`, function () {
-      let actual = shared.parseBool(str)
+      const actual = shared.parseBool(str)
       expect(actual).to.equal(expected)
     })
   })
@@ -106,16 +107,16 @@ describe('deprecated', function () {
   it('returns a function that prints a warning and runs the command', async function () {
     let context: any
     let heroku: any
-    let fn = async (c: any, h: any) => {
+    const fn = async (c: any, h: any) => {
       context = c
       heroku = h
       return 42
     }
 
-    let wrapped = shared.deprecated(fn, 'new-command')
+    const wrapped = shared.deprecated(fn, 'new-command')
 
-    let passedContext = {command: {command: 'foo', topic: 'bar'}}
-    let passedHeroku = {}
+    const passedContext = {command: {command: 'foo', topic: 'bar'}}
+    const passedHeroku = {}
 
     const {stderr} = await captureOutput(async () => {
       await wrapped(passedContext, passedHeroku)
@@ -128,7 +129,7 @@ describe('deprecated', function () {
 })
 
 describe('formatIntervalFromMilliseconds', function () {
-  let cases = [
+  const cases = [
     [10, '10 milliseconds'],
     [999, '999 milliseconds'],
     [1000, '1 second'],
@@ -143,11 +144,11 @@ describe('formatIntervalFromMilliseconds', function () {
   ]
 
   cases.forEach(function (testcase) {
-    let duration = testcase[0]
-    let expected = testcase[1]
+    const duration = testcase[0]
+    const expected = testcase[1]
 
     it(`formats ${duration} milliseconds as '${expected}'`, function () {
-      let actual = shared.formatIntervalFromMilliseconds(duration)
+      const actual = shared.formatIntervalFromMilliseconds(duration)
       expect(actual).to.equal(expected)
     })
   })
@@ -156,17 +157,17 @@ describe('formatIntervalFromMilliseconds', function () {
 describe('clusterConfig', () => {
   it('pulls out the correct values out of the config', () => {
     const attachment = {
-      name: 'kafka',
       app: {name: 'sushi'},
       config_vars: [
         'KAFKA_URL', 'KAFKA_TRUSTED_CERT', 'KAFKA_CLIENT_CERT', 'KAFKA_CLIENT_CERT_KEY',
       ],
+      name: 'kafka',
     }
     const config = {
-      KAFKA_URL: 'kafka://example.com',
-      KAFKA_TRUSTED_CERT: '<trusted cert>',
       KAFKA_CLIENT_CERT: '<client cert>',
       KAFKA_CLIENT_CERT_KEY: '<client cert key>',
+      KAFKA_TRUSTED_CERT: '<trusted cert>',
+      KAFKA_URL: 'kafka://example.com',
     }
     const result = shared.clusterConfig(attachment, config)
     expect(result.url).to.equal('kafka://example.com')
@@ -178,18 +179,18 @@ describe('clusterConfig', () => {
 
   it('includes a prefix if one is present', () => {
     const attachment = {
-      name: 'kafka',
       app: {name: 'sushi'},
       config_vars: [
         'KAFKA_URL', 'KAFKA_TRUSTED_CERT', 'KAFKA_CLIENT_CERT', 'KAFKA_CLIENT_CERT_KEY', 'KAFKA_PREFIX',
       ],
+      name: 'kafka',
     }
     const config = {
-      KAFKA_URL: 'kafka://example.com',
-      KAFKA_TRUSTED_CERT: '<trusted cert>',
       KAFKA_CLIENT_CERT: '<client cert>',
       KAFKA_CLIENT_CERT_KEY: '<client cert key>',
       KAFKA_PREFIX: 'vistula-1000.',
+      KAFKA_TRUSTED_CERT: '<trusted cert>',
+      KAFKA_URL: 'kafka://example.com',
     }
     const result = shared.clusterConfig(attachment, config)
     expect(result.url).to.equal('kafka://example.com')
@@ -201,18 +202,18 @@ describe('clusterConfig', () => {
 
   it('raises if an expected key is missing in the attachment metadata', () => {
     const attachment = {
-      name: 'kafka',
       app: {name: 'sushi'},
       config_vars: [
         'KAFKA_URL', 'KAFKA_TRUSTED_CERT', 'KAFKA_CLIENT_CERT_KEY',
       ],
+      name: 'kafka',
     }
     const config = {
-      KAFKA_URL: 'kafka://example.com',
-      KAFKA_TRUSTED_CERT: '<trusted cert>',
       KAFKA_CLIENT_CERT: '<client cert>',
       KAFKA_CLIENT_CERT_KEY: '<client cert key>',
       KAFKA_PREFIX: 'vistula-1000.',
+      KAFKA_TRUSTED_CERT: '<trusted cert>',
+      KAFKA_URL: 'kafka://example.com',
     }
     expect(() => shared.clusterConfig(attachment, config))
     .to.throw(`Could not find CLIENT_CERT for ${attachment.name} on ${attachment.app.name}`)
@@ -220,17 +221,17 @@ describe('clusterConfig', () => {
 
   it('raises if an expected value is missing in the app environment', () => {
     const attachment = {
-      name: 'kafka',
       app: {name: 'sushi'},
       config_vars: [
         'KAFKA_URL', 'KAFKA_TRUSTED_CERT', 'KAFKA_CLIENT_CERT', 'KAFKA_CLIENT_CERT_KEY',
       ],
+      name: 'kafka',
     }
     const config = {
-      KAFKA_URL: 'kafka://example.com',
-      KAFKA_TRUSTED_CERT: '<trusted cert>',
       KAFKA_CLIENT_CERT_KEY: '<client cert key>',
       KAFKA_PREFIX: 'vistula-1000.',
+      KAFKA_TRUSTED_CERT: '<trusted cert>',
+      KAFKA_URL: 'kafka://example.com',
     }
     expect(() => shared.clusterConfig(attachment, config))
     .to.throw(`Config value CLIENT_CERT for ${attachment.name} on ${attachment.app.name} is empty`)

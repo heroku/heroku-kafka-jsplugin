@@ -1,10 +1,11 @@
 import {expect} from 'chai'
 import {
-  describe, it, beforeEach, afterEach,
+  afterEach, beforeEach, describe, it,
 } from 'mocha'
 import nock from 'nock'
-import {runCommand} from '../../../helpers/run-command.js'
+
 import TopicsReplicationFactor from '../../../../src/commands/kafka/topics/replication-factor.js'
+import {runCommand} from '../../../helpers/run-command.js'
 
 const VERSION = 'v0'
 
@@ -40,7 +41,7 @@ describe('kafka:topics:replication-factor', () => {
     }])
 
     kafka.get(topicsUrl('00000000-0000-0000-0000-000000000000'))
-    .reply(200, {topics: [{name: 'topic-1', retention_time_ms: 123, compaction: true}]})
+    .reply(200, {topics: [{compaction: true, name: 'topic-1', retention_time_ms: 123}]})
     kafka.put(topicUrl('00000000-0000-0000-0000-000000000000', 'topic-1')).reply(200)
 
     const {stdout} = await runCommand(TopicsReplicationFactor, ['topic-1', '5', '--app', 'myapp'])
