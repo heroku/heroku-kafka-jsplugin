@@ -11,28 +11,21 @@
     "@heroku-cli/schema": "^2.0.1",
     "@heroku/heroku-cli-util": "^10.6.0",
     "@heroku/no-kafka": "^2.4.1",
-    "@oclif/core": "^4.8.4",
-    "co": "4.6.0",
-    "co-wait": "0.0.0",
+    "@oclif/core": "^4",
     "debug": "^2.6.9",
     "humanize-plus": "^1.8.2",
-    "lodash.memoize": "^4.1.2",
-    "lodash.sortby": "^4.7.0",
-    "node-spinner": "0.0.4",
-    "unexpected": "^13.2.1"
+    "lodash.memoize": "^4.1.2"
   },
   "devDependencies": {
     "@types/chai": "^5.2.3",
     "@types/debug": "^4.1.12",
     "@types/humanize-plus": "^1.8.2",
     "@types/lodash.memoize": "^4.1.9",
-    "@types/lodash.sortby": "^4.7.9",
     "@types/mocha": "^10.0.10",
     "@types/node": "^25.4.0",
     "@types/sinon": "^21.0.0",
     "ansis": "^4.2.0",
     "chai": "^4.3.10",
-    "chai-as-promised": "^7.1.1",
     "eslint": "^9.39.4",
     "eslint-config-oclif": "^6.0",
     "esmock": "^2.7.3",
@@ -42,9 +35,9 @@
     "nyc": "^17.1.0",
     "oclif": "^4.22.87",
     "sinon": "^21.0.2",
-    "ts-node": "^10.9.2",
     "tsx": "^4.21.0",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "unexpected": "^13.2.1"
   },
   "files": [
     "dist",
