@@ -1,0 +1,7 @@
+{
+  "require": ["./test/init.ts", "./test/helpers/hooks.ts"],
+  "spec": ["test/**/*.ts"],
+  "ignore": ["test/commands-old/**"],
+  "recursive": true,
+  "node-option": ["import=tsx"]
+}

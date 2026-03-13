@@ -1,2 +1,2 @@
 --recursive
---require ./test/init.js
+--require ./test/init.ts

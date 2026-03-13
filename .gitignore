@@ -1,2 +1,5 @@
 node_modules/
 .nyc_output/
+coverage/
+dist/
+oclif.manifest.json

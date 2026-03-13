@@ -6,6 +6,19 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Use Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22.x
+          cache: npm
+      - run: npm ci
+      - name: linting
+        run: npm run lint
+
   tests:
     name: Tests
     runs-on: ubuntu-latest
@@ -13,7 +26,7 @@ jobs:
     strategy:
       matrix:
         node-version: ["20.x", "22.x"]
-
+        os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
@@ -21,7 +34,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - name: build_and_test
         run: |
-          npm install
+          npm ci
           npm test
         env:
           CI: true

@@ -7,8 +7,11 @@
     "url": "https://github.com/heroku/heroku-kafka-jsplugin/issues"
   },
   "dependencies": {
-    "@heroku/heroku-cli-util": "^8.0.15",
+    "@heroku-cli/command": "^12.2.1",
+    "@heroku-cli/schema": "^2.0.1",
+    "@heroku/heroku-cli-util": "^10.6.0",
     "@heroku/no-kafka": "^2.4.1",
+    "@oclif/core": "^4.8.4",
     "co": "4.6.0",
     "co-wait": "0.0.0",
     "debug": "^2.6.9",
@@ -19,23 +22,33 @@
     "unexpected": "^13.2.1"
   },
   "devDependencies": {
-    "@eslint/js": "^9.22.0",
+    "@types/chai": "^5.2.3",
+    "@types/debug": "^4.1.12",
+    "@types/humanize-plus": "^1.8.2",
+    "@types/lodash.memoize": "^4.1.9",
+    "@types/lodash.sortby": "^4.7.9",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^25.4.0",
+    "@types/sinon": "^21.0.0",
+    "ansis": "^4.2.0",
     "chai": "^4.3.10",
     "chai-as-promised": "^7.1.1",
-    "eslint": "^9.22.0",
-    "eslint-plugin-import": "^2.28.1",
-    "eslint-plugin-n": "^16.1.0",
-    "eslint-plugin-promise": "^6.1.1",
+    "eslint": "^9.39.4",
+    "eslint-config-oclif": "^6.0",
+    "esmock": "^2.7.3",
     "globals": "^13.24.0",
     "mocha": "^11.1.0",
     "nock": "^14.0.1",
     "nyc": "^17.1.0",
-    "proxyquire": "^1.7.10",
-    "testdouble": "^3.2.2"
+    "oclif": "^4.22.87",
+    "sinon": "^21.0.2",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
   },
   "files": [
-    "commands",
-    "lib"
+    "dist",
+    "/oclif.manifest.json"
   ],
   "keywords": [
     "heroku-plugin"
@@ -44,16 +57,39 @@
   "engines": {
     "node": ">=20.0.0"
   },
-  "main": "commands/index.js",
+  "main": "dist/commands/index.js",
+  "type": "module",
   "repository": "heroku/heroku-kafka-jsplugin",
+  "oclif": {
+    "bin": "heroku",
+    "dirname": "heroku",
+    "commands": "./dist/commands",
+    "plugins": [],
+    "topics": {
+      "kafka": {
+        "description": "manage heroku kafka clusters"
+      },
+      "kafka:consumer-groups": {
+        "description": "manage kafka consumer groups"
+      },
+      "kafka:topics": {
+        "description": "manage kafka topics"
+      }
+    }
+  },
   "scripts": {
-    "coverage": "nyc --reporter=html --reporter=text --reporter=lcov yarn test",
-    "qtest": "mocha",
+    "build": "rm -rf dist && tsc && npm run manifest",
+    "coverage": "nyc --reporter=html --reporter=text --reporter=lcov npm test",
+    "lint": "eslint .",
+    "lint:fix:all": "eslint . --fix",
+    "manifest": "oclif manifest",
+    "prepack": "npm run build",
     "release": "np",
     "standardize": "standard --fix",
-    "test": "eslint . commands lib test && nyc mocha"
+    "test": "NODE_OPTIONS='--import tsx' nyc mocha",
+    "version": "oclif readme --readme-path README.md --output-dir docs --multi && git add README.md docs"
   },
-  "resolutions": {
+  "overrides": {
     "serialize-javascript": "^7.0.3"
   }
 }
