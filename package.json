@@ -97,7 +97,7 @@
     "@esbuild/darwin-arm64": "0.27.3",
     "@esbuild/darwin-x64": "0.27.3",
     "@esbuild/linux-arm": "0.27.3",
-    "@esbuild/linux-arm64": "0.27.3",
+    "@esbuild/linux-arm64": "0.27.4",
     "@esbuild/linux-ia32": "0.27.3",
     "@esbuild/linux-x64": "0.27.3",
     "@esbuild/win32-arm64": "0.27.3",
