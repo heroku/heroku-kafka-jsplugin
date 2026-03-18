@@ -39,7 +39,7 @@ jobs:
         uses: ./workflows-repo/.github/actions/release-validate-public
         with:
           package-manager: npm  # npm | npm | pnpm
-          lint_command: ''  # No lint script found
+          lint_command: 'run lint'  # No lint script found
           test_command: 'run test'
 
   release-please-pr:
