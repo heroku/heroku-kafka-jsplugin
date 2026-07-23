@@ -7,9 +7,9 @@
     "url": "https://github.com/heroku/heroku-kafka-jsplugin/issues"
   },
   "dependencies": {
-    "@heroku-cli/command": "^12.2.1",
+    "@heroku-cli/command": "^13.0.0",
     "@heroku-cli/schema": "^2.0.1",
-    "@heroku/heroku-cli-util": "^10.6.0",
+    "@heroku/heroku-cli-util": "^10.9.0",
     "@heroku/no-kafka": "^2.4.1",
     "@oclif/core": "^4",
     "debug": "^2.6.9",
