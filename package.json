@@ -12,7 +12,7 @@
     "@heroku/heroku-cli-util": "^10.9.0",
     "@heroku/no-kafka": "^2.4.1",
     "@oclif/core": "^4",
-    "debug": "^2.6.9",
+    "debug": "^4.4.3",
     "humanize-plus": "^1.8.2",
     "lodash.memoize": "^4.1.2"
   },
