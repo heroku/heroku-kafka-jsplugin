@@ -1,5 +1,15 @@
 # Changelog
 
+## [3.0.3](https://github.com/heroku/heroku-kafka-jsplugin/compare/heroku-kafka-v3.0.2...heroku-kafka-v3.0.3) (2026-08-21)
+
+
+### Dependencies
+
+* bump @heroku-cli/command from 13.0.1 to 13.1.0 ([#312](https://github.com/heroku/heroku-kafka-jsplugin/issues/312)) ([ead98dc](https://github.com/heroku/heroku-kafka-jsplugin/commit/ead98dc0dc2ad66049d3133ca770298abecb347f))
+* bump brace-expansion ([#320](https://github.com/heroku/heroku-kafka-jsplugin/issues/320)) ([1fc44d5](https://github.com/heroku/heroku-kafka-jsplugin/commit/1fc44d51acaa5f636804bd61de6aa7dcc00394b5))
+* bump debug and @types/debug ([#324](https://github.com/heroku/heroku-kafka-jsplugin/issues/324)) ([54c7435](https://github.com/heroku/heroku-kafka-jsplugin/commit/54c743539947e979a9b80b127a6ff9b11452cb35))
+* fix Dependabot security alerts ([#323](https://github.com/heroku/heroku-kafka-jsplugin/issues/323)) ([328ecdf](https://github.com/heroku/heroku-kafka-jsplugin/commit/328ecdfe93166b806f4681db4ff00fcfe9bde983))
+
 ## [3.0.2](https://github.com/heroku/heroku-kafka-jsplugin/compare/heroku-kafka-v3.0.1...heroku-kafka-v3.0.2) (2026-07-23)
 
 
