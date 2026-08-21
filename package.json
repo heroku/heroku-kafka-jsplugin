@@ -27,7 +27,7 @@
     "ansis": "^4.2.0",
     "chai": "^4.3.10",
     "eslint": "^9.39.4",
-    "eslint-config-oclif": "^6.0",
+    "eslint-config-oclif": "^7.1",
     "esmock": "^2.7.3",
     "globals": "^13.24.0",
     "mocha": "^11.1.0",
