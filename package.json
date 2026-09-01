@@ -26,7 +26,7 @@
     "@types/sinon": "^21.0.0",
     "ansis": "^4.2.0",
     "chai": "^4.3.10",
-    "eslint": "^9.39.4",
+    "eslint": "^10.9.1",
     "eslint-config-oclif": "^7.1",
     "esmock": "^2.7.3",
     "globals": "^13.24.0",
