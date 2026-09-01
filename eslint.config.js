@@ -11,6 +11,28 @@ export default [
       globals: {
         ...globals.mocha,
       },
+      parserOptions: {
+        // Test files sit outside tsconfig.json's `include` (deliberately, so
+        // `tsc`/`npm run build` never compiles test/**). eslint-config-xo>=0.58
+        // (pulled in via eslint-config-oclif@7) turns on typescript-eslint's
+        // project service by default, which otherwise refuses to parse files
+        // outside any known tsconfig project. `**` globs are disallowed here
+        // as a footgun guard, so list each test directory explicitly.
+        projectService: {
+          allowDefaultProject: [
+            'test/*.ts',
+            'test/commands/kafka/*.ts',
+            'test/commands/kafka/consumer-groups/*.ts',
+            'test/commands/kafka/topics/*.ts',
+            'test/helpers/*.ts',
+            'test/lib/*.ts',
+          ],
+          // This repo's whole test/ tree (~25 small files) matches the globs
+          // above; the tseslint default cap of 8 exists for repos where a wide
+          // glob accidentally captures the entire src tree. Raise it to fit.
+          maximumDefaultProjectFileMatchCount_THIS_WILL_SLOW_DOWN_LINTING: 50,
+        },
+      },
     },
     rules: {
       '@stylistic/indent-binary-ops': 'off',
