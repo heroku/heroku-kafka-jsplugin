@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.0.4](https://github.com/heroku/heroku-kafka-jsplugin/compare/heroku-kafka-v3.0.3...heroku-kafka-v3.0.4) (2026-09-22)
+
+
+### Dependencies
+
+* bump @oclif/core from 4.13.3 to 4.14.0 ([#330](https://github.com/heroku/heroku-kafka-jsplugin/issues/330)) ([bccfca2](https://github.com/heroku/heroku-kafka-jsplugin/commit/bccfca24de54821c494bb740930dd4f09a858ad3))
+
 ## [3.0.3](https://github.com/heroku/heroku-kafka-jsplugin/compare/heroku-kafka-v3.0.2...heroku-kafka-v3.0.3) (2026-08-21)
 
 
