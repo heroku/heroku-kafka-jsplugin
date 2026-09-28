@@ -35,6 +35,6 @@ jobs:
       - name: build_and_test
         run: |
           npm ci
-          npm test
+          npm run test:coverage
         env:
           CI: true
