@@ -78,9 +78,9 @@
     "readme": "oclif readme",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "test": "NODE_OPTIONS='--import tsx' mocha",
-    "test:watch": "NODE_OPTIONS='--import tsx' mocha --watch",
-    "test:coverage": "NODE_OPTIONS='--import tsx' nyc --reporter=text-summary --reporter=lcovonly mocha",
+    "test": "mocha",
+    "test:watch": "mocha --watch",
+    "test:coverage": "nyc --reporter=text-summary --reporter=lcovonly mocha",
     "docs:generate": "npm run build && npm run manifest && oclif readme --output-dir docs --multi",
     "prepare": "npm run build && npm run manifest",
     "postpack": "rimraf oclif.manifest.json"
