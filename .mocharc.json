@@ -3,5 +3,6 @@
   "spec": ["test/**/*.ts"],
   "ignore": ["test/commands-old/**"],
   "recursive": true,
+  "watch-files": ["test/**/*.ts", "src/**/*.ts"],
   "node-option": ["import=tsx"]
 }
