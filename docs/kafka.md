@@ -35,7 +35,7 @@ ARGUMENTS
   [CLUSTER]  cluster to operate on
 
 FLAGS
-  -a, --app=<value>     (required) app to run command against
+  -a, --app=<value>     (required) [env: HEROKU_APP] app to run command against
   -r, --remote=<value>  git remote of app to use
 
 GLOBAL FLAGS
@@ -67,7 +67,7 @@ ARGUMENTS
   [CLUSTER]  cluster to operate on
 
 FLAGS
-  -a, --app=<value>     (required) app to run command against
+  -a, --app=<value>     (required) [env: HEROKU_APP] app to run command against
   -r, --remote=<value>  git remote of app to use
 
 GLOBAL FLAGS
@@ -82,7 +82,7 @@ EXAMPLES
   $ heroku kafka:consumer-groups kafka-aerodynamic-32763
 ```
 
-_See code: [src/commands/kafka/consumer-groups/index.ts](https://github.com/heroku/heroku-kafka-jsplugin/blob/v2.13.0/src/commands/kafka/consumer-groups/index.ts)_
+_See code: [src/commands/kafka/consumer-groups/index.ts](https://github.com/heroku/heroku-kafka-jsplugin/blob/heroku-kafka-v3.0.4/src/commands/kafka/consumer-groups/index.ts)_
 
 ## `heroku kafka:consumer-groups:create CONSUMER_GROUP [CLUSTER]`
 
@@ -97,7 +97,7 @@ ARGUMENTS
   [CLUSTER]       cluster to operate on
 
 FLAGS
-  -a, --app=<value>     (required) app to run command against
+  -a, --app=<value>     (required) [env: HEROKU_APP] app to run command against
   -r, --remote=<value>  git remote of app to use
 
 GLOBAL FLAGS
@@ -112,7 +112,7 @@ EXAMPLES
   $ heroku kafka:consumer-groups:create word-counters kafka-aerodynamic-32763
 ```
 
-_See code: [src/commands/kafka/consumer-groups/create.ts](https://github.com/heroku/heroku-kafka-jsplugin/blob/v2.13.0/src/commands/kafka/consumer-groups/create.ts)_
+_See code: [src/commands/kafka/consumer-groups/create.ts](https://github.com/heroku/heroku-kafka-jsplugin/blob/heroku-kafka-v3.0.4/src/commands/kafka/consumer-groups/create.ts)_
 
 ## `heroku kafka:consumer-groups:destroy CONSUMER_GROUP [CLUSTER]`
 
@@ -127,7 +127,7 @@ ARGUMENTS
   [CLUSTER]       cluster to operate on
 
 FLAGS
-  -a, --app=<value>      (required) app to run command against
+  -a, --app=<value>      (required) [env: HEROKU_APP] app to run command against
   -r, --remote=<value>   git remote of app to use
       --confirm=<value>  pass the app name to skip the manual confirmation prompt
 
@@ -143,7 +143,7 @@ EXAMPLES
   $ heroku kafka:consumer-groups:destroy word-counters kafka-aerodynamic-32763
 ```
 
-_See code: [src/commands/kafka/consumer-groups/destroy.ts](https://github.com/heroku/heroku-kafka-jsplugin/blob/v2.13.0/src/commands/kafka/consumer-groups/destroy.ts)_
+_See code: [src/commands/kafka/consumer-groups/destroy.ts](https://github.com/heroku/heroku-kafka-jsplugin/blob/heroku-kafka-v3.0.4/src/commands/kafka/consumer-groups/destroy.ts)_
 
 ## `heroku kafka:credentials [CLUSTER]`
 
@@ -157,7 +157,7 @@ ARGUMENTS
   [CLUSTER]  cluster to operate on
 
 FLAGS
-  -a, --app=<value>     (required) app to run command against
+  -a, --app=<value>     (required) [env: HEROKU_APP] app to run command against
   -r, --remote=<value>  git remote of app to use
       --reset           (required) reset credentials
 
@@ -173,7 +173,7 @@ EXAMPLES
   $ heroku kafka:credentials KAFKA_RED_URL --reset
 ```
 
-_See code: [src/commands/kafka/credentials.ts](https://github.com/heroku/heroku-kafka-jsplugin/blob/v2.13.0/src/commands/kafka/credentials.ts)_
+_See code: [src/commands/kafka/credentials.ts](https://github.com/heroku/heroku-kafka-jsplugin/blob/heroku-kafka-v3.0.4/src/commands/kafka/credentials.ts)_
 
 ## `heroku kafka:fail [CLUSTER]`
 
@@ -188,7 +188,7 @@ ARGUMENTS
   [CLUSTER]  cluster to operate on
 
 FLAGS
-  -a, --app=<value>      (required) app to run command against
+  -a, --app=<value>      (required) [env: HEROKU_APP] app to run command against
   -r, --remote=<value>   git remote of app to use
       --catastrophic     terminate the underlying instance instead and allow automation to replace it
       --confirm=<value>  pass the app name to skip the manual confirmation prompt
@@ -206,7 +206,7 @@ EXAMPLES
   $ heroku kafka:fail kafka-aerodynamic-32763
 ```
 
-_See code: [src/commands/kafka/fail.ts](https://github.com/heroku/heroku-kafka-jsplugin/blob/v2.13.0/src/commands/kafka/fail.ts)_
+_See code: [src/commands/kafka/fail.ts](https://github.com/heroku/heroku-kafka-jsplugin/blob/heroku-kafka-v3.0.4/src/commands/kafka/fail.ts)_
 
 ## `heroku kafka:info [CLUSTER]`
 
@@ -220,7 +220,7 @@ ARGUMENTS
   [CLUSTER]  cluster to operate on
 
 FLAGS
-  -a, --app=<value>     (required) app to run command against
+  -a, --app=<value>     (required) [env: HEROKU_APP] app to run command against
   -r, --remote=<value>  git remote of app to use
 
 GLOBAL FLAGS
@@ -240,7 +240,7 @@ EXAMPLES
   $ heroku kafka:info HEROKU_KAFKA_BROWN_URL
 ```
 
-_See code: [src/commands/kafka/info.ts](https://github.com/heroku/heroku-kafka-jsplugin/blob/v2.13.0/src/commands/kafka/info.ts)_
+_See code: [src/commands/kafka/info.ts](https://github.com/heroku/heroku-kafka-jsplugin/blob/heroku-kafka-v3.0.4/src/commands/kafka/info.ts)_
 
 ## `heroku kafka:topics [CLUSTER]`
 
@@ -254,7 +254,7 @@ ARGUMENTS
   [CLUSTER]  cluster to operate on
 
 FLAGS
-  -a, --app=<value>     (required) app to run command against
+  -a, --app=<value>     (required) [env: HEROKU_APP] app to run command against
   -r, --remote=<value>  git remote of app to use
 
 GLOBAL FLAGS
@@ -269,7 +269,7 @@ EXAMPLES
   $ heroku kafka:topics HEROKU_KAFKA_BROWN_URL
 ```
 
-_See code: [src/commands/kafka/topics/index.ts](https://github.com/heroku/heroku-kafka-jsplugin/blob/v2.13.0/src/commands/kafka/topics/index.ts)_
+_See code: [src/commands/kafka/topics/index.ts](https://github.com/heroku/heroku-kafka-jsplugin/blob/heroku-kafka-v3.0.4/src/commands/kafka/topics/index.ts)_
 
 ## `heroku kafka:topics:compaction TOPIC VALUE [CLUSTER]`
 
@@ -285,7 +285,7 @@ ARGUMENTS
   [CLUSTER]  cluster to operate on
 
 FLAGS
-  -a, --app=<value>     (required) app to run command against
+  -a, --app=<value>     (required) [env: HEROKU_APP] app to run command against
   -r, --remote=<value>  git remote of app to use
 
 GLOBAL FLAGS
@@ -300,7 +300,7 @@ EXAMPLES
   $ heroku kafka:topics:compaction page-visits disable kafka-shiny-2345
 ```
 
-_See code: [src/commands/kafka/topics/compaction.ts](https://github.com/heroku/heroku-kafka-jsplugin/blob/v2.13.0/src/commands/kafka/topics/compaction.ts)_
+_See code: [src/commands/kafka/topics/compaction.ts](https://github.com/heroku/heroku-kafka-jsplugin/blob/heroku-kafka-v3.0.4/src/commands/kafka/topics/compaction.ts)_
 
 ## `heroku kafka:topics:create TOPIC [CLUSTER]`
 
@@ -316,7 +316,7 @@ ARGUMENTS
   [CLUSTER]  cluster to operate on
 
 FLAGS
-  -a, --app=<value>                 (required) app to run command against
+  -a, --app=<value>                 (required) [env: HEROKU_APP] app to run command against
   -r, --remote=<value>              git remote of app to use
       --compaction                  whether to use compaction for this topic
       --partitions=<value>          number of partitions to give the topic
@@ -337,7 +337,7 @@ EXAMPLES
   $ heroku kafka:topics:create page-visits kafka-shiny-2345 --partitions 100 --compaction
 ```
 
-_See code: [src/commands/kafka/topics/create.ts](https://github.com/heroku/heroku-kafka-jsplugin/blob/v2.13.0/src/commands/kafka/topics/create.ts)_
+_See code: [src/commands/kafka/topics/create.ts](https://github.com/heroku/heroku-kafka-jsplugin/blob/heroku-kafka-v3.0.4/src/commands/kafka/topics/create.ts)_
 
 ## `heroku kafka:topics:destroy TOPIC [CLUSTER]`
 
@@ -352,7 +352,7 @@ ARGUMENTS
   [CLUSTER]  cluster to operate on
 
 FLAGS
-  -a, --app=<value>      (required) app to run command against
+  -a, --app=<value>      (required) [env: HEROKU_APP] app to run command against
   -r, --remote=<value>   git remote of app to use
       --confirm=<value>  pass the app name to skip the manual confirmation prompt
 
@@ -368,7 +368,7 @@ EXAMPLES
   $ heroku kafka:topics:destroy page-visits HEROKU_KAFKA_BROWN_URL
 ```
 
-_See code: [src/commands/kafka/topics/destroy.ts](https://github.com/heroku/heroku-kafka-jsplugin/blob/v2.13.0/src/commands/kafka/topics/destroy.ts)_
+_See code: [src/commands/kafka/topics/destroy.ts](https://github.com/heroku/heroku-kafka-jsplugin/blob/heroku-kafka-v3.0.4/src/commands/kafka/topics/destroy.ts)_
 
 ## `heroku kafka:topics:info TOPIC [CLUSTER]`
 
@@ -383,7 +383,7 @@ ARGUMENTS
   [CLUSTER]  cluster to operate on
 
 FLAGS
-  -a, --app=<value>     (required) app to run command against
+  -a, --app=<value>     (required) [env: HEROKU_APP] app to run command against
   -r, --remote=<value>  git remote of app to use
 
 GLOBAL FLAGS
@@ -398,7 +398,7 @@ EXAMPLES
   $ heroku kafka:topics:info page-visits HEROKU_KAFKA_BROWN_URL
 ```
 
-_See code: [src/commands/kafka/topics/info.ts](https://github.com/heroku/heroku-kafka-jsplugin/blob/v2.13.0/src/commands/kafka/topics/info.ts)_
+_See code: [src/commands/kafka/topics/info.ts](https://github.com/heroku/heroku-kafka-jsplugin/blob/heroku-kafka-v3.0.4/src/commands/kafka/topics/info.ts)_
 
 ## `heroku kafka:topics:replication-factor TOPIC VALUE [CLUSTER]`
 
@@ -414,7 +414,7 @@ ARGUMENTS
   [CLUSTER]  cluster to operate on
 
 FLAGS
-  -a, --app=<value>     (required) app to run command against
+  -a, --app=<value>     (required) [env: HEROKU_APP] app to run command against
   -r, --remote=<value>  git remote of app to use
 
 GLOBAL FLAGS
@@ -429,7 +429,7 @@ EXAMPLES
   $ heroku kafka:topics:replication-factor page-visits 3 HEROKU_KAFKA_BROWN_URL
 ```
 
-_See code: [src/commands/kafka/topics/replication-factor.ts](https://github.com/heroku/heroku-kafka-jsplugin/blob/v2.13.0/src/commands/kafka/topics/replication-factor.ts)_
+_See code: [src/commands/kafka/topics/replication-factor.ts](https://github.com/heroku/heroku-kafka-jsplugin/blob/heroku-kafka-v3.0.4/src/commands/kafka/topics/replication-factor.ts)_
 
 ## `heroku kafka:topics:retention-time TOPIC VALUE [CLUSTER]`
 
@@ -445,7 +445,7 @@ ARGUMENTS
   [CLUSTER]  cluster to operate on
 
 FLAGS
-  -a, --app=<value>     (required) app to run command against
+  -a, --app=<value>     (required) [env: HEROKU_APP] app to run command against
   -r, --remote=<value>  git remote of app to use
 
 GLOBAL FLAGS
@@ -462,7 +462,7 @@ EXAMPLES
   $ heroku kafka:topics:retention-time page-visits 36h kafka-shiny-2345
 ```
 
-_See code: [src/commands/kafka/topics/retention-time.ts](https://github.com/heroku/heroku-kafka-jsplugin/blob/v2.13.0/src/commands/kafka/topics/retention-time.ts)_
+_See code: [src/commands/kafka/topics/retention-time.ts](https://github.com/heroku/heroku-kafka-jsplugin/blob/heroku-kafka-v3.0.4/src/commands/kafka/topics/retention-time.ts)_
 
 ## `heroku kafka:topics:tail TOPIC [CLUSTER]`
 
@@ -477,7 +477,7 @@ ARGUMENTS
   [CLUSTER]  cluster to operate on
 
 FLAGS
-  -a, --app=<value>         (required) app to run command against
+  -a, --app=<value>         (required) [env: HEROKU_APP] app to run command against
   -r, --remote=<value>      git remote of app to use
       --max-length=<value>  number of characters per message to output
 
@@ -495,7 +495,7 @@ EXAMPLES
   $ heroku kafka:topics:tail page-visits --max-length 200
 ```
 
-_See code: [src/commands/kafka/topics/tail.ts](https://github.com/heroku/heroku-kafka-jsplugin/blob/v2.13.0/src/commands/kafka/topics/tail.ts)_
+_See code: [src/commands/kafka/topics/tail.ts](https://github.com/heroku/heroku-kafka-jsplugin/blob/heroku-kafka-v3.0.4/src/commands/kafka/topics/tail.ts)_
 
 ## `heroku kafka:topics:write TOPIC MESSAGE [CLUSTER]`
 
@@ -512,7 +512,7 @@ ARGUMENTS
   [CLUSTER]  cluster to operate on
 
 FLAGS
-  -a, --app=<value>        (required) app to run command against
+  -a, --app=<value>        (required) [env: HEROKU_APP] app to run command against
   -r, --remote=<value>     git remote of app to use
       --key=<value>        the key for this message
       --partition=<value>  the partition to write to
@@ -529,7 +529,7 @@ EXAMPLES
   $ heroku kafka:topics:write page_visits "1441025138,www.example.com,192.168.2.13" kafka-aerodynamic-32763
 ```
 
-_See code: [src/commands/kafka/topics/write.ts](https://github.com/heroku/heroku-kafka-jsplugin/blob/v2.13.0/src/commands/kafka/topics/write.ts)_
+_See code: [src/commands/kafka/topics/write.ts](https://github.com/heroku/heroku-kafka-jsplugin/blob/heroku-kafka-v3.0.4/src/commands/kafka/topics/write.ts)_
 
 ## `heroku kafka:upgrade [CLUSTER]`
 
@@ -543,7 +543,7 @@ ARGUMENTS
   [CLUSTER]  cluster to operate on
 
 FLAGS
-  -a, --app=<value>      (required) app to run command against
+  -a, --app=<value>      (required) [env: HEROKU_APP] app to run command against
   -r, --remote=<value>   git remote of app to use
       --confirm=<value>  pass the app name to skip the manual confirmation prompt
       --version=<value>  (required) requested kafka version for upgrade
@@ -558,7 +558,7 @@ EXAMPLES
   $ heroku kafka:upgrade --version 0.9
 ```
 
-_See code: [src/commands/kafka/upgrade.ts](https://github.com/heroku/heroku-kafka-jsplugin/blob/v2.13.0/src/commands/kafka/upgrade.ts)_
+_See code: [src/commands/kafka/upgrade.ts](https://github.com/heroku/heroku-kafka-jsplugin/blob/heroku-kafka-v3.0.4/src/commands/kafka/upgrade.ts)_
 
 ## `heroku kafka:wait [CLUSTER]`
 
@@ -572,7 +572,7 @@ ARGUMENTS
   [CLUSTER]  cluster to operate on
 
 FLAGS
-  -a, --app=<value>            (required) app to run command against
+  -a, --app=<value>            (required) [env: HEROKU_APP] app to run command against
   -r, --remote=<value>         git remote of app to use
       --wait-interval=<value>  how frequently to poll in seconds (to avoid rate limiting)
 
@@ -588,7 +588,7 @@ EXAMPLES
   $ heroku kafka:wait HEROKU_KAFKA_BROWN
 ```
 
-_See code: [src/commands/kafka/wait.ts](https://github.com/heroku/heroku-kafka-jsplugin/blob/v2.13.0/src/commands/kafka/wait.ts)_
+_See code: [src/commands/kafka/wait.ts](https://github.com/heroku/heroku-kafka-jsplugin/blob/heroku-kafka-v3.0.4/src/commands/kafka/wait.ts)_
 
 ## `heroku kafka:zookeeper VALUE [CLUSTER]`
 
@@ -603,7 +603,7 @@ ARGUMENTS
   [CLUSTER]  cluster to operate on
 
 FLAGS
-  -a, --app=<value>     (required) app to run command against
+  -a, --app=<value>     (required) [env: HEROKU_APP] app to run command against
   -r, --remote=<value>  git remote of app to use
 
 GLOBAL FLAGS
@@ -618,4 +618,4 @@ EXAMPLES
   $ heroku kafka:zookeeper disable HEROKU_KAFKA_BROWN_URL
 ```
 
-_See code: [src/commands/kafka/zookeeper.ts](https://github.com/heroku/heroku-kafka-jsplugin/blob/v2.13.0/src/commands/kafka/zookeeper.ts)_
+_See code: [src/commands/kafka/zookeeper.ts](https://github.com/heroku/heroku-kafka-jsplugin/blob/heroku-kafka-v3.0.4/src/commands/kafka/zookeeper.ts)_
