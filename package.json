@@ -55,6 +55,7 @@
   "type": "module",
   "repository": "heroku/heroku-kafka-jsplugin",
   "oclif": {
+    "repositoryPrefix": "<%- repo %>/blob/heroku-kafka-v<%- version %>/<%- commandPath %>",
     "bin": "heroku",
     "dirname": "heroku",
     "commands": "./dist/commands",

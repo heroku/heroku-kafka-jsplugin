@@ -5,11 +5,14 @@ A plugin to manage Heroku Kafka.
 # Usage
 <!-- usage -->
 ```sh-session
-$ heroku kafka:COMMAND
+$ npm install -g heroku-kafka
+$ heroku COMMAND
 running command...
-$ heroku kafka --help
+$ heroku (--version)
+heroku-kafka/3.0.4 darwin-arm64 node-v22.22.3
+$ heroku --help [COMMAND]
 USAGE
-  $ heroku kafka
+  $ heroku COMMAND
 ...
 ```
 <!-- usagestop -->
