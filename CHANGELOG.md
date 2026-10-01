@@ -1,5 +1,17 @@
 # Changelog
 
+## [3.0.5](https://github.com/heroku/heroku-kafka-jsplugin/compare/heroku-kafka-v3.0.4...heroku-kafka-v3.0.5) (2026-10-01)
+
+
+### Bug Fixes
+
+* correct broken source links in generated command docs ([#342](https://github.com/heroku/heroku-kafka-jsplugin/issues/342)) ([640d592](https://github.com/heroku/heroku-kafka-jsplugin/commit/640d59248eb9a9456ac8202c2246e130123d309e))
+
+
+### Dependencies
+
+* bump brace-expansion ([#343](https://github.com/heroku/heroku-kafka-jsplugin/issues/343)) ([43a9fa7](https://github.com/heroku/heroku-kafka-jsplugin/commit/43a9fa73a92c188dacbf3832e70903366d4df9b5))
+
 ## [3.0.4](https://github.com/heroku/heroku-kafka-jsplugin/compare/heroku-kafka-v3.0.3...heroku-kafka-v3.0.4) (2026-09-22)
 
 
