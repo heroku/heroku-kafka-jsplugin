@@ -9,7 +9,7 @@ $ npm install -g heroku-kafka
 $ heroku COMMAND
 running command...
 $ heroku (--version)
-heroku-kafka/3.0.4 darwin-arm64 node-v22.22.3
+heroku-kafka/3.0.5 linux-x64 node-v22.23.2
 $ heroku --help [COMMAND]
 USAGE
   $ heroku COMMAND
