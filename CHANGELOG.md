@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.0.6](https://github.com/heroku/heroku-kafka-jsplugin/compare/heroku-kafka-v3.0.5...heroku-kafka-v3.0.6) (2026-11-20)
+
+
+### Dependencies
+
+* bump @heroku-cli/command from 13.2.3 to 13.2.6 ([#354](https://github.com/heroku/heroku-kafka-jsplugin/issues/354)) ([3f79d7c](https://github.com/heroku/heroku-kafka-jsplugin/commit/3f79d7c7357849e7b21e1905d2e667fe7da4ba61))
+
 ## [3.0.5](https://github.com/heroku/heroku-kafka-jsplugin/compare/heroku-kafka-v3.0.4...heroku-kafka-v3.0.5) (2026-10-01)
 
 
